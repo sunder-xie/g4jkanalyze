@@ -195,6 +195,42 @@ public class TimeFormatter {
 	}
 	
 	/**
+	 * 将当前实时时间格式从 "YYYY/M/D h:m:s.xxx"转成"YYYY-MM-DD hh:mm:ss.xxx" 注意阿拉伯日如果不足两位DD，则是空格加D即 “ D”的格式
+	 * @param dt
+	 * 2016-09-05添加
+	 */
+	public static String Tra_realdate2(String dt)
+	{
+		String logdate="1999-01-01 00:00:00.000";	
+		String[] sep=dt.split(" "); //将日期按照空格拆分成年月日和时间两部分
+		if(sep!=null)
+		{
+			if(sep.length==2)
+			{
+				String[] mydate=sep[0].split("/");
+				String[] mytime=sep[1].split(":");
+				int month=0;
+				int day=0; 
+				int hour=0;
+				if(mydate!=null&&mytime!=null)
+				{
+					if(mydate.length==3&&mytime.length==3)
+					{
+						month=Integer.valueOf(mydate[1]);
+						day=Integer.valueOf(mydate[2]);
+						hour=Integer.valueOf(mytime[0]);
+						if(month<10)mydate[1]="0"+mydate[1];
+						if(day<10)mydate[2]="0"+mydate[2];
+						if(hour<10)mytime[0]="0"+mytime[0];
+						logdate=mydate[0]+"-"+mydate[1]+"-"+mydate[2]+" "+mytime[0]+":"+mytime[1]+":"+mytime[2];
+					}
+				}
+			}
+		}
+		return logdate;
+	}
+	
+	/**
 	 * 获取同一个日期中的时间跨度
 	 * @param start_time
 	 * @param end_time

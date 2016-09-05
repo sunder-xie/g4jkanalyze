@@ -14,6 +14,7 @@ import org.apache.storm.tuple.Values;
 
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
+import cm.storm.g4jk.Commons.TimeFormatter;
 
 /*
  * 2016-09-05 对4G网分记录字段拆分解析
@@ -86,7 +87,34 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 	 * @param tuple:原始String类型的一条会话流
 	 */
 	public void process_tuple(String tuple){
+		g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
+		String attr_value=new String("");
+		String get_subattr=new String("");
+		String[] fields_set=tuple.split("\t");//按照TAB作为间隔划分字段
+		String[] get_subfields=null;
+		if(fields_set==null){
+			g4jkbasic4gbean=null;
+			return;
+		}
 		
+		//字段1，获取日期并做格式转换
+		if(fields_set.length>0)
+		{
+			attr_value=TimeFormatter.Tra_realdate2(fields_set[0]);
+			g4jkbasic4gbean.setStarttime(attr_value);
+		}
+		
+		//字段2，获取IMSI
+		if(fields_set.length>1)
+		{
+			g4jkbasic4gbean.setImsi(fields_set[1]);
+		}
+		
+		//字段2，获取IMSI
+		if(fields_set.length>2)
+		{
+			g4jkbasic4gbean.setImsi(fields_set[1]);
+		}
 	}
 
 	//对发射出去的元组进行字段的声明

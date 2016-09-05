@@ -13,6 +13,9 @@ import org.apache.storm.StormSubmitter;
 import org.apache.storm.topology.TopologyBuilder;
 
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_Basic4GSplitter;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicATDTSplitter;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicJKSplitter;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
 
 
 /**
@@ -86,10 +89,9 @@ public class Yunguan_G4JK_Topology {
         //设置bolt
         //第一组bolt分别spout的流进行字段解析
         Tpbuilder.setBolt("SplitterBoltwf4g", new Yunguan_G4JK_Basic4GSplitter(),3).shuffleGrouping("Spoutwf4g");
-//        Tpbuilder.setBolt("SplitterBoltwfjk", new Xinguan_FireWalls242Splitter(),1).shuffleGrouping("Spoutwfjk");
-//        Tpbuilder.setBolt("SplitterBoltwftau", new Xinguan_FireWalls214Splitter(),1).shuffleGrouping("Spoutwftau");
-//        Tpbuilder.setBolt("SplitterBoltwfatdt", new Xinguan_FireWalls242Splitter(),1).shuffleGrouping("Spoutwfatdt");
-        
+        Tpbuilder.setBolt("SplitterBoltwfjk", new Yunguan_G4JK_BasicJKSplitter(),1).shuffleGrouping("Spoutwfjk");
+        Tpbuilder.setBolt("SplitterBoltwftau", new Yunguan_G4JK_BasicTAUSplitter(),1).shuffleGrouping("Spoutwftau");
+        Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
         
         //第二组bolt分别对两个防火墙需要进行业务分析的字段进行合并，抽取
 //        Tpbuilder.setBolt("syslog214access", new Xinguan_FireWalls214Analyze(),1).shuffleGrouping("syslog214splitter");
