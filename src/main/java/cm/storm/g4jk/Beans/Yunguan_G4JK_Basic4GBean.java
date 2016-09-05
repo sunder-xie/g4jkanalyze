@@ -4,16 +4,16 @@ package cm.storm.g4jk.Beans;
  * 4G网分数据的类结构定义，具体字段描述如下类别所描述，目前字段19个 20160905
  */
 public class Yunguan_G4JK_Basic4GBean {
-	private String starttime="2000-01-01 00:00:00.000";	//系统获取4G网分流记录的时间
-	private String imsi="123456789012345"; 					//IMSI 15位，识别手机卡
+	private String starttime="2000-01-01 00:00:00.000";		//系统获取4G网分流记录的时间
+	private String imsi="123456789012345"; 						//IMSI 15位，识别手机卡
 	private String url="none";											//url相关路径信息
 	private String imei="123456789012345";						//imei 15位，识别手机
-	private String tac="none";											//基站TAC码
+	private String tac="none";										//基站TAC码
 	private String cid="none";											//4G小区号
 	//空字段，事件类型（目前无法区分get/post流程）
-	private String ul_data="none";									//上行流量 Byte
-	private String dl_data="none";									//下行流量 Byte
-	private String delay="none";										//会话时长 ms 
+	private String ul_data="0";										//上行流量 Byte
+	private String dl_data="0";										//下行流量 Byte
+	private String delay="0";											//会话时长 ms 
     private String user_agent="none";								//终端型号
     //空字段，是否为自有业务
     //空字段，手机品牌

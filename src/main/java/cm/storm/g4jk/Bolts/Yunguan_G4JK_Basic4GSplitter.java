@@ -89,31 +89,112 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 	public void process_tuple(String tuple){
 		g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
 		String attr_value=new String("");
-		String get_subattr=new String("");
 		String[] fields_set=tuple.split("\t");//按照TAB作为间隔划分字段
-		String[] get_subfields=null;
 		if(fields_set==null){
 			g4jkbasic4gbean=null;
 			return;
 		}
 		
+		//字段共23个，减去4个控制，19个可用
 		//字段1，获取日期并做格式转换
-		if(fields_set.length>0)
-		{
+		if(fields_set.length>0){
 			attr_value=TimeFormatter.Tra_realdate2(fields_set[0]);
 			g4jkbasic4gbean.setStarttime(attr_value);
 		}
 		
 		//字段2，获取IMSI
-		if(fields_set.length>1)
-		{
-			g4jkbasic4gbean.setImsi(fields_set[1]);
+		if(fields_set.length>1){
+			if(fields_set[1].length()==15)g4jkbasic4gbean.setImsi(fields_set[1]);
 		}
 		
-		//字段2，获取IMSI
-		if(fields_set.length>2)
-		{
-			g4jkbasic4gbean.setImsi(fields_set[1]);
+		//字段3，获取url
+		if(fields_set.length>2){
+			if(fields_set[2].length()>0)g4jkbasic4gbean.setUrl(fields_set[2]);
+		}
+		
+		//字段4，获取IMEI
+		if(fields_set.length>3){
+			if(fields_set[3].length()==15)g4jkbasic4gbean.setImei(fields_set[3]);
+		}
+		
+		//字段5，获取基站TAC码，至少4位
+		if(fields_set.length>4){
+			if(fields_set[4].length()>=4)g4jkbasic4gbean.setTac(fields_set[4]);
+		}
+		
+		//字段6，获取基站小区码cell_id，或者填写数字，或者填写none
+		if(fields_set.length>5){
+			if(fields_set[5].length()>0)g4jkbasic4gbean.setCid(fields_set[5]);
+		}
+		
+		//字段8，上行流量
+		if(fields_set.length>7){
+			if(fields_set[7].length()>0)g4jkbasic4gbean.setUl_data(fields_set[7]);
+		}
+		
+		//字段9，下行流量
+		if(fields_set.length>8){
+			if(fields_set[8].length()>0)g4jkbasic4gbean.setDl_data(fields_set[8]);
+		}
+		
+		//字段10，会话时长
+		if(fields_set.length>9){
+			if(fields_set[9].length()>0)g4jkbasic4gbean.setDelay(fields_set[9]);
+		}
+		
+		//字段10，会话时长
+		if(fields_set.length>9){
+			if(fields_set[9].length()>0)g4jkbasic4gbean.setDelay(fields_set[9]);
+		}
+		
+		//字段11，终端型号
+		if(fields_set.length>10){
+			if(fields_set[10].length()>0)g4jkbasic4gbean.setUser_agent(fields_set[10]);
+		}
+		
+		//字段15，接入点
+		if(fields_set.length>14){
+			if(fields_set[14].length()>0)g4jkbasic4gbean.setApn(fields_set[14]);
+		}
+		
+		//字段16，协议类型
+		if(fields_set.length>15){
+			if(fields_set[15].length()>0)g4jkbasic4gbean.setPro_type(fields_set[15]);
+		}
+		
+		//字段17，业务源ip
+		if(fields_set.length>16){
+			if(fields_set[16].length()>0)g4jkbasic4gbean.setUser_ip(fields_set[16]);
+		}
+		
+		//字段18，业务目标ip
+		if(fields_set.length>17){
+			if(fields_set[17].length()>0)g4jkbasic4gbean.setApp_server_ip(fields_set[17]);
+		}
+		
+		//字段19，业务源端口
+		if(fields_set.length>18){
+			if(fields_set[18].length()>0)g4jkbasic4gbean.setUser_port(fields_set[18]);
+		}
+		
+		//字段20，业务目的端口
+		if(fields_set.length>19){
+			if(fields_set[19].length()>0)g4jkbasic4gbean.setApp_server_port(fields_set[19]);
+		}
+
+		//字段21，业务大类
+		if(fields_set.length>20){
+			if(fields_set[20].length()>0)g4jkbasic4gbean.setApptype(fields_set[20]);
+		}
+		
+		//字段22，app小类
+		if(fields_set.length>21){
+			if(fields_set[21].length()>0)g4jkbasic4gbean.setIntappid(fields_set[21]);
+		}
+		
+		//字段23，业务小类
+		if(fields_set.length>22){
+			if(fields_set[22].length()>0)g4jkbasic4gbean.setIntsid(fields_set[22]);
 		}
 	}
 
