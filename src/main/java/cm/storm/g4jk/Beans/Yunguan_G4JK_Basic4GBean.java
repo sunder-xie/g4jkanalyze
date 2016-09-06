@@ -1,24 +1,24 @@
 package cm.storm.g4jk.Beans;
 
 /*
- * 4G网分数据的类结构定义，具体字段描述如下类别所描述，目前字段19个 20160905
+ * 4G网分数据的类结构定义，具体字段描述如下类别所描述，目前字段23个，有用的字段19个 20160905
  */
 public class Yunguan_G4JK_Basic4GBean {
-	private String starttime="2000-01-01 00:00:00.000";		//系统获取4G网分流记录的时间
-	private String imsi="123456789012345"; 						//IMSI 15位，识别手机卡
+	private String starttime="2000-01-01 00:00:00.000";	//系统获取4G网分流记录的时间
+	private String imsi="123456789012345"; 					//IMSI 15位，识别手机卡
 	private String url="none";											//url相关路径信息
 	private String imei="123456789012345";						//imei 15位，识别手机
-	private String tac="none";										//基站TAC码
+	private String tac="none";											//基站TAC码
 	private String cid="none";											//4G小区号
-	//空字段，事件类型（目前无法区分get/post流程）
-	private String ul_data="0";										//上行流量 Byte
-	private String dl_data="0";										//下行流量 Byte
+	private String event_type="none";								//空字段，事件类型（目前无法区分get/post流程）
+	private String ul_data="0";											//上行流量 Byte
+	private String dl_data="0";											//下行流量 Byte
 	private String delay="0";											//会话时长 ms 
     private String user_agent="none";								//终端型号
-    //空字段，是否为自有业务
-    //空字段，手机品牌
-    //空字段，手机型号
-    private String apn="none";											//接入点
+    private String gmcc_bus_ind="none";							//空字段，是否为自有业务
+    private String phone_brand="none";							//空字段，手机品牌
+    private String phone_type="none";								//空字段，手机型号
+	private String apn="none";											//接入点
     private String pro_type="1";									    //协议类型，默认都为1
     private String user_ip="none";									//业务源ip
     private String app_server_ip="none";							//业务目标ip
@@ -63,6 +63,12 @@ public class Yunguan_G4JK_Basic4GBean {
 	public void setCid(String cid) {
 		this.cid = cid;
 	}
+	public String getEvent_type() {
+		return event_type;
+	}
+	public void setEvent_type(String event_type) {
+		this.event_type = event_type;
+	}
 	public String getUl_data() {
 		return ul_data;
 	}
@@ -86,6 +92,24 @@ public class Yunguan_G4JK_Basic4GBean {
 	}
 	public void setUser_agent(String user_agent) {
 		this.user_agent = user_agent;
+	}
+	public String getGmcc_bus_ind() {
+		return gmcc_bus_ind;
+	}
+	public void setGmcc_bus_ind(String gmcc_bus_ind) {
+		this.gmcc_bus_ind = gmcc_bus_ind;
+	}
+	public String getPhone_brand() {
+		return phone_brand;
+	}
+	public void setPhone_brand(String phone_brand) {
+		this.phone_brand = phone_brand;
+	}
+	public String getPhone_type() {
+		return phone_type;
+	}
+	public void setPhone_type(String phone_type) {
+		this.phone_type = phone_type;
 	}
 	public String getApn() {
 		return apn;

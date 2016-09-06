@@ -74,20 +74,33 @@ public class Yunguan_G4JK_BasicTAUSplitter extends BaseRichBolt {
 	public void process_tuple(String tuple){
 		g4jkbasictaubean=new Yunguan_G4JK_BasicTAUBean();
 		String attr_value=new String("");
-		String get_subattr=new String("");
 		String[] fields_set=tuple.split("\t");//按照TAB作为间隔划分字段
-		String[] get_subfields=null;
 		if(fields_set==null){
 			g4jkbasictaubean=null;
 			return;
 		}
 		
+		//一共四个字段
+		//字段1.获取日期并做格式转换
 		if(fields_set.length>0)
 		{
-			//字段1.获取日期并做格式转换
 			attr_value=TimeFormatter.Tra_realdate2(fields_set[0]);
 			g4jkbasictaubean.setTtime(attr_value);
-			
+		}
+		
+		//字段2，获取IMSI
+		if(fields_set.length>1){
+			if(fields_set[1].length()==15)g4jkbasictaubean.setImsi(fields_set[1]);
+		}
+		
+		//字段3，获取基站TAC码，至少4位
+		if(fields_set.length>2){
+			if(fields_set[2].length()>=4)g4jkbasictaubean.setTac(fields_set[2]);
+		}
+		
+		//字段4，获取基站小区码cell_id，或者填写数字，或者填写none
+		if(fields_set.length>3){
+			if(fields_set[3].length()>0)g4jkbasictaubean.setCi(fields_set[3]);
 		}
 	}
 	

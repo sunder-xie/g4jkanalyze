@@ -1,7 +1,7 @@
 package cm.storm.g4jk.Beans;
 
 /*
- * 家宽网分数据的类结构定义，具体字段描述如下类别所描述，目前字段14个 20160905
+ * 家宽网分数据的类结构定义，具体字段描述如下类别所描述，目前字段16个，可用14个 20160905
  */
 public class Yunguan_G4JK_BasicJKBean {
 	private String starttime="2000-01-01 00:00:00.000";		//家宽网分流记录的会话开始时间
@@ -13,11 +13,11 @@ public class Yunguan_G4JK_BasicJKBean {
 	private String app_sub_type="none";								//URL二级分类，相当于业务小类，查看家宽维表
 	private String up_flux="none";										//上行流量 Byte
 	private String down_flux="none";									//下行流量 Byte
-    //空字段，业务使用协议（get或post），空值代表HTTP协议
+    private String protocol_type="1";									//空字段，业务使用协议（get或post），流中默认空值代表HTTP协议，此处设置为1
 	private String success="1";											//会话时长 success为1表示成功，为空表示失败
 	private String user_ip="none";										//业务源ip
 	private String dest_ip="none";										//业务目标ip
-	//空字段，源端口为空
+	private String src_port="none";										//空字段，源端口，默认也是为空
 	private String dest_port="none";									//目标端口
 	private String response_time="none";								//响应时间 ms
 	public String getStarttime() {
@@ -74,6 +74,12 @@ public class Yunguan_G4JK_BasicJKBean {
 	public void setDown_flux(String down_flux) {
 		this.down_flux = down_flux;
 	}
+	public String getProtocol_type() {
+		return protocol_type;
+	}
+	public void setProtocol_type(String protocol_type) {
+		this.protocol_type = protocol_type;
+	}
 	public String getSuccess() {
 		return success;
 	}
@@ -91,6 +97,12 @@ public class Yunguan_G4JK_BasicJKBean {
 	}
 	public void setDest_ip(String dest_ip) {
 		this.dest_ip = dest_ip;
+	}
+	public String getSrc_port() {
+		return src_port;
+	}
+	public void setSrc_port(String src_port) {
+		this.src_port = src_port;
 	}
 	public String getDest_port() {
 		return dest_port;

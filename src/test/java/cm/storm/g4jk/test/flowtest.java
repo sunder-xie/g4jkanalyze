@@ -43,6 +43,11 @@ public class flowtest {
 			if(fields_set[5].length()>0)g4jkbasic4gbean.setCid(fields_set[5]);
 		}
 		
+		//字段7，事件类型
+		if(fields_set.length>6){
+			if(fields_set[6].length()>0)g4jkbasic4gbean.setEvent_type(fields_set[6]);
+		}
+		
 		//字段8，上行流量
 		if(fields_set.length>7){
 			if(fields_set[7].length()>0)g4jkbasic4gbean.setUl_data(fields_set[7]);
@@ -58,14 +63,24 @@ public class flowtest {
 			if(fields_set[9].length()>0)g4jkbasic4gbean.setDelay(fields_set[9]);
 		}
 		
-		//字段10，会话时长
-		if(fields_set.length>9){
-			if(fields_set[9].length()>0)g4jkbasic4gbean.setDelay(fields_set[9]);
-		}
-		
 		//字段11，终端型号
 		if(fields_set.length>10){
 			if(fields_set[10].length()>0)g4jkbasic4gbean.setUser_agent(fields_set[10]);
+		}
+		
+		//字段12，是否自有业务
+		if(fields_set.length>11){
+			if(fields_set[11].length()>0)g4jkbasic4gbean.setGmcc_bus_ind(fields_set[11]);
+		}
+		
+		//字段13，手机品牌
+		if(fields_set.length>12){
+			if(fields_set[12].length()>0)g4jkbasic4gbean.setPhone_brand(fields_set[12]);
+		}
+		
+		//字段14，手机型号
+		if(fields_set.length>13){
+			if(fields_set[13].length()>0)g4jkbasic4gbean.setPhone_type(fields_set[13]);
 		}
 		
 		//字段15，接入点
@@ -97,7 +112,7 @@ public class flowtest {
 		if(fields_set.length>19){
 			if(fields_set[19].length()>0)g4jkbasic4gbean.setApp_server_port(fields_set[19]);
 		}
-			
+
 		//字段21，业务大类
 		if(fields_set.length>20){
 			if(fields_set[20].length()>0)g4jkbasic4gbean.setApptype(fields_set[20]);
@@ -119,10 +134,14 @@ public class flowtest {
 		System.out.println(g4jkbasic4gbean.getImei());
 		System.out.println(g4jkbasic4gbean.getTac());
 		System.out.println(g4jkbasic4gbean.getCid());
+		System.out.println(g4jkbasic4gbean.getEvent_type());
 		System.out.println(g4jkbasic4gbean.getUl_data());
 		System.out.println(g4jkbasic4gbean.getDl_data());
 		System.out.println(g4jkbasic4gbean.getDelay());
 		System.out.println(g4jkbasic4gbean.getUser_agent());
+		System.out.println(g4jkbasic4gbean.getGmcc_bus_ind());
+		System.out.println(g4jkbasic4gbean.getPhone_brand());
+		System.out.println(g4jkbasic4gbean.getPhone_type());
 		System.out.println(g4jkbasic4gbean.getApn());
 		System.out.println(g4jkbasic4gbean.getPro_type());
 		System.out.println(g4jkbasic4gbean.getUser_ip());

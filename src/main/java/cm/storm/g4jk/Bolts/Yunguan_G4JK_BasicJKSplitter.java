@@ -64,9 +64,11 @@ public class Yunguan_G4JK_BasicJKSplitter extends BaseRichBolt {
 						g4jkbasicjkbean.getApp_sub_type(),
 						g4jkbasicjkbean.getUp_flux(),
 						g4jkbasicjkbean.getDown_flux(),
+						g4jkbasicjkbean.getProtocol_type(),
 						g4jkbasicjkbean.getSuccess(),
 						g4jkbasicjkbean.getUser_ip(),
 						g4jkbasicjkbean.getDest_ip(),
+						g4jkbasicjkbean.getSrc_port(),
 						g4jkbasicjkbean.getDest_port(),
 						g4jkbasicjkbean.getResponse_time()
 				));
@@ -84,20 +86,93 @@ public class Yunguan_G4JK_BasicJKSplitter extends BaseRichBolt {
 	public void process_tuple(String tuple){
 		g4jkbasicjkbean=new Yunguan_G4JK_BasicJKBean();
 		String attr_value=new String("");
-		String get_subattr=new String("");
 		String[] fields_set=tuple.split("\t");//按照TAB作为间隔划分字段
-		String[] get_subfields=null;
 		if(fields_set==null){
 			g4jkbasicjkbean=null;
 			return;
 		}
 		
-		if(fields_set.length>0)
-		{
-			//字段1.获取日期并做格式转换
+		//字段共16个，减去2个空值，14个可用
+		//字段1，获取会话开始时间
+		if(fields_set.length>0){
 			attr_value=TimeFormatter.Tra_realdate2(fields_set[0]);
 			g4jkbasicjkbean.setStarttime(attr_value);
-			
+		}
+		
+		//字段2，获取会话结束时间
+		if(fields_set.length>1){
+			attr_value=TimeFormatter.Tra_realdate2(fields_set[1]);
+			g4jkbasicjkbean.setLasttime(attr_value);
+		}
+		
+		//字段3，用户账号
+		if(fields_set.length>2){
+			if(fields_set[2].length()>0)g4jkbasicjkbean.setUser_name(fields_set[2]);
+		}
+		
+		//字段4，用户类型
+		if(fields_set.length>3){
+			if(fields_set[3].length()>0)g4jkbasicjkbean.setUser_type(fields_set[3]);
+		}
+		
+		//字段5，URI
+		if(fields_set.length>4){
+			if(fields_set[4].length()>0)g4jkbasicjkbean.setUri(fields_set[4]);
+		}
+		
+		//字段6，URL一级业务分类
+		if(fields_set.length>5){
+			if(fields_set[5].length()>0)g4jkbasicjkbean.setApp_type(fields_set[5]);
+		}
+		
+		//字段7，URL二级业务分类
+		if(fields_set.length>6){
+			if(fields_set[6].length()>0)g4jkbasicjkbean.setApp_sub_type(fields_set[6]);
+		}
+		
+		//字段8，上行流量
+		if(fields_set.length>7){
+			if(fields_set[7].length()>0)g4jkbasicjkbean.setUp_flux(fields_set[8]);
+		}
+		
+		//字段9，下行流量
+		if(fields_set.length>8){
+			if(fields_set[8].length()>0)g4jkbasicjkbean.setDown_flux(fields_set[8]);
+		}
+		
+		//字段10，协议类型，默认为1
+		if(fields_set.length>9){
+			if(fields_set[9].length()>0)g4jkbasicjkbean.setProtocol_type(fields_set[9]);
+		}
+		
+		//字段11，业务是否成功
+		if(fields_set.length>10){
+			if(fields_set[10].length()>0)g4jkbasicjkbean.setSuccess(fields_set[10]);
+		}
+		
+		//字段12，业务源ip
+		if(fields_set.length>11){
+			if(fields_set[11].length()>0)g4jkbasicjkbean.setUser_ip(fields_set[11]);
+		}
+		
+		//字段13，目的ip
+		if(fields_set.length>12){
+			if(fields_set[12].length()>0)g4jkbasicjkbean.setDest_ip(fields_set[12]);
+		}
+		
+		//字段14，源端口
+		if(fields_set.length>13){
+			if(fields_set[13].length()>0)g4jkbasicjkbean.setSrc_port(fields_set[13]);
+		}
+		
+		//字段15，目的端口
+		if(fields_set.length>14){
+			if(fields_set[14].length()>0)g4jkbasicjkbean.setDest_port(fields_set[14]);
+		}
+		
+		//字段16，响应时间
+		if(fields_set.length>15){
+			if(fields_set[15].length()>0)g4jkbasicjkbean.setResponse_time(fields_set[15]);
 		}
 	}
 	
@@ -115,9 +190,11 @@ public class Yunguan_G4JK_BasicJKSplitter extends BaseRichBolt {
 			Yunguan_G4JK_BasicJKFields.APP_SUB_TYPE,
 			Yunguan_G4JK_BasicJKFields.UP_FLUX,
 			Yunguan_G4JK_BasicJKFields.DOWN_FLUX,
+			Yunguan_G4JK_BasicJKFields.PROTOCOL_TYPE,
 			Yunguan_G4JK_BasicJKFields.SUCCESS,
 			Yunguan_G4JK_BasicJKFields.USER_IP,
 			Yunguan_G4JK_BasicJKFields.DEST_IP,
+			Yunguan_G4JK_BasicJKFields.SRC_PORT,
 			Yunguan_G4JK_BasicJKFields.DEST_PORT,
 			Yunguan_G4JK_BasicJKFields.RESPONSE_TIME
 		));

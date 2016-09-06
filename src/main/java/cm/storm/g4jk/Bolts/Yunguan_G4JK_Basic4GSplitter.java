@@ -61,10 +61,14 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 					g4jkbasic4gbean.getImei(),
 					g4jkbasic4gbean.getTac(),
 					g4jkbasic4gbean.getCid(),
+					g4jkbasic4gbean.getEvent_type(),
 					g4jkbasic4gbean.getUl_data(),
 					g4jkbasic4gbean.getDl_data(),
 					g4jkbasic4gbean.getDelay(),
 					g4jkbasic4gbean.getUser_agent(),
+					g4jkbasic4gbean.getGmcc_bus_ind(),
+					g4jkbasic4gbean.getPhone_brand(),
+					g4jkbasic4gbean.getPhone_type(),
 					g4jkbasic4gbean.getApn(),
 					g4jkbasic4gbean.getPro_type(),
 					g4jkbasic4gbean.getUser_ip(),
@@ -95,7 +99,7 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 			return;
 		}
 		
-		//字段共23个，减去4个控制，19个可用
+		//字段共23个，目前4个空值，19个可用
 		//字段1，获取日期并做格式转换
 		if(fields_set.length>0){
 			attr_value=TimeFormatter.Tra_realdate2(fields_set[0]);
@@ -127,6 +131,11 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 			if(fields_set[5].length()>0)g4jkbasic4gbean.setCid(fields_set[5]);
 		}
 		
+		//字段7，事件类型
+		if(fields_set.length>6){
+			if(fields_set[6].length()>0)g4jkbasic4gbean.setEvent_type(fields_set[6]);
+		}
+		
 		//字段8，上行流量
 		if(fields_set.length>7){
 			if(fields_set[7].length()>0)g4jkbasic4gbean.setUl_data(fields_set[7]);
@@ -142,14 +151,24 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 			if(fields_set[9].length()>0)g4jkbasic4gbean.setDelay(fields_set[9]);
 		}
 		
-		//字段10，会话时长
-		if(fields_set.length>9){
-			if(fields_set[9].length()>0)g4jkbasic4gbean.setDelay(fields_set[9]);
-		}
-		
 		//字段11，终端型号
 		if(fields_set.length>10){
 			if(fields_set[10].length()>0)g4jkbasic4gbean.setUser_agent(fields_set[10]);
+		}
+		
+		//字段12，是否自有业务
+		if(fields_set.length>11){
+			if(fields_set[11].length()>0)g4jkbasic4gbean.setGmcc_bus_ind(fields_set[11]);
+		}
+		
+		//字段13，手机品牌
+		if(fields_set.length>12){
+			if(fields_set[12].length()>0)g4jkbasic4gbean.setPhone_brand(fields_set[12]);
+		}
+		
+		//字段14，手机型号
+		if(fields_set.length>13){
+			if(fields_set[13].length()>0)g4jkbasic4gbean.setPhone_type(fields_set[13]);
 		}
 		
 		//字段15，接入点
@@ -209,10 +228,14 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 			Yunguan_G4JK_Basic4GFields.IMEI,
 			Yunguan_G4JK_Basic4GFields.TAC,
 			Yunguan_G4JK_Basic4GFields.CID,
+			Yunguan_G4JK_Basic4GFields.EVENT_TYPE,
 			Yunguan_G4JK_Basic4GFields.UL_DATA,
 			Yunguan_G4JK_Basic4GFields.DL_DATA,
 			Yunguan_G4JK_Basic4GFields.DELAY,
 			Yunguan_G4JK_Basic4GFields.USER_AGENT,
+			Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND,
+			Yunguan_G4JK_Basic4GFields.PHONE_BRAND,
+			Yunguan_G4JK_Basic4GFields.PHONE_TYPE,
 			Yunguan_G4JK_Basic4GFields.APN,
 			Yunguan_G4JK_Basic4GFields.PRO_TYPE,
 			Yunguan_G4JK_Basic4GFields.USER_IP,
