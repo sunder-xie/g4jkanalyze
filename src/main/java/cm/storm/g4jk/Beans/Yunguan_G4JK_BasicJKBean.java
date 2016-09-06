@@ -11,15 +11,15 @@ public class Yunguan_G4JK_BasicJKBean {
 	private String uri="none";												//网站主域名
 	private String app_type="none";										//URL一级分类，相当于业务大类，查看家宽维表
 	private String app_sub_type="none";								//URL二级分类，相当于业务小类，查看家宽维表
-	private String up_flux="none";										//上行流量 Byte
-	private String down_flux="none";									//下行流量 Byte
+	private String up_flux="0";												//上行流量 Byte
+	private String down_flux="0";											//下行流量 Byte
     private String protocol_type="1";									//空字段，业务使用协议（get或post），流中默认空值代表HTTP协议，此处设置为1
 	private String success="1";											//会话时长 success为1表示成功，为空表示失败
 	private String user_ip="none";										//业务源ip
 	private String dest_ip="none";										//业务目标ip
 	private String src_port="none";										//空字段，源端口，默认也是为空
 	private String dest_port="none";									//目标端口
-	private String response_time="none";								//响应时间 ms
+	private String response_time="0";									//响应时间 ms
 	public String getStarttime() {
 		return starttime;
 	}
