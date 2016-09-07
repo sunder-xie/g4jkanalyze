@@ -118,9 +118,9 @@ public class RedisServer {
     }  
 	/*通用key操作结束*/
 	
-	/*String操作*/
+	/*单值操作，可以是String，Float*/
 	/**
-	 * 添加string value值
+	 * 添加value值
 	 * @param key
 	 * @param value
 	 */
@@ -129,7 +129,7 @@ public class RedisServer {
 	}
 	
 	/**
-	 * 返回string value值
+	 * 返回value值
 	 * @param key
 	 * @return
 	 */
@@ -144,6 +144,16 @@ public class RedisServer {
 	 */
 	public long incr(String key){
 		return jedisCluster.incr(key);
+	}
+	
+	/**
+	 * 对键值进行自增浮点数计数，将指定主键key的value值加上浮点数，如果key本身不存在，会新增0并加上value
+	 * @param key
+	 * @param 
+	 * @return 返回最新的自增值
+	 */
+	public Double incrbyfloat(String key,double value){
+		return jedisCluster.incrByFloat(key, value);
 	}
 	/*String操作结束*/
 	
