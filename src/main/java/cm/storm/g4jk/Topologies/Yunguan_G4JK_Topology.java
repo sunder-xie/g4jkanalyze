@@ -16,6 +16,9 @@ import cm.storm.g4jk.Bolts.Yunguan_G4JK_Basic4GSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicATDTSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicJKSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_HmapAccToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_HspAccToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_TagsAccToRedis;
 
 
 /**
@@ -93,9 +96,10 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("SplitterBoltwftau", new Yunguan_G4JK_BasicTAUSplitter(),1).shuffleGrouping("Spoutwftau");
         Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
         
-        //第二组bolt分别对两个防火墙需要进行业务分析的字段进行合并，抽取
-//        Tpbuilder.setBolt("syslog214access", new Xinguan_FireWalls214Analyze(),1).shuffleGrouping("syslog214splitter");
-//        Tpbuilder.setBolt("syslog242access", new Xinguan_FireWalls242Analyze(),1).shuffleGrouping("syslog242splitter");
+        //第二组bolt，关于4G网分数据的实时解析，按照业务需求将数据直接入Redis库
+        Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),3).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("TagsAccBoltwfg4", new Yunguan_G4JK_TagsAccToRedis(),3).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),3).shuffleGrouping("SplitterBoltwf4g");
 //        
 //        //第三个bolt，针对业务需求，对字段进行redis格式转换
 //        Tpbuilder.setBolt("syslog214Redisformat", new Xinguan_FireWalls214RedisFormat(),10).shuffleGrouping("syslog214access");

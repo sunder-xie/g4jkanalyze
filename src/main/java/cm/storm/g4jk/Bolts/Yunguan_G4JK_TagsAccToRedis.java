@@ -13,10 +13,9 @@ import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 20160907由于目前网分数据的标签信息不准确，因此需要imsi对应type类型的维表，辅助对网分数据进行标签的标记累加
- * 包括当天标签下的人数累计，
+ * 根据type类型对应的维表，累计当天标签下的人数(区别imsi)，http 4G流量，
  * @author yanxu
- *
+ * 20160907
  */
 public class Yunguan_G4JK_TagsAccToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
@@ -32,6 +31,7 @@ public class Yunguan_G4JK_TagsAccToRedis extends BaseRichBolt {
 	private RedisServer redisserver;
 
 	//初始化bolt元组搜集器，用于存放需要发射元组
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void prepare(Map conf, 
 			TopologyContext topologyContext, 
@@ -58,11 +58,11 @@ public class Yunguan_G4JK_TagsAccToRedis extends BaseRichBolt {
 			if(tag!=null&&tag.equals("nil")==false)
 			{
 				tdate=tdate.substring(0,10);
-				key="g4_"+tdate+"_tagset_"+tag;
+				key="mfg4_"+tdate+"_tagset_"+tag;
 				//将imsi累计到对应的标签中
 				redisserver.sadd(key, imsi);
 				
-				key="g4_"+tdate+"_tagflux_"+tag;
+				key="mfg4_"+tdate+"_tagflux_"+tag;
 				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 				//将标签产生的流量值累计到对应的标签中
 				redisserver.incrbyfloat(key, g4flux);

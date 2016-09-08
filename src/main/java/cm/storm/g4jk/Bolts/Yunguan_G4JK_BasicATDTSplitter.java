@@ -34,6 +34,7 @@ public class Yunguan_G4JK_BasicATDTSplitter extends BaseRichBolt {
 	private Yunguan_G4JK_BasicATDTBean g4jkbasicatdtbean=null;
 
 	//初始化bolt元组搜集器，用于存放需要发射元组
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void prepare(Map conf, 
 			TopologyContext topologyContext, 

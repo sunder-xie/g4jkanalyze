@@ -13,16 +13,16 @@ import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 每15分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
+ * 每5分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
  * @author chinamobile
  * 20160907
  */
-public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
+public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
-	private static final long serialVersionUID = 4610478279647936193L;
-	
+	private static final long serialVersionUID = -6609360345719069810L;
+
 	//记录作业日志到storm的logs目录下对应的topology日志中
-	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_HspAccToRedis.class);
+	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_HmapAccToRedis.class);
 	
 	//元组发射搜集器
 	private OutputCollector collector;
@@ -38,8 +38,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			OutputCollector outputCollector) {
 		this.collector = outputCollector;
 	}
-	
-	//按照4G网分数据tac,ci对应的hotspot的imsi汇总，流量的汇总，15分钟产生一次，记录数量千级别
+
+	//按照4G网分数据tac,ci，汇总流量，5分钟窗口，记录数量万级别
 	@Override
 	public void execute(Tuple tuple) {
 		//redis操作
@@ -50,36 +50,37 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
-		String hotspot=null;
 		String hour=null;
 		String clock=null;
 		int clk=0;
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
-			key="ref_"+tac+"_"+ci;
-			//查询维表获取标签
-			hotspot=redisserver.get(key);
-			if(hotspot!=null&&hotspot.equals("nil")==false)
-			{
-				hour=tdate.substring(11,13);
-				clock=tdate.substring(14,16);
-				clk=Integer.valueOf(clock); //会自动过滤数字前边的0
-				tdate=tdate.substring(0,10);
-				if(clk>=0&&clk<15)clock="0";
-				else if(clk>=15&&clk<30)clock="1";
-				else if(clk>=30&&clk<45)clock="2";
-				else if(clk>45)clock="3";
-				key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+clock;
+			hour=tdate.substring(11,13);
+			clock=tdate.substring(14,16);
+			clk=Integer.valueOf(clock); //会自动过滤数字前边的0
+			tdate=tdate.substring(0,10);
+			if(clk>=0&&clk<5)clock="00";
+			else if(clk>=5&&clk<10)clock="01";
+			else if(clk>=10&&clk<15)clock="02";
+			else if(clk>=15&&clk<20)clock="03";
+			else if(clk>=20&&clk<25)clock="04";
+			else if(clk>=25&&clk<30)clock="05";
+			else if(clk>=30&&clk<35)clock="06";
+			else if(clk>=35&&clk<40)clock="07";
+			else if(clk>=40&&clk<45)clock="08";
+			else if(clk>=45&&clk<50)clock="09";
+			else if(clk>=50&&clk<55)clock="10";
+			else if(clk>=55)clock="11";
+			key="mfg4_"+tdate+"_hmset_"+tac+"_"+ci+"_"+hour+"_"+clock;
 
-				//将imsi累计到对应的标签中
-				redisserver.sadd(key, imsi);
-				
-				key="mfg4_"+tdate+"_hspflux_"+hotspot+"_"+hour+"_"+clock;
-				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-				//将标签产生的流量值累计到对应的标签中
-				redisserver.incrbyfloat(key, g4flux);
-			}
+			//将imsi累计到对应的标签中
+			redisserver.sadd(key, imsi);
+			
+			key="mfg4_"+tdate+"_hmflux_"+tac+"_"+ci+"_"+hour+"_"+clock;
+			g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+			//将标签产生的流量值累计到对应的标签中
+			redisserver.incrbyfloat(key, g4flux);
 		}
 		//释放内存
 		redisserver=null;
@@ -89,14 +90,12 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		ulflux=null;
 		tac=null;
 		ci=null;
-		hotspot=null;
 		hour=null;
 		clock=null;
 		clk=0;
 		key=null;
 		g4flux=0;
 		collector.ack(tuple);
-
 	}
 
 	//对发射出去的元组进行字段的声明

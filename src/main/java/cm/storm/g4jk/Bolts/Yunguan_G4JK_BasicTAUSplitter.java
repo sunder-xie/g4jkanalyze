@@ -34,6 +34,7 @@ public class Yunguan_G4JK_BasicTAUSplitter extends BaseRichBolt {
 	private Yunguan_G4JK_BasicTAUBean g4jkbasictaubean=null;
 	
 	//初始化bolt元组搜集器，用于存放需要发射元组
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void prepare(Map conf, 
 			TopologyContext topologyContext, 
