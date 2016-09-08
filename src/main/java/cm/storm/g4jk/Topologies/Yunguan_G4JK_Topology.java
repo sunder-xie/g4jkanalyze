@@ -97,9 +97,9 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
         
         //第二组bolt，关于4G网分数据的实时解析，按照业务需求将数据直接入Redis库
-        Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),3).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("TagsAccBoltwfg4", new Yunguan_G4JK_TagsAccToRedis(),3).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),3).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),6).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("TagsAccBoltwfg4", new Yunguan_G4JK_TagsAccToRedis(),6).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),6).shuffleGrouping("SplitterBoltwf4g");
 //        
 //        //第三个bolt，针对业务需求，对字段进行redis格式转换
 //        Tpbuilder.setBolt("syslog214Redisformat", new Xinguan_FireWalls214RedisFormat(),10).shuffleGrouping("syslog214access");
