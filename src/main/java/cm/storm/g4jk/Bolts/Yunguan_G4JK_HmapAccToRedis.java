@@ -50,6 +50,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String tcsll=null;
 		String hour=null;
 		String clock=null;
 		int clk=0;
@@ -72,11 +73,14 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 			else if(clk>=45&&clk<50)clock="09";
 			else if(clk>=50&&clk<55)clock="10";
 			else if(clk>=55)clock="11";
-			key="mfg4_"+tdate+"_hmset_"+tac+"_"+ci+"_"+hour+"_"+clock;
+			key="ref_"+tac+"_"+ci;
+			tcsll=redisserver.get(key);
+			
+			key="mfg4_"+tdate+"_hmset_"+tcsll+"_"+hour+"_"+clock;
 			//将imsi累计到对应的标签中
 			redisserver.sadd(key, imsi);
 			
-			key="mfg4_"+tdate+"_hmflux_"+tac+"_"+ci+"_"+hour+"_"+clock;
+			key="mfg4_"+tdate+"_hmflux_"+tcsll+"_"+hour+"_"+clock;
 			g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 			//将标签产生的流量值累计到对应的标签中
 			redisserver.incrbyfloat(key, g4flux);
@@ -89,6 +93,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		ulflux=null;
 		tac=null;
 		ci=null;
+		tcsll=null;
 		hour=null;
 		clock=null;
 		clk=0;
