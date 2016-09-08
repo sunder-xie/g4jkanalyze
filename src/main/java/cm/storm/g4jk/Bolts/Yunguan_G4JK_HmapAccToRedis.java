@@ -57,33 +57,36 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
-			hour=tdate.substring(11,13);
-			clock=tdate.substring(14,16);
-			clk=Integer.valueOf(clock); //会自动过滤数字前边的0
-			tdate=tdate.substring(0,10);
-			if(clk>=0&&clk<5)clock="00";
-			else if(clk>=5&&clk<10)clock="01";
-			else if(clk>=10&&clk<15)clock="02";
-			else if(clk>=15&&clk<20)clock="03";
-			else if(clk>=20&&clk<25)clock="04";
-			else if(clk>=25&&clk<30)clock="05";
-			else if(clk>=30&&clk<35)clock="06";
-			else if(clk>=35&&clk<40)clock="07";
-			else if(clk>=40&&clk<45)clock="08";
-			else if(clk>=45&&clk<50)clock="09";
-			else if(clk>=50&&clk<55)clock="10";
-			else if(clk>=55)clock="11";
 			key="ref_"+tac+"_"+ci;
 			tcsll=redisserver.get(key);
-			
-			key="mfg4_"+tdate+"_hmset_"+tcsll+"_"+hour+"_"+clock;
-			//将imsi累计到对应的标签中
-			redisserver.sadd(key, imsi);
-			
-			key="mfg4_"+tdate+"_hmflux_"+tcsll+"_"+hour+"_"+clock;
-			g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-			//将标签产生的流量值累计到对应的标签中
-			redisserver.incrbyfloat(key, g4flux);
+			if(tcsll!=null&&tcsll.equals("nil")==false){
+				hour=tdate.substring(11,13);
+				clock=tdate.substring(14,16);
+				clk=Integer.valueOf(clock); //会自动过滤数字前边的0
+				tdate=tdate.substring(0,10);
+				if(clk>=0&&clk<5)clock="00";
+				else if(clk>=5&&clk<10)clock="01";
+				else if(clk>=10&&clk<15)clock="02";
+				else if(clk>=15&&clk<20)clock="03";
+				else if(clk>=20&&clk<25)clock="04";
+				else if(clk>=25&&clk<30)clock="05";
+				else if(clk>=30&&clk<35)clock="06";
+				else if(clk>=35&&clk<40)clock="07";
+				else if(clk>=40&&clk<45)clock="08";
+				else if(clk>=45&&clk<50)clock="09";
+				else if(clk>=50&&clk<55)clock="10";
+				else if(clk>=55)clock="11";
+				
+				
+				key="mfg4_"+tdate+"_hmset_"+tcsll+"_"+hour+"_"+clock;
+				//将imsi累计到对应的标签中
+				redisserver.sadd(key, imsi);
+				
+				key="mfg4_"+tdate+"_hmflux_"+tcsll+"_"+hour+"_"+clock;
+				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+				//将标签产生的流量值累计到对应的标签中
+				redisserver.incrbyfloat(key, g4flux);
+			}
 		}
 		//释放内存
 		redisserver=null;
