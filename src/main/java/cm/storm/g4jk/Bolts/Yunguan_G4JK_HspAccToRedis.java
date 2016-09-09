@@ -70,12 +70,12 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				else if(clk>=15&&clk<30)clock="1";
 				else if(clk>=30&&clk<45)clock="2";
 				else if(clk>45)clock="3";
-				key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+clock;
+				key="mfg4_"+tdate+"_hspset_"+hour+"_"+clock+"_"+hotspot;
 
 				//将imsi累计到对应的标签中
 				redisserver.sadd(key, imsi);
 				
-				key="mfg4_"+tdate+"_hspflux_"+hotspot+"_"+hour+"_"+clock;
+				key="mfg4_"+tdate+"_hspflux_"+hour+"_"+clock+"_"+hotspot;
 				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 				//将标签产生的流量值累计到对应的标签中
 				redisserver.incrbyfloat(key, g4flux);
