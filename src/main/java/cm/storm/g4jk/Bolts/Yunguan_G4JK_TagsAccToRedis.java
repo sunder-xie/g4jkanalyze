@@ -52,7 +52,7 @@ public class Yunguan_G4JK_TagsAccToRedis extends BaseRichBolt {
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>11&&imsi.length()>=15){
-			key="ref_"+imsi;
+			key="ref_tags_"+imsi;
 			//查询维表获取标签
 			tag=redisserver.get(key);
 			if(tag!=null&&tag.equals("nil")==false)

@@ -57,7 +57,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
-			key="ref_"+tac+"_"+ci;
+			key="ref_hpm_"+tac+"_"+ci;
 			tcsll=redisserver.get(key);
 			if(tcsll!=null&&tcsll.equals("nil")==false){
 				hour=tdate.substring(11,13);

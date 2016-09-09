@@ -57,7 +57,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
-			key="ref_"+tac+"_"+ci;
+			key="ref_hsp_"+tac+"_"+ci;
 			//查询维表获取标签
 			hotspot=redisserver.get(key);
 			if(hotspot!=null&&hotspot.equals("nil")==false)
@@ -76,7 +76,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					minute="00";
 				}
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
-
 				//将imsi累计到对应的标签中
 				redisserver.sadd(key, imsi);
 				
