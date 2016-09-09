@@ -72,7 +72,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				else if(clk2>=30&&clk2<45)minute="45";
 				else if(clk2>=45){
 					clk1+=1;
-					hour=String.format("%010d", clk1);
+					hour=String.format("%02d", clk1);
 					minute="00";
 				}
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;

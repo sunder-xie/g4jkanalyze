@@ -78,7 +78,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				else if(clk2>=50&&clk2<55)minute="55";
 				else if(clk2>=55){
 					clk1+=1;
-					hour=String.format("%010d", clk1);
+					hour=String.format("%02d", clk1);
 					minute="00";
 				}
 
