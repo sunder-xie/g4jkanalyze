@@ -52,8 +52,8 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String tcsll=null;
 		String hour=null;
-		String clock=null;
-		int clk=0;
+		String minute=null;
+		int clk1=0,clk2=0;
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
@@ -61,27 +61,32 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 			tcsll=redisserver.get(key);
 			if(tcsll!=null&&tcsll.equals("nil")==false){
 				hour=tdate.substring(11,13);
-				clock=tdate.substring(14,16);
-				clk=Integer.valueOf(clock); //会自动过滤数字前边的0
+				minute=tdate.substring(14,16);
+				clk1=Integer.valueOf(hour); //会自动过滤数字前边的0
+				clk2=Integer.valueOf(minute); //会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
-				if(clk>=0&&clk<5)clock="00";
-				else if(clk>=5&&clk<10)clock="01";
-				else if(clk>=10&&clk<15)clock="02";
-				else if(clk>=15&&clk<20)clock="03";
-				else if(clk>=20&&clk<25)clock="04";
-				else if(clk>=25&&clk<30)clock="05";
-				else if(clk>=30&&clk<35)clock="06";
-				else if(clk>=35&&clk<40)clock="07";
-				else if(clk>=40&&clk<45)clock="08";
-				else if(clk>=45&&clk<50)clock="09";
-				else if(clk>=50&&clk<55)clock="10";
-				else if(clk>=55)clock="11";
+				if(clk2>=0&&clk2<5)minute="05";
+				else if(clk2>=5&&clk2<10)minute="10";
+				else if(clk2>=10&&clk2<15)minute="15";
+				else if(clk2>=15&&clk2<20)minute="20";
+				else if(clk2>=20&&clk2<25)minute="25";
+				else if(clk2>=25&&clk2<30)minute="30";
+				else if(clk2>=30&&clk2<35)minute="35";
+				else if(clk2>=35&&clk2<40)minute="40";
+				else if(clk2>=40&&clk2<45)minute="45";
+				else if(clk2>=45&&clk2<50)minute="50";
+				else if(clk2>=50&&clk2<55)minute="55";
+				else if(clk2>=55){
+					clk1+=1;
+					hour=String.format("%010d", clk1);
+					minute="00";
+				}
 
-				key="mfg4_"+tdate+"_hmset_"+hour+"_"+clock+"_"+tcsll;
+				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				//将imsi累计到对应的标签中
 				redisserver.sadd(key, imsi);
 				
-				key="mfg4_"+tdate+"_hmflux_"+hour+"_"+clock+"_"+tcsll;
+				key="mfg4_"+tdate+"_hmflux_"+hour+"_"+minute+"_"+tcsll;
 				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 				//将标签产生的流量值累计到对应的标签中
 				redisserver.incrbyfloat(key, g4flux);
@@ -97,8 +102,9 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		ci=null;
 		tcsll=null;
 		hour=null;
-		clock=null;
-		clk=0;
+		minute=null;
+		clk1=0;
+		clk2=0;
 		key=null;
 		g4flux=0;
 		collector.ack(tuple);
