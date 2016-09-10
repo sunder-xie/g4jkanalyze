@@ -96,20 +96,14 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("SplitterBoltwftau", new Yunguan_G4JK_BasicTAUSplitter(),1).shuffleGrouping("Spoutwftau");
         Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
         
-        //第二组bolt，关于4G网分数据的实时解析，按照业务需求将数据直接入Redis库
+        //第二组bolt，关于4G网分数据的实时解析，
+        //统计热点区域人流量，流量数据，15分钟累计一次，将数据直接入库redis
+        //标签人数，流量累计，直接入库redis
+        //基站周边人数，流量累计，每五分钟累计一次
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),6).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("TagsAccBoltwfg4", new Yunguan_G4JK_TagsAccToRedis(),6).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),6).shuffleGrouping("SplitterBoltwf4g");
-//        
-//        //第三个bolt，针对业务需求，对字段进行redis格式转换
-//        Tpbuilder.setBolt("syslog214Redisformat", new Xinguan_FireWalls214RedisFormat(),10).shuffleGrouping("syslog214access");
-//        Tpbuilder.setBolt("syslog242Redisformat", new Xinguan_FireWalls242RedisFormat(),12).shuffleGrouping("syslog242access");
-//        
-//        //第四个bolt，将数据写入redis
-//        Tpbuilder.setBolt("syslogToRedis", new Xinguan_FireWallsToRedis(),8)
-//        .shuffleGrouping("syslog214Redisformat")
-//        .shuffleGrouping("syslog242Redisformat");
-        /*拓扑Topology设置结束*/
+        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
+
         
         /*拓扑执行*/
         //Configuration
