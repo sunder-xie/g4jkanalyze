@@ -72,7 +72,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			//查询维表获取标签
 			tag=redisserver.get(key);
 
-			if(hotspot!=null&&hotspot.equals("nil")==false&&tag!=null&&tag.equals("nil")==false)
+			if(hotspot!=null&&hotspot.equals("nil")==false)
 			{
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
@@ -90,15 +90,27 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				
 				key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中tag的imsi明细
 				redisserver.sadd(key, imsi);
-
-				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
-				//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
+				
+				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
+				//将imsi累计到热点区域中,以15分钟为维度进行创建
 				redisserver.sadd(key, imsi);
 				
-				key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+				key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot;
 				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-				//将标签产生的流量值累计到热点区域对应的标签中
+				//将热点区域产生的流量值累计到热点区域对应的标签中
 				redisserver.incrbyfloat(key, g4flux);
+				
+				if(tag!=null&&tag.equals("nil")==false)
+				{
+					key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+					//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
+					redisserver.sadd(key, imsi);
+					
+					key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+					//将标签产生的流量值累计到热点区域对应的标签中
+					redisserver.incrbyfloat(key, g4flux);
+				}
 			}
 		}
 		
