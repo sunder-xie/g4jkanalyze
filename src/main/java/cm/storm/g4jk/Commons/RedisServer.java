@@ -45,8 +45,6 @@ public class RedisServer {
 		JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(ResourcesConfig.MAX_ACTIVE);
         config.setMaxIdle(ResourcesConfig.MAX_IDLE);
-        config.setMinIdle(ResourcesConfig.MIN_IDLE);
-        config.setBlockWhenExhausted(ResourcesConfig.Block_Exhausted);
         config.setMaxWaitMillis(ResourcesConfig.MAX_WAIT);
         config.setTestOnBorrow(ResourcesConfig.TEST_ON_BORROW);
         
