@@ -88,7 +88,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					minute="00";
 				}
 				
-				key="mfg4_"+tdate+"_hspdayset_"+hotspot+"_"+tag;	//记录每天对应的hostspot中tag的imsi明细
+				key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中tag的imsi明细
 				redisserver.sadd(key, imsi);
 
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
