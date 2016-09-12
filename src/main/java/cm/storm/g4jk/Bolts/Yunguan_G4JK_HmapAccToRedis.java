@@ -62,25 +62,33 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 			if(tcsll!=null&&tcsll.equals("nil")==false){
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
-				clk1=Integer.valueOf(hour); //会自动过滤数字前边的0
-				clk2=Integer.valueOf(minute); //会自动过滤数字前边的0
+				clk1=Integer.valueOf(hour); 		//会自动过滤数字前边的0
+				clk2=Integer.valueOf(minute);		//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
-				if(clk2>=0&&clk2<5)minute="05";
-				else if(clk2>=5&&clk2<10)minute="10";
-				else if(clk2>=10&&clk2<15)minute="15";
-				else if(clk2>=15&&clk2<20)minute="20";
-				else if(clk2>=20&&clk2<25)minute="25";
-				else if(clk2>=25&&clk2<30)minute="30";
-				else if(clk2>=30&&clk2<35)minute="35";
-				else if(clk2>=35&&clk2<40)minute="40";
-				else if(clk2>=40&&clk2<45)minute="45";
-				else if(clk2>=45&&clk2<50)minute="50";
-				else if(clk2>=50&&clk2<55)minute="55";
-				else if(clk2>=55){
+				if(clk2>=0&&clk2<15)minute="15";
+				else if(clk2>=15&&clk2<30)minute="30";
+				else if(clk2>=30&&clk2<45)minute="45";
+				else if(clk2>=45){
 					clk1+=1;
 					hour=String.format("%02d", clk1);
 					minute="00";
 				}
+//				if(clk2>=0&&clk2<5)minute="05";
+//				else if(clk2>=5&&clk2<10)minute="10";
+//				else if(clk2>=10&&clk2<15)minute="15";
+//				else if(clk2>=15&&clk2<20)minute="20";
+//				else if(clk2>=20&&clk2<25)minute="25";
+//				else if(clk2>=25&&clk2<30)minute="30";
+//				else if(clk2>=30&&clk2<35)minute="35";
+//				else if(clk2>=35&&clk2<40)minute="40";
+//				else if(clk2>=40&&clk2<45)minute="45";
+//				else if(clk2>=45&&clk2<50)minute="50";
+//				else if(clk2>=50&&clk2<55)minute="55";
+//				else if(clk2>=55){
+//					clk1+=1;
+//					hour=String.format("%02d", clk1);
+//					minute="00";
+//				}
 
 				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				//将imsi累计到对应的标签中
