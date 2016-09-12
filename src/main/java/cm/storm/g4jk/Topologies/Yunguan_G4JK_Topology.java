@@ -99,7 +99,7 @@ public class Yunguan_G4JK_Topology {
         //统计热点区域人流量，标签人数，流量数据，15分钟累计一次，将数据直接入库redis
         //基站周边人数，流量累计，每五分钟累计一次
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("HspAccBoltwfg4");
+        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
 
         
         /*拓扑执行*/

@@ -7,11 +7,11 @@ import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
-import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
-import org.apache.storm.tuple.Values;
-
-import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
+//import org.apache.storm.tuple.Values;
+//import org.apache.storm.tuple.Fields;
+//
+//import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
@@ -31,7 +31,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 	private OutputCollector collector;
 	
 	//元组存储结构
-	private Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=null;
+	//private Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=null;
 	
 	//获取redis连接
 	private RedisServer redisserver;
@@ -102,60 +102,60 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			}
 		}
 		
-		g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
-		if(g4jkbasic4gbean!=null)
-		{
-			g4jkbasic4gbean.setStarttime(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME));
-			g4jkbasic4gbean.setImsi(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI));
-			g4jkbasic4gbean.setUrl(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL));
-			g4jkbasic4gbean.setImei(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMEI));
-			g4jkbasic4gbean.setTac(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC));
-			g4jkbasic4gbean.setCid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID));
-			g4jkbasic4gbean.setEvent_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.EVENT_TYPE));
-			g4jkbasic4gbean.setUl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA));
-			g4jkbasic4gbean.setDl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA));
-			g4jkbasic4gbean.setDelay(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DELAY));
-			g4jkbasic4gbean.setUser_agent(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_AGENT));
-			g4jkbasic4gbean.setGmcc_bus_ind(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND));
-			g4jkbasic4gbean.setPhone_brand(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_BRAND));
-			g4jkbasic4gbean.setPhone_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_TYPE));
-			g4jkbasic4gbean.setApn(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APN));
-			g4jkbasic4gbean.setPro_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PRO_TYPE));
-			g4jkbasic4gbean.setUser_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_IP));
-			g4jkbasic4gbean.setApp_server_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_IP));
-			g4jkbasic4gbean.setUser_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_PORT));
-			g4jkbasic4gbean.setApp_server_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT));
-			g4jkbasic4gbean.setApptype(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE));
-			g4jkbasic4gbean.setIntappid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID));
-			g4jkbasic4gbean.setIntsid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID));
-
-			//发射元组
-			collector.emit(new Values(
-				g4jkbasic4gbean.getStarttime(),
-				g4jkbasic4gbean.getImsi(),
-				g4jkbasic4gbean.getUrl(),
-				g4jkbasic4gbean.getImei(),
-				g4jkbasic4gbean.getTac(),
-				g4jkbasic4gbean.getCid(),
-				g4jkbasic4gbean.getEvent_type(),
-				g4jkbasic4gbean.getUl_data(),
-				g4jkbasic4gbean.getDl_data(),
-				g4jkbasic4gbean.getDelay(),
-				g4jkbasic4gbean.getUser_agent(),
-				g4jkbasic4gbean.getGmcc_bus_ind(),
-				g4jkbasic4gbean.getPhone_brand(),
-				g4jkbasic4gbean.getPhone_type(),
-				g4jkbasic4gbean.getApn(),
-				g4jkbasic4gbean.getPro_type(),
-				g4jkbasic4gbean.getUser_ip(),
-				g4jkbasic4gbean.getApp_server_ip(),
-				g4jkbasic4gbean.getUser_port(),
-				g4jkbasic4gbean.getApp_server_port(),
-				g4jkbasic4gbean.getApptype(),
-				g4jkbasic4gbean.getIntappid(),
-				g4jkbasic4gbean.getIntsid()
-			));
-		}
+//		g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
+//		if(g4jkbasic4gbean!=null)
+//		{
+//			g4jkbasic4gbean.setStarttime(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME));
+//			g4jkbasic4gbean.setImsi(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI));
+//			g4jkbasic4gbean.setUrl(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL));
+//			g4jkbasic4gbean.setImei(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMEI));
+//			g4jkbasic4gbean.setTac(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC));
+//			g4jkbasic4gbean.setCid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID));
+//			g4jkbasic4gbean.setEvent_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.EVENT_TYPE));
+//			g4jkbasic4gbean.setUl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA));
+//			g4jkbasic4gbean.setDl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA));
+//			g4jkbasic4gbean.setDelay(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DELAY));
+//			g4jkbasic4gbean.setUser_agent(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_AGENT));
+//			g4jkbasic4gbean.setGmcc_bus_ind(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND));
+//			g4jkbasic4gbean.setPhone_brand(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_BRAND));
+//			g4jkbasic4gbean.setPhone_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_TYPE));
+//			g4jkbasic4gbean.setApn(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APN));
+//			g4jkbasic4gbean.setPro_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PRO_TYPE));
+//			g4jkbasic4gbean.setUser_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_IP));
+//			g4jkbasic4gbean.setApp_server_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_IP));
+//			g4jkbasic4gbean.setUser_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_PORT));
+//			g4jkbasic4gbean.setApp_server_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT));
+//			g4jkbasic4gbean.setApptype(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE));
+//			g4jkbasic4gbean.setIntappid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID));
+//			g4jkbasic4gbean.setIntsid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID));
+//
+//			//发射元组
+//			collector.emit(new Values(
+//				g4jkbasic4gbean.getStarttime(),
+//				g4jkbasic4gbean.getImsi(),
+//				g4jkbasic4gbean.getUrl(),
+//				g4jkbasic4gbean.getImei(),
+//				g4jkbasic4gbean.getTac(),
+//				g4jkbasic4gbean.getCid(),
+//				g4jkbasic4gbean.getEvent_type(),
+//				g4jkbasic4gbean.getUl_data(),
+//				g4jkbasic4gbean.getDl_data(),
+//				g4jkbasic4gbean.getDelay(),
+//				g4jkbasic4gbean.getUser_agent(),
+//				g4jkbasic4gbean.getGmcc_bus_ind(),
+//				g4jkbasic4gbean.getPhone_brand(),
+//				g4jkbasic4gbean.getPhone_type(),
+//				g4jkbasic4gbean.getApn(),
+//				g4jkbasic4gbean.getPro_type(),
+//				g4jkbasic4gbean.getUser_ip(),
+//				g4jkbasic4gbean.getApp_server_ip(),
+//				g4jkbasic4gbean.getUser_port(),
+//				g4jkbasic4gbean.getApp_server_port(),
+//				g4jkbasic4gbean.getApptype(),
+//				g4jkbasic4gbean.getIntappid(),
+//				g4jkbasic4gbean.getIntsid()
+//			));
+//		}
 		//释放内存
 		redisserver=null;
 		tdate=null;
@@ -172,7 +172,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		key=null;
 		tag=null;
 		g4flux=0;
-		g4jkbasic4gbean=null;
+		//g4jkbasic4gbean=null;
 		collector.ack(tuple);
 	}
 	
@@ -180,31 +180,31 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
-		outputFieldsDeclarer.declare(new Fields(
-				Yunguan_G4JK_Basic4GFields.STARTTIME,
-				Yunguan_G4JK_Basic4GFields.IMSI,
-				Yunguan_G4JK_Basic4GFields.URL,
-				Yunguan_G4JK_Basic4GFields.IMEI,
-				Yunguan_G4JK_Basic4GFields.TAC,
-				Yunguan_G4JK_Basic4GFields.CID,
-				Yunguan_G4JK_Basic4GFields.EVENT_TYPE,
-				Yunguan_G4JK_Basic4GFields.UL_DATA,
-				Yunguan_G4JK_Basic4GFields.DL_DATA,
-				Yunguan_G4JK_Basic4GFields.DELAY,
-				Yunguan_G4JK_Basic4GFields.USER_AGENT,
-				Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND,
-				Yunguan_G4JK_Basic4GFields.PHONE_BRAND,
-				Yunguan_G4JK_Basic4GFields.PHONE_TYPE,
-				Yunguan_G4JK_Basic4GFields.APN,
-				Yunguan_G4JK_Basic4GFields.PRO_TYPE,
-				Yunguan_G4JK_Basic4GFields.USER_IP,
-				Yunguan_G4JK_Basic4GFields.APP_SERVER_IP,
-				Yunguan_G4JK_Basic4GFields.USER_PORT,
-				Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT,
-				Yunguan_G4JK_Basic4GFields.APPTYPE,
-				Yunguan_G4JK_Basic4GFields.INTAPPID,
-				Yunguan_G4JK_Basic4GFields.INTSID
-			));
+//		outputFieldsDeclarer.declare(new Fields(
+//				Yunguan_G4JK_Basic4GFields.STARTTIME,
+//				Yunguan_G4JK_Basic4GFields.IMSI,
+//				Yunguan_G4JK_Basic4GFields.URL,
+//				Yunguan_G4JK_Basic4GFields.IMEI,
+//				Yunguan_G4JK_Basic4GFields.TAC,
+//				Yunguan_G4JK_Basic4GFields.CID,
+//				Yunguan_G4JK_Basic4GFields.EVENT_TYPE,
+//				Yunguan_G4JK_Basic4GFields.UL_DATA,
+//				Yunguan_G4JK_Basic4GFields.DL_DATA,
+//				Yunguan_G4JK_Basic4GFields.DELAY,
+//				Yunguan_G4JK_Basic4GFields.USER_AGENT,
+//				Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND,
+//				Yunguan_G4JK_Basic4GFields.PHONE_BRAND,
+//				Yunguan_G4JK_Basic4GFields.PHONE_TYPE,
+//				Yunguan_G4JK_Basic4GFields.APN,
+//				Yunguan_G4JK_Basic4GFields.PRO_TYPE,
+//				Yunguan_G4JK_Basic4GFields.USER_IP,
+//				Yunguan_G4JK_Basic4GFields.APP_SERVER_IP,
+//				Yunguan_G4JK_Basic4GFields.USER_PORT,
+//				Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT,
+//				Yunguan_G4JK_Basic4GFields.APPTYPE,
+//				Yunguan_G4JK_Basic4GFields.INTAPPID,
+//				Yunguan_G4JK_Basic4GFields.INTSID
+//			));
 	}
 
 }
