@@ -62,7 +62,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			hotspot=redisserver.get(key);
 			if(hotspot!=null&&hotspot.equals("nil")==false)
 			{
-				key="mfg4_"+tdate+"_hspdayset_"+hotspot;//记录每天对应的hostspot对应的imsi明细
+				key="mfg4_"+tdate+"_hspdset_"+hotspot;//记录每天对应的hostspot对应的imsi明细
 				redisserver.sadd(key, imsi);
 				
 				hour=tdate.substring(11,13);

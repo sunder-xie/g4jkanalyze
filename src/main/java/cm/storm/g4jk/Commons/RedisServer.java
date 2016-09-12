@@ -49,7 +49,6 @@ public class RedisServer {
         config.setBlockWhenExhausted(ResourcesConfig.Block_Exhausted);
         config.setMaxWaitMillis(ResourcesConfig.MAX_WAIT);
         config.setTestOnBorrow(ResourcesConfig.TEST_ON_BORROW);
-        config.setTestOnReturn(ResourcesConfig.TEST_ON_RETURN);
         
         //新建JedisCluster连接
         jedisCluster=new JedisCluster(jedisClusterNodes,
