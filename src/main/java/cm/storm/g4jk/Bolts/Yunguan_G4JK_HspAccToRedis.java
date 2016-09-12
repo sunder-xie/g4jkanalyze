@@ -62,9 +62,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			hotspot=redisserver.get(key);
 			if(hotspot!=null&&hotspot.equals("nil")==false)
 			{
-				key="mfg4_"+tdate+"_hspdset_"+hotspot;//记录每天对应的hostspot对应的imsi明细
-				redisserver.sadd(key, imsi);
-				
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
 				clk1=Integer.valueOf(hour); //会自动过滤数字前边的0
@@ -78,6 +75,10 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					hour=String.format("%02d", clk1);
 					minute="00";
 				}
+				
+				key="mfg4_"+tdate+"_hspdayset_"+hotspot;//记录每天对应的hostspot对应的imsi明细
+				redisserver.sadd(key, imsi);
+
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
 				//将imsi累计到对应的标签中,以15分钟为维度进行创建
 				redisserver.sadd(key, imsi);
