@@ -121,8 +121,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				//用户上网标签人数统计，测试代码
 				if(apptag!=null&&apptag.equals("nil")==false)
 				{
-					key="mfg4_"+tdate+"_hspset_web_"+hour+"_"+minute+"_"+hotspot+"_"+apptag;
-					//将imsi累计到热点区域对应的app标签中，以15分钟为维度进行创建
+					key="mfg4_"+tdate+"_hspwtagset"+hotspot+"_"+apptag; //+hour+"_"+minute+"_"
+					//将imsi累计到热点区域对应的app标签中，累计1天
 					redisserver.sadd(key, imsi);
 				}
 			}
