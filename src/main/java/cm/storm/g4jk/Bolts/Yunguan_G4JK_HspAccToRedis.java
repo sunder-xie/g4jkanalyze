@@ -118,12 +118,17 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 //					redisserver.incrbyfloat(key, g4flux);
 				}
 				
-				//用户上网标签人数统计，测试代码
+				//用户上网标签人数统计，流量统计，测试代码
 				if(apptag!=null&&apptag.equals("nil")==false)
 				{
 					key="mfg4_"+tdate+"_hspwtagset"+hotspot+"_"+apptag; //+hour+"_"+minute+"_"
 					//将imsi累计到热点区域对应的app标签中，累计1天
 					redisserver.sadd(key, imsi);
+					
+					key="mfg4_"+tdate+"_hspwtagflux_"+hotspot+"_"+apptag;//+hour+"_"+minute+"_"
+					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+					//将标签产生的流量值累计到热点区域对应的标签中
+					redisserver.incrbyfloat(key, g4flux);
 				}
 			}
 		}
