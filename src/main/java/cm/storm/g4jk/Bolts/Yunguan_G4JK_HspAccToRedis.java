@@ -53,21 +53,30 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String apptype=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE);
+		String intappid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
+		//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		String hotspot=null;
 		String hour=null;
 		String minute=null;
 		String tag=null;
+		String apptag=null;
+		//String busitag=null;
 		int clk1=0,clk2=0;
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hsp_"+tac+"_"+ci;
-			//查询维表获取标签
+			//查询维表获取热点区域标签
 			hotspot=redisserver.get(key);
 			
 			key="ref_tags_"+imsi;
-			//查询维表获取标签
+			//查询维表获取维表标记的imsi标签
 			tag=redisserver.get(key);
+			
+			key="ref_wtag_"+apptype+"_"+intappid;
+			//查询维表获取上网大类标签
+			apptag=redisserver.get(key);
 
 			if(hotspot!=null&&hotspot.equals("nil")==false)
 			{
@@ -103,10 +112,18 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
 					redisserver.sadd(key, imsi);
 					
-					key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
-					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-					//将标签产生的流量值累计到热点区域对应的标签中
-					redisserver.incrbyfloat(key, g4flux);
+//					key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+//					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+//					//将标签产生的流量值累计到热点区域对应的标签中
+//					redisserver.incrbyfloat(key, g4flux);
+				}
+				
+				//用户上网标签人数统计，测试代码
+				if(apptag!=null&&apptag.equals("nil")==false)
+				{
+					key="mfg4_"+tdate+"_hspset_web_"+hour+"_"+minute+"_"+hotspot+"_"+apptag;
+					//将imsi累计到热点区域对应的app标签中，以15分钟为维度进行创建
+					redisserver.sadd(key, imsi);
 				}
 			}
 		}
@@ -122,6 +139,9 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		hotspot=null;
 		hour=null;
 		minute=null;
+		apptype=null;
+		intappid=null;
+		apptag=null;
 		clk1=0;
 		clk2=0;
 		key=null;
