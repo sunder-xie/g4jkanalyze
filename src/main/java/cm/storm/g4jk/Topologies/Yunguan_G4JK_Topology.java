@@ -13,11 +13,13 @@ import org.apache.storm.StormSubmitter;
 import org.apache.storm.topology.TopologyBuilder;
 
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_Basic4GSplitter;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicATDTSplitter;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicJKSplitter;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HmapAccToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HspAccToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_TauAccToRedis;
 
 
 /**
@@ -75,8 +77,8 @@ public class Yunguan_G4JK_Topology {
 	    //可以参考链接https://storm.apache.org/javadoc/apidocs/backtype/storm/spout/ISpout.html
 	    //程序员可以利用其中的nextTuple()方法对已有的元组数据进行进一步的字段筛选，处理，然后交给collector进行发射emit，也可以将这个预处理过程添加到对应的Bolt中的excute方法来进行，具体针对需求而定
 	    KafkaSpout kspout_wf4g = new KafkaSpout(spoutConfigwf4g);
+	    KafkaSpout kspout_wftau = new KafkaSpout(spoutConfigwftau);
 //	    KafkaSpout kspout_wfjk = new KafkaSpout(spoutConfigwfjk);
-//	    KafkaSpout kspout_wftau = new KafkaSpout(spoutConfigwftau);
 //	    KafkaSpout kspout_wfatdt = new KafkaSpout(spoutConfigwfatdt);
 	    /*kafka spout配置结束*/
 	    
@@ -84,23 +86,24 @@ public class Yunguan_G4JK_Topology {
         TopologyBuilder Tpbuilder = new TopologyBuilder();
         //设置spout，在storm运行过程中对应的id，来源的kafka，以及对应所需的slot数量
         Tpbuilder.setSpout("Spoutwf4g", kspout_wf4g, 3);
-//        Tpbuilder.setSpout("Spoutwfjk", kspout_wfjk, 1);
-//        Tpbuilder.setSpout("Spoutwftau", kspout_wftau, 1);
-//        Tpbuilder.setSpout("Spoutwfatdt", kspout_wfatdt, 1);
+        Tpbuilder.setSpout("Spoutwftau", kspout_wftau, 1);
+//      Tpbuilder.setSpout("Spoutwfjk", kspout_wfjk, 1);
+//      Tpbuilder.setSpout("Spoutwfatdt", kspout_wfatdt, 1);
         
         //设置bolt
         //初始bolt分别spout的流进行字段解析
         Tpbuilder.setBolt("SplitterBoltwf4g", new Yunguan_G4JK_Basic4GSplitter(),3).shuffleGrouping("Spoutwf4g");
-//        Tpbuilder.setBolt("SplitterBoltwfjk", new Yunguan_G4JK_BasicJKSplitter(),1).shuffleGrouping("Spoutwfjk");
-//        Tpbuilder.setBolt("SplitterBoltwftau", new Yunguan_G4JK_BasicTAUSplitter(),1).shuffleGrouping("Spoutwftau");
-//        Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
+        Tpbuilder.setBolt("SplitterBoltwftau", new Yunguan_G4JK_BasicTAUSplitter(),1).shuffleGrouping("Spoutwftau");
+//      Tpbuilder.setBolt("SplitterBoltwfjk", new Yunguan_G4JK_BasicJKSplitter(),1).shuffleGrouping("Spoutwfjk");
+//      Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
         
         //业务bolt，关于4G网分数据的实时解析，
         //统计热点区域人流量，标签人数，流量数据，15分钟累计一次，将数据直接入库redis
-        //基站周边人数，流量累计，每五分钟累计一次
+        //基站周边人数，流量累计，15分钟累计一次，将数据直接入库redis
+        //统计TAU中的人流量信息补充，15分钟累计一次，将数据直接入库redis
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
-
+        Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),2).shuffleGrouping("SplitterBoltwftau");
         
         /*拓扑执行*/
         //Configuration

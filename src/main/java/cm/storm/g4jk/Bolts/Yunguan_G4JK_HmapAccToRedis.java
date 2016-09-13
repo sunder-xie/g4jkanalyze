@@ -13,7 +13,7 @@ import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 每5分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
+ * 每15分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
  * @author chinamobile
  * 20160907
  */
@@ -39,7 +39,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		this.collector = outputCollector;
 	}
 
-	//按照4G网分数据tac,ci，汇总流量，5分钟窗口，记录数量万级别
+	//按照4G网分数据tac,ci，汇总流量，15分钟窗口，记录数量万级别
 	@Override
 	public void execute(Tuple tuple) {
 		//redis操作
@@ -73,22 +73,6 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 					hour=String.format("%02d", clk1);
 					minute="00";
 				}
-//				if(clk2>=0&&clk2<5)minute="05";
-//				else if(clk2>=5&&clk2<10)minute="10";
-//				else if(clk2>=10&&clk2<15)minute="15";
-//				else if(clk2>=15&&clk2<20)minute="20";
-//				else if(clk2>=20&&clk2<25)minute="25";
-//				else if(clk2>=25&&clk2<30)minute="30";
-//				else if(clk2>=30&&clk2<35)minute="35";
-//				else if(clk2>=35&&clk2<40)minute="40";
-//				else if(clk2>=40&&clk2<45)minute="45";
-//				else if(clk2>=45&&clk2<50)minute="50";
-//				else if(clk2>=50&&clk2<55)minute="55";
-//				else if(clk2>=55){
-//					clk1+=1;
-//					hour=String.format("%02d", clk1);
-//					minute="00";
-//				}
 
 				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				//将imsi累计到对应的标签中
@@ -125,3 +109,20 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 	}
 
 }
+
+//if(clk2>=0&&clk2<5)minute="05";
+//else if(clk2>=5&&clk2<10)minute="10";
+//else if(clk2>=10&&clk2<15)minute="15";
+//else if(clk2>=15&&clk2<20)minute="20";
+//else if(clk2>=20&&clk2<25)minute="25";
+//else if(clk2>=25&&clk2<30)minute="30";
+//else if(clk2>=30&&clk2<35)minute="35";
+//else if(clk2>=35&&clk2<40)minute="40";
+//else if(clk2>=40&&clk2<45)minute="45";
+//else if(clk2>=45&&clk2<50)minute="50";
+//else if(clk2>=50&&clk2<55)minute="55";
+//else if(clk2>=55){
+//	clk1+=1;
+//	hour=String.format("%02d", clk1);
+//	minute="00";
+//}
