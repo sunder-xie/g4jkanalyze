@@ -98,7 +98,7 @@ public class Yunguan_G4JK_Topology {
 //      Tpbuilder.setBolt("SplitterBoltwfatdt", new Yunguan_G4JK_BasicATDTSplitter(),1).shuffleGrouping("Spoutwfatdt");
         
         //业务bolt，关于4G网分数据的实时解析，
-        //统计热点区域人流量，标签人数，流量数据，15分钟累计一次，将数据直接入库redis
+        //统计热点区域人流量，标签，上网标签人数，热点区域流量数据，15分钟累计一次，将数据直接入库redis
         //基站周边人数，流量累计，15分钟累计一次，将数据直接入库redis
         //统计TAU中的人流量信息补充，15分钟累计一次，将数据直接入库redis
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
