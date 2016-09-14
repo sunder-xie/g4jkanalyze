@@ -62,7 +62,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String tag=null;
 		String apptag=null;
 		String imsi_catch_time=null;
-		String imsi_tdate=tdate;
+		String imsi_tdate="19000101000000";
 		int clk1=0,clk2=0;
 		String key=null;
 		double g4flux=0;
@@ -81,9 +81,9 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 
 			if(hotspot!=null&&hotspot.equals("nil")==false)
 			{
-				imsi_tdate=tdate;
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
+				imsi_tdate=tdate.substring(0,4)+tdate.substring(4,6)+tdate.substring(6,8)+hour+minute+tdate.substring(17);
 				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
 				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
@@ -103,7 +103,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
 				imsi_catch_time=redisserver.get(key);
 				if(imsi_catch_time==null||imsi_catch_time.equals("nil"))imsi_catch_time=imsi_tdate+";"+imsi_tdate;
-				else imsi_catch_time=imsi_catch_time.substring(0,20)+imsi_tdate;
+				else imsi_catch_time=imsi_catch_time.substring(0,15)+imsi_tdate;
 				redisserver.set(key, imsi_catch_time);
 				
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
