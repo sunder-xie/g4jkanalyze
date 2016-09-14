@@ -61,7 +61,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String minute=null;
 		String tag=null;
 		String apptag=null;
-		//String busitag=null;
+		String imsi_catch_time=null;
+		String imsi_tdate=tdate;
 		int clk1=0,clk2=0;
 		String key=null;
 		double g4flux=0;
@@ -80,6 +81,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 
 			if(hotspot!=null&&hotspot.equals("nil")==false)
 			{
+				imsi_tdate=tdate;
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
 				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
@@ -96,6 +98,13 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				
 				key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
 				redisserver.sadd(key, imsi);
+				
+				//标记hotspot捕获imsi的时间
+				key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
+				imsi_catch_time=redisserver.get(key);
+				if(imsi_catch_time==null||imsi_catch_time.equals("nil"))imsi_catch_time=imsi_tdate+";"+imsi_tdate;
+				else imsi_catch_time=imsi_catch_time.substring(0,20)+imsi_tdate;
+				redisserver.set(key, imsi_catch_time);
 				
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
 				//将imsi累计到热点区域中,以15分钟为维度进行创建
@@ -121,14 +130,14 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				//用户上网标签人数统计，流量统计，测试代码
 				if(apptag!=null&&apptag.equals("nil")==false)
 				{
-					key="mfg4_"+tdate+"_hspwtagset_"+hotspot+"_"+apptag; //+hour+"_"+minute+"_"
+					key="mfg4_"+tdate+"_hspwtagset_"+hour+"_"+minute+"_"+hotspot+"_"+apptag; 
 					//将imsi累计到热点区域对应的app标签中，累计1天
 					redisserver.sadd(key, imsi);
 					
-					key="mfg4_"+tdate+"_hspwtagflux_"+hotspot+"_"+apptag;//+hour+"_"+minute+"_"
-					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-					//将标签产生的流量值累计到热点区域对应的标签中
-					redisserver.incrbyfloat(key, g4flux);
+//					key="mfg4_"+tdate+"_hspwtagflux_"+hour+"_"+minute+"_"+hotspot+"_"+apptag;
+//					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+//					//将标签产生的流量值累计到热点区域对应的标签中
+//					redisserver.incrbyfloat(key, g4flux);
 				}
 			}
 		}
