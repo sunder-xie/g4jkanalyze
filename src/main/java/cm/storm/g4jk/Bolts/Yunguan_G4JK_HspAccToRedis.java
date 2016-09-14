@@ -84,7 +84,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			{
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
-				imsi_catch_time=tdate.substring(0,4)+tdate.substring(4,6)+tdate.substring(6,8)+hour+minute+tdate.substring(17);
+				imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
 				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
 				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
