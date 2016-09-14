@@ -160,6 +160,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		clk2=0;
 		key=null;
 		tag=null;
+		imsi_catch_time=null;
+		imsi_tdate=null;
 		g4flux=0;
 		collector.ack(tuple);
 	}
