@@ -62,7 +62,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String tag=null;
 		String apptag=null;
 		String imsi_catch_time=null;
-		String imsi_tdate="19000101000000";
+		String imsi_tdate1="19000101000000";
+		String imsi_tdate2="19000101000000";
 		int clk1=0,clk2=0;
 		String key=null;
 		double g4flux=0;
@@ -83,7 +84,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			{
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
-				imsi_tdate=tdate.substring(0,4)+tdate.substring(4,6)+tdate.substring(6,8)+hour+minute+tdate.substring(17);
+				imsi_catch_time=tdate.substring(0,4)+tdate.substring(4,6)+tdate.substring(6,8)+hour+minute+tdate.substring(17);
 				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
 				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
@@ -101,10 +102,16 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				
 				//标记hotspot捕获imsi的时间
 				key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
-				imsi_catch_time=redisserver.get(key);
-				if(imsi_catch_time==null||imsi_catch_time.equals("nil"))imsi_catch_time=imsi_tdate+";"+imsi_tdate;
-				else imsi_catch_time=imsi_catch_time.substring(0,15)+imsi_tdate;
-				redisserver.set(key, imsi_catch_time);
+				imsi_tdate1=redisserver.get(key);
+				if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+				else if (imsi_tdate1.length()>=29){
+					imsi_tdate2=imsi_tdate1.substring(15);
+					imsi_tdate1=imsi_tdate1.substring(0,14);
+					if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
+					else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+					else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
+				}
+				redisserver.set(key, imsi_tdate1);
 				
 				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
 				//将imsi累计到热点区域中,以15分钟为维度进行创建
@@ -161,7 +168,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		key=null;
 		tag=null;
 		imsi_catch_time=null;
-		imsi_tdate=null;
+		imsi_tdate1=null;
+		imsi_tdate2=null;
 		g4flux=0;
 		collector.ack(tuple);
 	}
