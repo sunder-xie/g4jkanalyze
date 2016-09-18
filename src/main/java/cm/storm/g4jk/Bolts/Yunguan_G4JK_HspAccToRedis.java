@@ -83,7 +83,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
-				for(String hotspot:hotspotlist){
+				for(String hotspot : hotspotlist){
 					hour=tdate.substring(11,13);
 					minute=tdate.substring(14,16);
 					imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
