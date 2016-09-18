@@ -306,6 +306,38 @@ public class RedisServer {
 		}
 		return res;
 	}
+	
+	/**
+	 * 获取set元素数量
+	 * @param key
+	 * @return 元素数量 -1表示出错
+	 */
+	public long scard(String key){
+		long res=0;
+		try{
+			res=jedisCluster.scard(key);
+		}catch(Exception e){
+			logger.error("Jediscluster opt scard error: ", e);
+			return -1;
+		}
+		return res;
+	}
+	
+	/**
+	 * 获取set的全部元素值集合
+	 * @param key set的key
+	 * @return 返回Set<String>集合
+	 */
+	public Set<String> smembers(String key){
+		Set<String> res=null;
+		try{
+			res=jedisCluster.smembers(key);
+		}catch(Exception e){
+			logger.error("Jediscluster opt smembers error: ", e);
+			return null;
+		}
+		return res;
+	}
 	/*set集合操作封装结束*/
 	
 	/*hash散列操作封装*/

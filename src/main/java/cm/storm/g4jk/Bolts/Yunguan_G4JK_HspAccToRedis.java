@@ -1,6 +1,7 @@
 package cm.storm.g4jk.Bolts;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -56,7 +57,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String apptype=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE);
 		String intappid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
 		//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
-		String hotspot=null;
+		Set<String> hotspotlist=null;
 		String hour=null;
 		String minute=null;
 		String tag=null;
@@ -70,7 +71,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hsp_"+tac+"_"+ci;
 			//查询维表获取热点区域标签
-			hotspot=redisserver.get(key);
+			hotspotlist=redisserver.smembers(key);
 			
 			key="ref_tags_"+imsi;
 			//查询维表获取维表标记的imsi标签
@@ -80,71 +81,63 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			//查询维表获取上网大类标签
 			apptag=redisserver.get(key);
 
-			if(hotspot!=null&&hotspot.equals("nil")==false)
+			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
-				hour=tdate.substring(11,13);
-				minute=tdate.substring(14,16);
-				imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
-				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
-				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
-				tdate=tdate.substring(0,10);
-				if(clk2>=0&&clk2<15)minute="15";
-				else if(clk2>=15&&clk2<30)minute="30";
-				else if(clk2>=30&&clk2<45)minute="45";
-				else if(clk2>=45){
-					clk1+=1;
-					hour=String.format("%02d", clk1);
-					minute="00";
-				}
-				
-				key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
-				redisserver.sadd(key, imsi);
-				
-				//标记hotspot捕获imsi的时间
-				key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
-				imsi_tdate1=redisserver.get(key);
-				if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
-				else if (imsi_tdate1.length()>=29){
-					imsi_tdate2=imsi_tdate1.substring(15);
-					imsi_tdate1=imsi_tdate1.substring(0,14);
-					if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
-					else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
-					else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
-				}
-				redisserver.set(key, imsi_tdate1);
-				
-				key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
-				//将imsi累计到热点区域中,以15分钟为维度进行创建
-				redisserver.sadd(key, imsi);
-				
-				key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot;
-				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-				//将热点区域产生的流量值累计到热点区域对应的标签中
-				redisserver.incrbyfloat(key, g4flux);
-				
-				if(tag!=null&&tag.equals("nil")==false)
-				{
-					key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
-					//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
+				for(String hotspot:hotspotlist){
+					hour=tdate.substring(11,13);
+					minute=tdate.substring(14,16);
+					imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
+					clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
+					clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+					tdate=tdate.substring(0,10);
+					if(clk2>=0&&clk2<15)minute="15";
+					else if(clk2>=15&&clk2<30)minute="30";
+					else if(clk2>=30&&clk2<45)minute="45";
+					else if(clk2>=45){
+						clk1+=1;
+						hour=String.format("%02d", clk1);
+						minute="00";
+					}
+					
+					key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
 					redisserver.sadd(key, imsi);
 					
-//					key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
-//					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-//					//将标签产生的流量值累计到热点区域对应的标签中
-//					redisserver.incrbyfloat(key, g4flux);
-				}
-				
-				//用户上网标签人数统计，流量统计，测试代码
-				if(apptag!=null&&apptag.equals("nil")==false)
-				{
-					key="mfg4_"+tdate+"_hspwtagset_"+hour+"_"+minute+"_"+hotspot+"_"+apptag; 
-					//将imsi累计到热点区域对应的app标签中，累计1天
+					//标记hotspot捕获imsi的时间
+					key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
+					imsi_tdate1=redisserver.get(key);
+					if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+					else if (imsi_tdate1.length()>=29){
+						imsi_tdate2=imsi_tdate1.substring(15);
+						imsi_tdate1=imsi_tdate1.substring(0,14);
+						if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
+						else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
+					}
+					redisserver.set(key, imsi_tdate1);
+					
+					key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
+					//将imsi累计到热点区域中,以15分钟为维度进行创建
 					redisserver.sadd(key, imsi);
 					
-//					key="mfg4_"+tdate+"_hspwtagflux_"+hour+"_"+minute+"_"+hotspot+"_"+apptag;
-//					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-//					//将标签产生的流量值累计到热点区域对应的标签中
-//					redisserver.incrbyfloat(key, g4flux);
+					key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot;
+					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+					//将热点区域产生的流量值累计到热点区域对应的标签中
+					redisserver.incrbyfloat(key, g4flux);
+					
+					if(tag!=null&&tag.equals("nil")==false)
+					{
+						key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+						//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
+						redisserver.sadd(key, imsi);
+					}
+					
+					//用户上网标签人数统计，流量统计，测试代码
+					if(apptag!=null&&apptag.equals("nil")==false)
+					{
+						key="mfg4_"+tdate+"_hspwtagset_"+hour+"_"+minute+"_"+hotspot+"_"+apptag; 
+						//将imsi累计到热点区域对应的app标签中，累计1天
+						redisserver.sadd(key, imsi);
+					}
 				}
 			}
 		}
@@ -157,7 +150,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		ulflux=null;
 		tac=null;
 		ci=null;
-		hotspot=null;
+		hotspotlist=null;
 		hour=null;
 		minute=null;
 		apptype=null;
@@ -267,3 +260,14 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 //Yunguan_G4JK_Basic4GFields.INTAPPID,
 //Yunguan_G4JK_Basic4GFields.INTSID
 //));
+
+
+//key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+//g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+////将标签产生的流量值累计到热点区域对应的标签中
+//redisserver.incrbyfloat(key, g4flux);
+
+//key="mfg4_"+tdate+"_hspwtagflux_"+hour+"_"+minute+"_"+hotspot+"_"+apptag;
+//g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+////将标签产生的流量值累计到热点区域对应的标签中
+//redisserver.incrbyfloat(key, g4flux);
