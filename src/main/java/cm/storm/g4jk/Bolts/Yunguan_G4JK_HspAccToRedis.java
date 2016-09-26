@@ -65,7 +65,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
-			//查询维表获取热点区域标签
+			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
 			key="ref_hsp_"+tac+"_"+ci;
 			hotspotlist=redisserver.smembers(key);
 
