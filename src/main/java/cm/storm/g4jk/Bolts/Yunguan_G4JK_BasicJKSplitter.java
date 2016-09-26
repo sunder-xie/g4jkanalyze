@@ -108,7 +108,7 @@ public class Yunguan_G4JK_BasicJKSplitter extends BaseRichBolt {
 		
 		//字段3，用户账号
 		if(fields_set.length>2){
-			if(fields_set[2].length()>0)g4jkbasicjkbean.setUser_name(fields_set[2]);
+			if(fields_set[2].length()>0)g4jkbasicjkbean.setUser_name(fields_set[2].trim());
 		}
 		
 		//字段4，用户类型
