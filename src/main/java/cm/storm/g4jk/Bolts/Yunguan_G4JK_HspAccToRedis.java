@@ -82,9 +82,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				else if(clk>=45)minute="45";
 				
 				for(String hotspot : hotspotlist){			
-					key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
-					redisserver.sadd(key, imsi);
-					
 					//标记hotspot捕获imsi的时间
 					key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
 					imsi_tdate1=redisserver.get(key);
