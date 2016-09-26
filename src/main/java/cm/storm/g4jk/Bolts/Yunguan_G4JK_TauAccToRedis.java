@@ -52,65 +52,63 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		Set<String> hotspotlist=null;
 		String hour=null;
 		String minute=null;
-		String tag=null;
 		String tcsll=null;
-		int clk1=0,clk2=0;
+		int clk=0;
 		String key=null;
+		String imsi_catch_time=null;
+		String imsi_tdate1="19000101000000";
+		String imsi_tdate2="19000101000000";
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hsp_"+tac+"_"+ci;
 			//查询维表获取标签
 			hotspotlist=redisserver.smembers(key);
 			
-			key="ref_tags_"+imsi;
-			//查询维表获取标签
-			tag=redisserver.get(key);
-			
 			key="ref_hpm_"+tac+"_"+ci;
 			//查询维表获取标签
 			tcsll=redisserver.get(key);
-			
 
-			
 			//热点区域人流补充
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
-				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
-				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+				imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
+				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
-				if(clk2>=0&&clk2<15)minute="15";
-				else if(clk2>=15&&clk2<30)minute="30";
-				else if(clk2>=30&&clk2<45)minute="45";
-				else if(clk2>=45){
-					clk1+=1;
-					hour=String.format("%02d", clk1);
-					minute="00";
-				}
+				if(clk>=0&&clk<15)minute="00";
+				else if(clk>=15&&clk<30)minute="15";
+				else if(clk>=30&&clk<45)minute="30";
+				else if(clk>=45)minute="45";
 				
 				for(String hotspot : hotspotlist){
 					key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
 					redisserver.sadd(key, imsi);
 					
+					//标记hotspot捕获imsi的时间
+					key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
+					imsi_tdate1=redisserver.get(key);
+					if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+					else if (imsi_tdate1.length()>=29){
+						imsi_tdate2=imsi_tdate1.substring(15);
+						imsi_tdate1=imsi_tdate1.substring(0,14);
+						if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
+						else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
+					}
+					redisserver.set(key, imsi_tdate1);
+					
 					key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
 					redisserver.sadd(key, imsi);
-	
-					if(tag!=null&&tag.equals("nil")==false)
-					{
-						key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
-						//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
-						redisserver.sadd(key, imsi);
-					}
 				}
 			}
 			
 			//热力图区域人流补充
 			if(tcsll!=null&&tcsll.equals("nil")==false)
 			{
-				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				//将imsi累计到对应的标签中
+				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				redisserver.sadd(key, imsi);
 			}
 		}
@@ -126,8 +124,10 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		minute=null;
 		tcsll=null;
 		key=null;
-		clk1=0;
-		clk2=0;
+		imsi_catch_time=null;
+		imsi_tdate1=null;
+		imsi_tdate2=null;
+		clk=0;
 		collector.ack(tuple);
 	}
 
@@ -138,3 +138,39 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 	}
 
 }
+
+//String tag=null;
+//key="ref_tags_"+imsi;
+////查询维表获取标签
+//tag=redisserver.get(key);
+
+
+//key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
+//redisserver.sadd(key, imsi);
+
+//标记hotspot捕获imsi的时间
+//key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
+//key="mfg4_"+tdate+"_hsptime_"+hotspot+"_"+imsi;
+//imsi_tdate1=redisserver.get(key);
+//if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+//else if (imsi_tdate1.length()>=29){
+//	imsi_tdate2=imsi_tdate1.substring(15);
+//	imsi_tdate1=imsi_tdate1.substring(0,14);
+//	if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
+//	else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+//	else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
+//}
+//redisserver.set(key, imsi_tdate1);
+
+//将imsi累计到热点区域中,以15分钟为维度进行创建
+//key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
+//redisserver.sadd(key, imsi);
+//key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+hour+"_"+minute+"_"+imsi;
+//redisserver.set(key, "1");
+//
+//if(tag!=null&&tag.equals("nil")==false)
+//{
+//	key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+//	//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
+//	redisserver.sadd(key, imsi);
+//}

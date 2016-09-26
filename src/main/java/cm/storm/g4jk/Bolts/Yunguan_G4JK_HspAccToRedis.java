@@ -54,51 +54,34 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
-		String apptype=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE);
-		String intappid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
 		//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		Set<String> hotspotlist=null;
 		String hour=null;
 		String minute=null;
-		String tag=null;
-		String apptag=null;
 		String imsi_catch_time=null;
 		String imsi_tdate1="19000101000000";
 		String imsi_tdate2="19000101000000";
-		int clk1=0,clk2=0;
+		int clk=0;
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
-			key="ref_hsp_"+tac+"_"+ci;
 			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
+			key="ref_hsp_"+tac+"_"+ci;
 			hotspotlist=redisserver.smembers(key);
-			
-			key="ref_tags_"+imsi;
-			//查询维表获取imsi对应定义好的标记标签，目前截至20160926只有一个，没有多个
-			tag=redisserver.get(key);
-			
-			key="ref_wtag_"+apptype+"_"+intappid;
-			//查询维表获取上网大类标签
-			apptag=redisserver.get(key);
 
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
 				imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
-				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
-				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
-				if(clk2>=0&&clk2<15)minute="15";
-				else if(clk2>=15&&clk2<30)minute="30";
-				else if(clk2>=30&&clk2<45)minute="45";
-				else if(clk2>=45){
-					clk1+=1;
-					hour=String.format("%02d", clk1);
-					minute="00";
-				}
+				if(clk>=0&&clk<15)minute="00";
+				else if(clk>=15&&clk<30)minute="15";
+				else if(clk>=30&&clk<45)minute="30";
+				else if(clk>=45)minute="45";
 				
-				for(String hotspot : hotspotlist){
+				for(String hotspot : hotspotlist){			
 					key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
 					redisserver.sadd(key, imsi);
 					
@@ -123,21 +106,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 					//将热点区域产生的流量值累计到热点区域对应的标签中
 					redisserver.incrbyfloat(key, g4flux);
-					
-					if(tag!=null&&tag.equals("nil")==false)
-					{
-						key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
-						//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
-						redisserver.sadd(key, imsi);
-					}
-					
-					//用户上网标签人数统计，流量统计，测试代码
-					if(apptag!=null&&apptag.equals("nil")==false)
-					{
-						key="mfg4_"+tdate+"_hspwtagset_"+hour+"_"+minute+"_"+hotspot+"_"+apptag; 
-						//将imsi累计到热点区域对应的app标签中，累计1天
-						redisserver.sadd(key, imsi);
-					}
 				}
 			}
 		}
@@ -153,13 +121,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		hotspotlist=null;
 		hour=null;
 		minute=null;
-		apptype=null;
-		intappid=null;
-		apptag=null;
-		clk1=0;
-		clk2=0;
+		clk=0;
 		key=null;
-		tag=null;
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
@@ -271,3 +234,46 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 //g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 ////将标签产生的流量值累计到热点区域对应的标签中
 //redisserver.incrbyfloat(key, g4flux);
+
+//if(tag!=null&&tag.equals("nil")==false)
+//{
+//	//将imsi累计到热点区域对应的标签中,以15分钟为维度进行创建
+//	key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot+"_"+tag;
+//	redisserver.sadd(key, imsi);
+//}
+
+//用户上网标签人数统计，流量统计，测试代码
+//if(apptag!=null&&apptag.equals("nil")==false)
+//{
+//	//将imsi累计到热点区域对应的app标签中，累计1天
+//	key="mfg4_"+tdate+"_hspwtagset_"+hour+"_"+minute+"_"+hotspot+"_"+apptag; 
+//	redisserver.sadd(key, imsi);
+//}
+
+//key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
+//redisserver.sadd(key, imsi);
+
+//标记hotspot捕获imsi的时间
+//key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
+
+//将imsi累计到热点区域中,以15分钟为维度进行创建
+//key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
+//redisserver.sadd(key, imsi);
+
+//获取上网标签行为
+//String apptype=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE);
+//String intappid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
+//apptype=null;
+//intappid=null;
+
+//String tag=null;
+//String apptag=null;
+////查询维表获取维表标记的imsi标签
+//key="ref_tags_"+imsi;
+//tag=redisserver.get(key);
+//
+////查询维表获取上网大类标签
+//key="ref_wtag_"+apptype+"_"+intappid;
+//apptag=redisserver.get(key);
+//apptag=null;
+//tag=null;

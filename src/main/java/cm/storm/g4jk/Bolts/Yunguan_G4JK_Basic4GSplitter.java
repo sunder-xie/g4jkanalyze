@@ -109,7 +109,7 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 		
 		//字段2，获取IMSI
 		if(fields_set.length>1){
-			if(fields_set[1].length()==15)g4jkbasic4gbean.setImsi(fields_set[1]);
+			if(fields_set[1].length()==15)g4jkbasic4gbean.setImsi(fields_set[1].trim());
 		}
 		
 		//字段3，获取url
@@ -124,12 +124,12 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 		
 		//字段5，获取基站TAC码，至少4位
 		if(fields_set.length>4){
-			if(fields_set[4].length()>=4)g4jkbasic4gbean.setTac(fields_set[4]);
+			if(fields_set[4].length()>=4)g4jkbasic4gbean.setTac(fields_set[4].trim());
 		}
 		
 		//字段6，获取基站小区码cell_id，或者填写数字，或者填写none
 		if(fields_set.length>5){
-			if(fields_set[5].length()>0)g4jkbasic4gbean.setCid(fields_set[5]);
+			if(fields_set[5].length()>0)g4jkbasic4gbean.setCid(fields_set[5].trim());
 		}
 		
 		//字段7，事件类型

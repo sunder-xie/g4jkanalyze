@@ -91,17 +91,17 @@ public class Yunguan_G4JK_BasicTAUSplitter extends BaseRichBolt {
 		
 		//字段2，获取IMSI
 		if(fields_set.length>1){
-			if(fields_set[1].length()==15)g4jkbasictaubean.setImsi(fields_set[1]);
+			if(fields_set[1].length()==15)g4jkbasictaubean.setImsi(fields_set[1].trim());
 		}
 		
 		//字段3，获取基站TAC码，至少4位
 		if(fields_set.length>2){
-			if(fields_set[2].length()>=4)g4jkbasictaubean.setTac(fields_set[2]);
+			if(fields_set[2].length()>=4)g4jkbasictaubean.setTac(fields_set[2].trim());
 		}
 		
 		//字段4，获取基站小区码cell_id，或者填写数字，或者填写none
 		if(fields_set.length>3){
-			if(fields_set[3].length()>0)g4jkbasictaubean.setCi(fields_set[3]);
+			if(fields_set[3].length()>0)g4jkbasictaubean.setCi(fields_set[3].trim());
 		}
 	}
 	
