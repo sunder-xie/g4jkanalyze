@@ -54,7 +54,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		String minute=null;
 		String tag=null;
 		String tcsll=null;
-		int clk1=0,clk2=0;
+		int clk=0;
 		String key=null;
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
@@ -69,25 +69,18 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 			key="ref_hpm_"+tac+"_"+ci;
 			//查询维表获取标签
 			tcsll=redisserver.get(key);
-			
 
-			
 			//热点区域人流补充
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
-				clk1=Integer.valueOf(hour); 	//会自动过滤数字前边的0
-				clk2=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
-				if(clk2>=0&&clk2<15)minute="15";
-				else if(clk2>=15&&clk2<30)minute="30";
-				else if(clk2>=30&&clk2<45)minute="45";
-				else if(clk2>=45){
-					clk1+=1;
-					hour=String.format("%02d", clk1);
-					minute="00";
-				}
+				if(clk>=0&&clk<15)minute="00";
+				else if(clk>=15&&clk<30)minute="15";
+				else if(clk>=30&&clk<45)minute="30";
+				else if(clk>=45)minute="45";
 				
 				for(String hotspot : hotspotlist){
 					key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
@@ -126,8 +119,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		minute=null;
 		tcsll=null;
 		key=null;
-		clk1=0;
-		clk2=0;
+		clk=0;
 		collector.ack(tuple);
 	}
 

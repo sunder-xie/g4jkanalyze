@@ -53,7 +53,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String tcsll=null;
 		String hour=null;
 		String minute=null;
-		int clk1=0,clk2=0;
+		int clk=0;
 		String key=null;
 		double g4flux=0;
 		if(tdate.length()>=23&&imsi.length()>=15){
@@ -62,17 +62,12 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 			if(tcsll!=null&&tcsll.equals("nil")==false){
 				hour=tdate.substring(11,13);
 				minute=tdate.substring(14,16);
-				clk1=Integer.valueOf(hour); 		//会自动过滤数字前边的0
-				clk2=Integer.valueOf(minute);		//会自动过滤数字前边的0
+				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
-				if(clk2>=0&&clk2<15)minute="15";
-				else if(clk2>=15&&clk2<30)minute="30";
-				else if(clk2>=30&&clk2<45)minute="45";
-				else if(clk2>=45){
-					clk1+=1;
-					hour=String.format("%02d", clk1);
-					minute="00";
-				}
+				if(clk>=0&&clk<15)minute="00";
+				else if(clk>=15&&clk<30)minute="15";
+				else if(clk>=30&&clk<45)minute="30";
+				else if(clk>=45)minute="45";
 
 				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				//将imsi累计到对应的标签中
@@ -95,8 +90,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		tcsll=null;
 		hour=null;
 		minute=null;
-		clk1=0;
-		clk2=0;
+		clk=0;
 		key=null;
 		g4flux=0;
 		collector.ack(tuple);
