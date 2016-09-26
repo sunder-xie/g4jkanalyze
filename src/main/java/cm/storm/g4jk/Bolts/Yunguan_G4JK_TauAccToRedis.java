@@ -82,12 +82,11 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 				else if(clk>=45)minute="45";
 				
 				for(String hotspot : hotspotlist){
-					//将imsi累计到热点区域中,以15分钟为维度进行创建
-					key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+hour+"_"+minute+"_"+imsi;
-					redisserver.setnx(key, "1");
+					key="mfg4_"+tdate+"_hspdayset_"+hotspot;	//记录每天对应的hostspot中的imsi明细
+					redisserver.sadd(key, imsi);
 					
-					//标记hotspot捕获imsi的最早和最晚时间
-					key="mfg4_"+tdate+"_hsptime_"+hotspot+"_"+imsi;
+					//标记hotspot捕获imsi的时间
+					key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
 					imsi_tdate1=redisserver.get(key);
 					if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
 					else if (imsi_tdate1.length()>=29){
@@ -98,6 +97,10 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
 					}
 					redisserver.set(key, imsi_tdate1);
+					
+					key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
+					//将imsi累计到热点区域中,以15分钟为维度进行创建
+					redisserver.sadd(key, imsi);
 				}
 			}
 			
