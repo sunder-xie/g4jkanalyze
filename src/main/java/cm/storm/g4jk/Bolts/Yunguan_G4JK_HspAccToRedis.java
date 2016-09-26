@@ -83,7 +83,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				
 				for(String hotspot : hotspotlist){			
 					//标记hotspot捕获imsi的时间
-					key="mfg4_"+tdate+"_"+imsi+"_"+hotspot;
+					key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+imsi;
 					imsi_tdate1=redisserver.get(key);
 					if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
 					else if (imsi_tdate1.length()>=29){
@@ -95,11 +95,11 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					}
 					redisserver.set(key, imsi_tdate1);
 					
-					key="mfg4_"+tdate+"_hspset_"+hour+"_"+minute+"_"+hotspot;
+					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
 					redisserver.sadd(key, imsi);
 					
-					key="mfg4_"+tdate+"_hspflux_"+hour+"_"+minute+"_"+hotspot;
+					key="mfg4_"+tdate+"_hspflux_"+hotspot+"_"+hour+"_"+minute;
 					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
 					//将热点区域产生的流量值累计到热点区域对应的标签中
 					redisserver.incrbyfloat(key, g4flux);
