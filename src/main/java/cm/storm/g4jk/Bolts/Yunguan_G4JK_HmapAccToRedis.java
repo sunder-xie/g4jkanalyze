@@ -69,8 +69,8 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				else if(clk>=30&&clk<45)minute="30";
 				else if(clk>=45)minute="45";
 
-				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				//将imsi累计到对应的标签中
+				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				redisserver.sadd(key, imsi);
 				
 				key="mfg4_"+tdate+"_hmflux_"+hour+"_"+minute+"_"+tcsll;

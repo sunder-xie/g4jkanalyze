@@ -152,6 +152,23 @@ public class RedisServer {
 	}
 	
 	/**
+	 * 判断value值是否存在，不存在则添加，存在则不再设置
+	 * @param key
+	 * @param value 1表示key被成功设置，0表示没有被设置【key已经存在】，-1出错
+	 * @return 
+	 */
+	public long setnx(String key, String value){
+		long reply=0;
+		try{
+			reply=jedisCluster.setnx(key, value);
+		}catch(Exception e){
+			logger.error("Jediscluster opt setnx error: ", e);
+			return -1;
+		}
+		return reply;
+	}
+	
+	/**
 	 * 返回value值
 	 * @param key
 	 * @return
