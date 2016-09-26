@@ -297,15 +297,14 @@ public class RedisServer {
 	 * @param value
 	 */
 	public long sadd(String key, String value){
-		return jedisCluster.sadd(key,value);
-//		long res=0;
-//		try{
-//			res=jedisCluster.sadd(key,value);
-//		}catch(Exception e){
-//			logger.error("Jediscluster opt sadd error: ", e);
-//			return -1;
-//		}
-//		return res;
+		long res=0;
+		try{
+			res=jedisCluster.sadd(key,value);
+		}catch(Exception e){
+			logger.error("Jediscluster opt sadd error: ", e);
+			return -1;
+		}
+		return res;
 	}
 	
 	/**
