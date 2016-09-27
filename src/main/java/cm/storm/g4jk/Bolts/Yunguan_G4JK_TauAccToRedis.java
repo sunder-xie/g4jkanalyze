@@ -68,11 +68,12 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 			//查询维表获取标签
 			tcsll=redisserver.get(key);
 
+			hour=tdate.substring(11,13);
+			minute=tdate.substring(14,16);
+			
 			//热点区域人流补充
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
-				hour=tdate.substring(11,13);
-				minute=tdate.substring(14,16);
 				imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
 				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 				tdate=tdate.substring(0,10);
