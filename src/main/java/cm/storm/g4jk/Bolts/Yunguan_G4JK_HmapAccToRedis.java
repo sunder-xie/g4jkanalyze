@@ -73,9 +73,9 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				redisserver.sadd(key, imsi);
 				
+				//将标签产生的流量值累计到对应的标签中
 				key="mfg4_"+tdate+"_hmflux_"+hour+"_"+minute+"_"+tcsll;
 				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-				//将标签产生的流量值累计到对应的标签中
 				redisserver.incrbyfloat(key, g4flux);
 			}
 		}
