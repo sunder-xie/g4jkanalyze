@@ -111,7 +111,7 @@ public class Yunguan_G4JK_Topology {
   		//conf.put("wordsFile", args[0]);
   		conf.setDebug(false);
   		conf.put(Config.TOPOLOGY_ACKER_EXECUTORS,0);//防止出现大量重传的最后手段，其余处理效率问题需要通过调整代码，添加并行数量来提升效率
-  		//conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 60); //将对应的延迟时间延长，防止大量fail出现，造成大量元组的重发送
+  		conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, 300); //将对应的延迟时间延长，防止大量fail出现，造成大量元组的重发送
   		//conf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
   		
   		// 执行 Topology
