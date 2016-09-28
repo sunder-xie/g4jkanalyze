@@ -18,7 +18,7 @@ public class ResourcesConfig {
 	public final static boolean TEST_ON_BORROW = true;					//在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的；
 	
 	public final static int CLUSTER_TIMEOUT=50*1000;						//获取集群信息的超时时间
-	public final static int CLUSTER_MAX_REDIRECTIONS=10; 			//获取重定向的次数
+	public final static int CLUSTER_MAX_REDIRECTIONS=5; 			//获取重定向的次数
 	
 	public final static String REDIS_SERVER_IP="10.245.254.56";		//redis数据库IP地址
 	public final static String REDIS_SERVER_PORT="7001";				//redis数据库端口
