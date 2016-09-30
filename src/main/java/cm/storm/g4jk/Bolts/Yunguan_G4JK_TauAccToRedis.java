@@ -62,7 +62,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hsp_"+tac+"_"+ci;
 			//查询维表获取标签
-			hotspotlist=redisserver.sscan(key,null);
+			hotspotlist=redisserver.smembers(key);
 			
 			key="ref_hpm_"+tac+"_"+ci;
 			//查询维表获取标签
