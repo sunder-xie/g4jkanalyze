@@ -1,6 +1,5 @@
 package cm.storm.g4jk.Bolts;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -19,12 +18,12 @@ import cm.storm.g4jk.Commons.RedisServer;
  * @author chinamobile
  * 20161008
  */
-public class Yunguan_G4JK_TouchSjjsToRedis extends BaseRichBolt {
+public class Yunguan_G4JK_SJJS093ToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
 	private static final long serialVersionUID = -2349911902769092963L;
 
 	//记录作业日志到storm的logs目录下对应的topology日志中
-	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_TouchSjjsToRedis.class);
+	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJS093ToRedis.class);
 	
 	//元组发射搜集器
 	private OutputCollector collector;
@@ -51,11 +50,9 @@ public class Yunguan_G4JK_TouchSjjsToRedis extends BaseRichBolt {
 		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
 		String words=null;
 		String key=null;
-		String[] params=null;
 		String[] keywords=null;
 		String phnum=null;
 		int i=0;
-		int j=0;
 		
 		//业务app小类，上网业务小类id
 		//String appsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
@@ -66,33 +63,32 @@ public class Yunguan_G4JK_TouchSjjsToRedis extends BaseRichBolt {
 			if(phnum!=null&&phnum.length()>=11){
 				try {
 					url=java.net.URLDecoder.decode(url, "utf-8");
-					tdate=tdate.substring(0,10);//获取日期YYYY-MM-DD
+					tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
 					
 					//业务：分析用户是否搜索宽带关键字，对应触点id为SJJS093
 					key="ref_sjjsparams_SJJS093";
-					words=redisserver.get(key);//取值为--上网行为类型:购物#论坛;上网搜索热词:家宽#宽带#极光#电信;
-					if(words!=null&&words.contains(";")==true){
-						params=words.split(";");
-						if(params!=null&&params.length>0){
-
-							words=keywords[1]; 	//取值为--上网搜索热词:家宽#宽带#极光#电信
-							if(words.contains(":")==true){
-								keywords=words.split(":");
-								if(keywords!=null&&keywords.length>1){
-									words=keywords[1];	//取值为--家宽#宽带#极光#电信
-									keywords=words.split("#");
-									for(i=0;i<keywords.length;i++){
-										if(url.contains(keywords[i])==true){
-											key="mfg4_"+tdate+"_sjjs_"+phnum;
-											redisserver.sadd(key, "SJJS093");
-											break;
-										}
+					words=redisserver.get(key);	//取值为--上网行为类型:购物#论坛;上网搜索热词:家宽#宽带#极光#电信;
+					if(words!=null&&words.trim().length()>0){
+						i=words.indexOf("热词");	//针对热词挖掘行为特征
+						if(i>=0){
+							words=words.substring(i);//取值为--热词:家宽#宽带#极光#电信
+							i=words.indexOf(":");
+							if(i>=0){
+								words=words.substring(i+1);//取值为--家宽#宽带#极光#电信
+								keywords=words.split("#");
+								for(i=0;i<keywords.length;i++){
+									keywords[i]=keywords[i].trim();
+									if(keywords[i].equals("")==false&&url.contains(keywords[i])==true){
+										key="mfg4_"+tdate+"_sjjs_"+phnum;
+										redisserver.sadd(key, "SJJS093");
+										key="mfg4_"+tdate+"_UnTouchSet";
+										redisserver.sadd(key, phnum);
+										break;
 									}
 								}
 							}
 						}
 					}
-					
 				} catch (Exception ex) {
 					LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
 				}
@@ -108,10 +104,8 @@ public class Yunguan_G4JK_TouchSjjsToRedis extends BaseRichBolt {
 		url=null;
 		words=null;
 		key=null;
-		params=null;
 		keywords=null;
 		i=0;
-		j=0;
 		
 		collector.ack(tuple);
 	}
