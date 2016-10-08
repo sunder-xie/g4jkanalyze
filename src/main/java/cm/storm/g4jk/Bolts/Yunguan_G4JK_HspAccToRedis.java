@@ -50,8 +50,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		redisserver=RedisServer.getInstance();
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
-		String dlflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA);
-		String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
@@ -63,7 +61,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String imsi_tdate2="19000101000000";
 		int clk=0;
 		String key=null;
-		double g4flux=0;
+
 		if(tdate.length()>=23&&imsi.length()>=15){
 			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
 			key="ref_hsp_"+tac+"_"+ci;
@@ -98,11 +96,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
 					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
 					redisserver.sadd(key, imsi);
-					
-					//将热点区域产生的流量值累计到热点区域对应的标签中
-					key="mfg4_"+tdate+"_hspflux_"+hotspot+"_"+hour+"_"+minute;
-					g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-					redisserver.incrbyfloat(key, g4flux);
 				}
 			}
 		}
@@ -111,8 +104,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		redisserver=null;
 		tdate=null;
 		imsi=null;
-		dlflux=null;
-		ulflux=null;
 		tac=null;
 		ci=null;
 		hotspotlist=null;
@@ -123,7 +114,7 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
-		g4flux=0;
+
 		collector.ack(tuple);
 	}
 	
@@ -134,6 +125,19 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 	}
 
 }
+
+//将标签产生的流量值累计到对应的标签中，2016年10月8日，未使用暂停
+//将热点区域产生的流量值累计到热点区域对应的标签中
+//String dlflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA);
+//String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
+//double g4flux=0;
+//key="mfg4_"+tdate+"_hspflux_"+hotspot+"_"+hour+"_"+minute;
+//g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+//redisserver.incrbyfloat(key, g4flux);
+//dlflux=null;
+//ulflux=null;
+//g4flux=0;
+
 
 //元组存储结构
 //private Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=null;

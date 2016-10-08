@@ -46,8 +46,6 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		redisserver=RedisServer.getInstance();
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
-		String dlflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA);
-		String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String tcsll=null;
@@ -55,7 +53,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String minute=null;
 		int clk=0;
 		String key=null;
-		double g4flux=0;
+		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hpm_"+tac+"_"+ci;
 			tcsll=redisserver.get(key);
@@ -72,19 +70,12 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				//将imsi累计到对应的标签中
 				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				redisserver.sadd(key, imsi);
-				
-				//将标签产生的流量值累计到对应的标签中
-				key="mfg4_"+tdate+"_hmflux_"+hour+"_"+minute+"_"+tcsll;
-				g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
-				redisserver.incrbyfloat(key, g4flux);
 			}
 		}
 		//释放内存
 		redisserver=null;
 		tdate=null;
 		imsi=null;
-		dlflux=null;
-		ulflux=null;
 		tac=null;
 		ci=null;
 		tcsll=null;
@@ -92,7 +83,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		minute=null;
 		clk=0;
 		key=null;
-		g4flux=0;
+		
 		collector.ack(tuple);
 	}
 
@@ -103,6 +94,17 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 	}
 
 }
+
+//将标签产生的流量值累计到对应的标签中，2016年10月8日，未使用暂停
+//String dlflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA);
+//String ulflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA);
+//double g4flux=0;
+//key="mfg4_"+tdate+"_hmflux_"+hour+"_"+minute+"_"+tcsll;
+//g4flux=(Double.valueOf(dlflux)+Double.valueOf(ulflux))/1048576; //单位由Byte转为MB
+//redisserver.incrbyfloat(key, g4flux);
+//g4flux=0;
+//dlflux=null;
+//ulflux=null;
 
 //if(clk2>=0&&clk2<5)minute="05";
 //else if(clk2>=5&&clk2<10)minute="10";
