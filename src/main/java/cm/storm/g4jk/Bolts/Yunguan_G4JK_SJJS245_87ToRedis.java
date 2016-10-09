@@ -119,7 +119,7 @@ public class Yunguan_G4JK_SJJS245_87ToRedis extends BaseRichBolt {
 				if(keywords[0].contains("热词")){
 					words=keywords[1]+"#"; //取值为--苹果#iphone#
 					keywords=words.split("#");
-					for(j=0;i<keywords.length;j++){
+					for(j=0;j<keywords.length;j++){
 						keywords[j]=keywords[j].trim();
 						if(keywords[j].equals("")==false&&url.contains(keywords[j])==true){
 							return true;
