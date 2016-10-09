@@ -45,7 +45,7 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 	//从Spoutwf4g获取字段信息进行字段解析,发射
 	@Override
 	public void execute(Tuple tuple) {
-		String str_tuple=tuple.getString(0);		//获取tuple中的string组成的记录
+		String str_tuple=tuple.getString(0);		//获取tuple中的String组成的记录
 		if(StringUtils.isBlank(str_tuple)==false)
 		{
 			//字段获取开始
