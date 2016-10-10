@@ -68,7 +68,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 					
 				//业务：分析用户是为宽带触点潜在目标用户，对应触点id为SJJS093
 				key="ref_sjjsparams_SJJS093";
-				words=redisserver.get(key).trim();	//20161009取值为--上网行为类型:购物#论坛;上网搜索热词:家宽#宽带#极光#电信;
+				words=redisserver.get(key);	//20161009取值为--上网行为类型:购物#论坛;上网搜索热词:家宽#宽带#极光#电信;
 				flag=businessJudge(tuple, words, phnum);		
 				if(flag==true){								//需要触点，再将号码放入当天的触点集合中
 					key="mfg4_"+tdate+"_sjjs_"+phnum;

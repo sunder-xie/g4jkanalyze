@@ -57,7 +57,7 @@ public class Yunguan_G4JK_SJJS245_87ToRedis extends BaseRichBolt {
 					
 				//业务：分析用户是为苹果手机潜在客户，对应触点id为SJJS245
 				key="ref_sjjsparams_SJJS245";
-				words=redisserver.get(key).trim();	//20161009取值为--上网搜索热词:苹果#iphone;上网行为类型:购物;
+				words=redisserver.get(key);	//20161009取值为--上网搜索热词:苹果#iphone;上网行为类型:购物;
 				flag=businessJudge(tuple, words, phnum);		
 				if(flag==true){								//需要触点，再将号码放入当天的触点集合中
 					key="mfg4_"+tdate+"_sjjs_"+phnum;
