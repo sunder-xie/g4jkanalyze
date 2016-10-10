@@ -19,7 +19,7 @@ import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HmapAccToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HspAccToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS093_93ToRedis;
-import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS245_87ToRedis;
+//import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS245_87ToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_TauAccToRedis;
 
 
