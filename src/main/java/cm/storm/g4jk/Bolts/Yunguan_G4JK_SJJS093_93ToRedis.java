@@ -33,9 +33,6 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 	//获取redis连接
 	private RedisServer redisserver;
 	
-	//元组存储结构
-	private Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=null;
-	
 	//初始化bolt元组搜集器，用于存放需要发射元组
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -77,39 +74,6 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 					redisserver.sadd(key, phnum);
 				}
 			}
-			
-			//拼接字段
-			process_tuple(tuple);
-			//将元组继续往后台传输
-			if(g4jkbasic4gbean!=null)
-			{
-				//发射元组
-				collector.emit(new Values(
-					g4jkbasic4gbean.getStarttime(),
-					g4jkbasic4gbean.getImsi(),
-					g4jkbasic4gbean.getUrl(),
-					g4jkbasic4gbean.getImei(),
-					g4jkbasic4gbean.getTac(),
-					g4jkbasic4gbean.getCid(),
-					g4jkbasic4gbean.getEvent_type(),
-					g4jkbasic4gbean.getUl_data(),
-					g4jkbasic4gbean.getDl_data(),
-					g4jkbasic4gbean.getDelay(),
-					g4jkbasic4gbean.getUser_agent(),
-					g4jkbasic4gbean.getGmcc_bus_ind(),
-					g4jkbasic4gbean.getPhone_brand(),
-					g4jkbasic4gbean.getPhone_type(),
-					g4jkbasic4gbean.getApn(),
-					g4jkbasic4gbean.getPro_type(),
-					g4jkbasic4gbean.getUser_ip(),
-					g4jkbasic4gbean.getApp_server_ip(),
-					g4jkbasic4gbean.getUser_port(),
-					g4jkbasic4gbean.getApp_server_port(),
-					g4jkbasic4gbean.getApptype(),
-					g4jkbasic4gbean.getIntappid(),
-					g4jkbasic4gbean.getIntsid()
-				));
-			}
 		}
 		
 		//释放内存
@@ -119,8 +83,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		phnum=null;
 		words=null;
 		key=null;
-		g4jkbasic4gbean=null;
-		
+	
 		collector.ack(tuple);
 	}
 
@@ -176,90 +139,125 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		}
 		return flag;
 	}
-	
-	
-	/**
-	 * @param tuple:从string中获取数据
-	 */
-	public void process_tuple(Tuple tuple){
-		g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
-		//字段共23个，目前4个空值，19个可用
-		//字段1，获取日期并做格式转换
-		g4jkbasic4gbean.setStarttime(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME));
-		//字段2，获取IMSI
-		g4jkbasic4gbean.setImsi(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI));		
-		//字段3，获取url
-		g4jkbasic4gbean.setUrl(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL));		
-		//字段4，获取IMEI
-		g4jkbasic4gbean.setImei(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMEI));		
-		//字段5，获取基站TAC码，至少4位
-		g4jkbasic4gbean.setTac(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC));		
-		//字段6，获取基站小区码cell_id，或者填写数字，或者填写none
-		g4jkbasic4gbean.setCid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID));		
-		//字段7，事件类型
-		g4jkbasic4gbean.setEvent_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.EVENT_TYPE));
-		//字段8，上行流量
-		g4jkbasic4gbean.setUl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA));
-		//字段9，下行流量
-		g4jkbasic4gbean.setDl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA));		
-		//字段10，会话时长
-		g4jkbasic4gbean.setDelay(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DELAY));	
-		//字段11，终端型号
-		g4jkbasic4gbean.setUser_agent(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_AGENT));
-		//字段12，是否自有业务
-		g4jkbasic4gbean.setGmcc_bus_ind(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND));
-		//字段13，手机品牌
-		g4jkbasic4gbean.setPhone_brand(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_BRAND));
-		//字段14，手机型号
-		g4jkbasic4gbean.setPhone_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_TYPE));
-		//字段15，接入点
-		g4jkbasic4gbean.setApn(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APN));
-		//字段16，协议类型
-		g4jkbasic4gbean.setPro_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PRO_TYPE));
-		//字段17，业务源ip
-		g4jkbasic4gbean.setUser_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_IP));
-		//字段18，业务目标ip
-		g4jkbasic4gbean.setApp_server_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_IP));
-		//字段19，业务源端口
-		g4jkbasic4gbean.setUser_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_PORT));
-		//字段20，业务目的端口
-		g4jkbasic4gbean.setApp_server_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT));
-		//字段21，业务大类
-		g4jkbasic4gbean.setApptype(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE));
-		//字段22，app小类
-		g4jkbasic4gbean.setIntappid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID));
-		//字段23，业务小类
-		g4jkbasic4gbean.setIntsid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID));
-	}
 
 	//对发射出去的元组进行字段的声明
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
-		outputFieldsDeclarer.declare(new Fields(
-				Yunguan_G4JK_Basic4GFields.STARTTIME,
-				Yunguan_G4JK_Basic4GFields.IMSI,
-				Yunguan_G4JK_Basic4GFields.URL,
-				Yunguan_G4JK_Basic4GFields.IMEI,
-				Yunguan_G4JK_Basic4GFields.TAC,
-				Yunguan_G4JK_Basic4GFields.CID,
-				Yunguan_G4JK_Basic4GFields.EVENT_TYPE,
-				Yunguan_G4JK_Basic4GFields.UL_DATA,
-				Yunguan_G4JK_Basic4GFields.DL_DATA,
-				Yunguan_G4JK_Basic4GFields.DELAY,
-				Yunguan_G4JK_Basic4GFields.USER_AGENT,
-				Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND,
-				Yunguan_G4JK_Basic4GFields.PHONE_BRAND,
-				Yunguan_G4JK_Basic4GFields.PHONE_TYPE,
-				Yunguan_G4JK_Basic4GFields.APN,
-				Yunguan_G4JK_Basic4GFields.PRO_TYPE,
-				Yunguan_G4JK_Basic4GFields.USER_IP,
-				Yunguan_G4JK_Basic4GFields.APP_SERVER_IP,
-				Yunguan_G4JK_Basic4GFields.USER_PORT,
-				Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT,
-				Yunguan_G4JK_Basic4GFields.APPTYPE,
-				Yunguan_G4JK_Basic4GFields.INTAPPID,
-				Yunguan_G4JK_Basic4GFields.INTSID
-			));
 	}
 }
+
+
+//元组存储结构
+//private Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=null;
+////拼接字段
+//process_tuple(tuple);
+////将元组继续往后台传输
+//if(g4jkbasic4gbean!=null)
+//{
+//	//发射元组
+//	collector.emit(new Values(
+//		g4jkbasic4gbean.getStarttime(),
+//		g4jkbasic4gbean.getImsi(),
+//		g4jkbasic4gbean.getUrl(),
+//		g4jkbasic4gbean.getImei(),
+//		g4jkbasic4gbean.getTac(),
+//		g4jkbasic4gbean.getCid(),
+//		g4jkbasic4gbean.getEvent_type(),
+//		g4jkbasic4gbean.getUl_data(),
+//		g4jkbasic4gbean.getDl_data(),
+//		g4jkbasic4gbean.getDelay(),
+//		g4jkbasic4gbean.getUser_agent(),
+//		g4jkbasic4gbean.getGmcc_bus_ind(),
+//		g4jkbasic4gbean.getPhone_brand(),
+//		g4jkbasic4gbean.getPhone_type(),
+//		g4jkbasic4gbean.getApn(),
+//		g4jkbasic4gbean.getPro_type(),
+//		g4jkbasic4gbean.getUser_ip(),
+//		g4jkbasic4gbean.getApp_server_ip(),
+//		g4jkbasic4gbean.getUser_port(),
+//		g4jkbasic4gbean.getApp_server_port(),
+//		g4jkbasic4gbean.getApptype(),
+//		g4jkbasic4gbean.getIntappid(),
+//		g4jkbasic4gbean.getIntsid()
+//	));
+//}
+//g4jkbasic4gbean=null;	
+/**
+ * @param tuple:从string中获取数据
+ */
+//public void process_tuple(Tuple tuple){
+//	g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
+//	//字段共23个，目前4个空值，19个可用
+//	//字段1，获取日期并做格式转换
+//	g4jkbasic4gbean.setStarttime(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME));
+//	//字段2，获取IMSI
+//	g4jkbasic4gbean.setImsi(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI));		
+//	//字段3，获取url
+//	g4jkbasic4gbean.setUrl(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL));		
+//	//字段4，获取IMEI
+//	g4jkbasic4gbean.setImei(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMEI));		
+//	//字段5，获取基站TAC码，至少4位
+//	g4jkbasic4gbean.setTac(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC));		
+//	//字段6，获取基站小区码cell_id，或者填写数字，或者填写none
+//	g4jkbasic4gbean.setCid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID));		
+//	//字段7，事件类型
+//	g4jkbasic4gbean.setEvent_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.EVENT_TYPE));
+//	//字段8，上行流量
+//	g4jkbasic4gbean.setUl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.UL_DATA));
+//	//字段9，下行流量
+//	g4jkbasic4gbean.setDl_data(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA));		
+//	//字段10，会话时长
+//	g4jkbasic4gbean.setDelay(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DELAY));	
+//	//字段11，终端型号
+//	g4jkbasic4gbean.setUser_agent(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_AGENT));
+//	//字段12，是否自有业务
+//	g4jkbasic4gbean.setGmcc_bus_ind(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND));
+//	//字段13，手机品牌
+//	g4jkbasic4gbean.setPhone_brand(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_BRAND));
+//	//字段14，手机型号
+//	g4jkbasic4gbean.setPhone_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PHONE_TYPE));
+//	//字段15，接入点
+//	g4jkbasic4gbean.setApn(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APN));
+//	//字段16，协议类型
+//	g4jkbasic4gbean.setPro_type(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.PRO_TYPE));
+//	//字段17，业务源ip
+//	g4jkbasic4gbean.setUser_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_IP));
+//	//字段18，业务目标ip
+//	g4jkbasic4gbean.setApp_server_ip(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_IP));
+//	//字段19，业务源端口
+//	g4jkbasic4gbean.setUser_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.USER_PORT));
+//	//字段20，业务目的端口
+//	g4jkbasic4gbean.setApp_server_port(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT));
+//	//字段21，业务大类
+//	g4jkbasic4gbean.setApptype(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.APPTYPE));
+//	//字段22，app小类
+//	g4jkbasic4gbean.setIntappid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID));
+//	//字段23，业务小类
+//	g4jkbasic4gbean.setIntsid(tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID));
+//}
+//outputFieldsDeclarer.declare(new Fields(
+//		Yunguan_G4JK_Basic4GFields.STARTTIME,
+//		Yunguan_G4JK_Basic4GFields.IMSI,
+//		Yunguan_G4JK_Basic4GFields.URL,
+//		Yunguan_G4JK_Basic4GFields.IMEI,
+//		Yunguan_G4JK_Basic4GFields.TAC,
+//		Yunguan_G4JK_Basic4GFields.CID,
+//		Yunguan_G4JK_Basic4GFields.EVENT_TYPE,
+//		Yunguan_G4JK_Basic4GFields.UL_DATA,
+//		Yunguan_G4JK_Basic4GFields.DL_DATA,
+//		Yunguan_G4JK_Basic4GFields.DELAY,
+//		Yunguan_G4JK_Basic4GFields.USER_AGENT,
+//		Yunguan_G4JK_Basic4GFields.GMCC_BUS_IND,
+//		Yunguan_G4JK_Basic4GFields.PHONE_BRAND,
+//		Yunguan_G4JK_Basic4GFields.PHONE_TYPE,
+//		Yunguan_G4JK_Basic4GFields.APN,
+//		Yunguan_G4JK_Basic4GFields.PRO_TYPE,
+//		Yunguan_G4JK_Basic4GFields.USER_IP,
+//		Yunguan_G4JK_Basic4GFields.APP_SERVER_IP,
+//		Yunguan_G4JK_Basic4GFields.USER_PORT,
+//		Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT,
+//		Yunguan_G4JK_Basic4GFields.APPTYPE,
+//		Yunguan_G4JK_Basic4GFields.INTAPPID,
+//		Yunguan_G4JK_Basic4GFields.INTSID
+//	));

@@ -106,7 +106,7 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),4).shuffleGrouping("SplitterBoltwftau");
         Tpbuilder.setBolt("SJJS093Bolt93wfg4", new Yunguan_G4JK_SJJS093_93ToRedis(),9).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("SJJS245Bolt87wfg4", new Yunguan_G4JK_SJJS245_87ToRedis(),9).shuffleGrouping("SJJS093Bolt93wfg4");
+        //Tpbuilder.setBolt("SJJS245Bolt87wfg4", new Yunguan_G4JK_SJJS245_87ToRedis(),9).shuffleGrouping("SJJS093Bolt93wfg4");
         /*拓扑执行*/
         //Configuration
   		Config conf = new Config();
