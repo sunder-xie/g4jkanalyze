@@ -109,10 +109,19 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		//内存不足直接返回
 		if(params==null||params.length<1)return false;
 		
-		//对url做转换操作，如果解析失败，返回false
+		//对url做转换操作，通用转换做法假定就是 GBK 的编码：
+		//将其解码成字节码，然后再把字节码编码为GBK，
+		//如果转换回来后与没有转换之前是相等的。
+		//这样假设成立，也就是GBK编码。如果解析失败，则用utf8解码
 		try {
 			url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
-			url=java.net.URLDecoder.decode(url, "utf-8");
+			String fis= java.net.URLDecoder.decode(url, "gb2312");
+			String sec = new String(fis.getBytes("gb2312"), "gb2312");
+			if (fis.equals(sec)==true)
+				url=fis;
+	        else
+	        	url= java.net.URLDecoder.decode(url, "utf-8");
+//			url=java.net.URLDecoder.decode(url, "utf-8");
 		} catch (Exception ex) {
 //			LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
 			return false;
