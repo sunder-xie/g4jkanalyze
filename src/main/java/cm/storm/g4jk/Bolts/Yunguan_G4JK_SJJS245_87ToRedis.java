@@ -102,8 +102,17 @@ public class Yunguan_G4JK_SJJS245_87ToRedis extends BaseRichBolt {
 		
 		//对url做转换操作，如果解析失败，返回false
 		try {
+			String reg = "[^\u4e00-\u9fa5]";   //^匹配所有非中文字符, \u4e00, \u9fa5代表是两个unicode编码值，他们正好是Unicode表中的汉字的头和尾
 			url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
-			url=java.net.URLDecoder.decode(url, "utf-8");
+			String fis= java.net.URLDecoder.decode(url, "gb2312");
+			String sec = new String(fis.getBytes("gb2312"), "gb2312");
+			if (fis.equals(sec)==true)
+				url=fis;
+	        else
+	        	url= java.net.URLDecoder.decode(url, "utf-8");
+			
+			//提取中文
+			url = url.replaceAll(reg, "");
 		} catch (Exception ex) {
 //			LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
 			return false;

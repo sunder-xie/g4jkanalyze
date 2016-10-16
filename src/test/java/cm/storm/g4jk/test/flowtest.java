@@ -157,11 +157,13 @@ public class flowtest {
 //		System.out.println(g4jkbasic4gbean.getApptype());
 //		System.out.println(g4jkbasic4gbean.getIntappid());
 //		System.out.println(g4jkbasic4gbean.getIntsid());
-		
+
+		//测试自动去掉多余的0
 //		String testnum="000123";
 //		int testint=Integer.valueOf(testnum);
 //		System.out.println(String.valueOf(testint));
 		
+		//测试中文提取与统计长度
 		try {
 			String url="/025A84D404EA4E5834979B8A356DB4FA53340640/%5Bwww.qiqipu.com%5D%CB%DE%B5%D0.BD1024%B8%DF%C7%E5%D6%D0%D3%A2%CB%AB%D7%D6.mp4";
 			//测试url串1："/hm.gif?cc=0&ck=1&cl=24-bit&ds=720x1280&et=0&ja=0&ln=zh-CN&lo=0&lt=1452054716&nv=1&rnd=1052692563&si=cdf7b63861fb9e5aa11b9f3859918fac&st=3&su=http%3A%2F%2Fcommon.diditaxi.com.cn%2Fgeneral%2FwebEntry%3Fwx%3Dtrue%26code%3D01169203ae60e01df8320537bd1ecb5o%26state%3D123&v=1.1.22&lv=3&tt=%E7%B2%89%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%89";
@@ -179,6 +181,7 @@ public class flowtest {
 			String reg = "[^\u4e00-\u9fa5]";  
 			url = url.replaceAll(reg, "");
 			System.out.println(url);
+			System.out.println(url.length());
 		} catch (Exception ex) {
 //			LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
 		}
