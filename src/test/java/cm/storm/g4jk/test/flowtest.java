@@ -1,8 +1,10 @@
 package cm.storm.g4jk.test;
-
-import java.net.URLDecoder;
-
-import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
+//
+//import java.net.URLDecoder;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
+//
+//import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 //import cm.storm.g4jk.Commons.TimeFormatter;
@@ -161,9 +163,10 @@ public class flowtest {
 //		System.out.println(String.valueOf(testint));
 		
 		try {
-			String url="/17.gif?n_try=0&t_ani=554&t_liv=6379&t_load=-9508&etype=slide&page=detail&app=mediacy&browser=baidubox&phoneid=50206&tanet=3&taspeed=287&logid=11218310436162814452&os=&wd=%E5%B0%91%E5%A6%87%E8%81%8A%E5%BE%AE%E4%BF%A1%E5%8F%91%E6%AF%94%E7%9A%84%E5%9B%BE%E7%89%87&sid=2c3ec78c910929ab174688703d173c16754ac96a&sampid=50&spat=1-0-nj02-&group=";
+			String url="/025A84D404EA4E5834979B8A356DB4FA53340640/%5Bwww.qiqipu.com%5D%CB%DE%B5%D0.BD1024%B8%DF%C7%E5%D6%D0%D3%A2%CB%AB%D7%D6.mp4";
 			//测试url串1："/hm.gif?cc=0&ck=1&cl=24-bit&ds=720x1280&et=0&ja=0&ln=zh-CN&lo=0&lt=1452054716&nv=1&rnd=1052692563&si=cdf7b63861fb9e5aa11b9f3859918fac&st=3&su=http%3A%2F%2Fcommon.diditaxi.com.cn%2Fgeneral%2FwebEntry%3Fwx%3Dtrue%26code%3D01169203ae60e01df8320537bd1ecb5o%26state%3D123&v=1.1.22&lv=3&tt=%E7%B2%89%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%89";
 			//测试url串2："/025A84D404EA4E5834979B8A356DB4FA53340640/%5Bwww.qiqipu.com%5D%CB%DE%B5%D0.BD1024%B8%DF%C7%E5%D6%D0%D3%A2%CB%AB%D7%D6.mp4";
+			//测试url串3："/17.gif?n_try=0&t_ani=554&t_liv=6379&t_load=-9508&etype=slide&page=detail&app=mediacy&browser=baidubox&phoneid=50206&tanet=3&taspeed=287&logid=11218310436162814452&os=&wd=%E5%B0%91%E5%A6%87%E8%81%8A%E5%BE%AE%E4%BF%A1%E5%8F%91%E6%AF%94%E7%9A%84%E5%9B%BE%E7%89%87&sid=2c3ec78c910929ab174688703d173c16754ac96a&sampid=50&spat=1-0-nj02-&group="
 			//url=java.net.URLDecoder.decode(url, "utf-8");
 			String fis= java.net.URLDecoder.decode(url, "gb2312");
 			String sec = new String(fis.getBytes("gb2312"), "gb2312");
@@ -171,7 +174,11 @@ public class flowtest {
 				url=fis;
 	        else
 	        	url= java.net.URLDecoder.decode(url, "utf-8");
-			System.out.println(String.valueOf(url));
+			
+			//提取其中的中文
+			String reg = "[^\u4e00-\u9fa5]";  
+			url = url.replaceAll(reg, "");
+			System.out.println(url);
 		} catch (Exception ex) {
 //			LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
 		}

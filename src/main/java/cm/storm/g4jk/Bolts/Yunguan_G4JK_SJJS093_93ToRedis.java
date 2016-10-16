@@ -114,6 +114,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		//如果转换回来后与没有转换之前是相等的。
 		//这样假设成立，也就是GBK编码。如果解析失败，则用utf8解码
 		try {
+			String reg = "[^\u4e00-\u9fa5]";   //^匹配所有非中文字符, \u4e00, \u9fa5代表是两个unicode编码值，他们正好是Unicode表中的汉字的头和尾
 			url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
 			String fis= java.net.URLDecoder.decode(url, "gb2312");
 			String sec = new String(fis.getBytes("gb2312"), "gb2312");
@@ -121,9 +122,11 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 				url=fis;
 	        else
 	        	url= java.net.URLDecoder.decode(url, "utf-8");
-//			url=java.net.URLDecoder.decode(url, "utf-8");
+			
+			//提取中文
+			url = url.replaceAll(reg, "");
 		} catch (Exception ex) {
-//			LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
+			//LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
 			return false;
 		}
 		
