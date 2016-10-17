@@ -14,7 +14,7 @@ import org.apache.storm.topology.TopologyBuilder;
 
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_Basic4GSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
-import cm.storm.g4jk.Bolts.Yunguan_G4JK_ChineseWordsCountToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_ZhWordsCountToRedis;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicATDTSplitter;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicJKSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HmapAccToRedis;
@@ -107,7 +107,7 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),4).shuffleGrouping("SplitterBoltwftau");
         Tpbuilder.setBolt("SJJS093Bolt93wfg4", new Yunguan_G4JK_SJJS093_93ToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("ChCountBoltwfg4", new Yunguan_G4JK_ChineseWordsCountToRedis(),6).shuffleGrouping("SJJS093Bolt93wfg4");
+        Tpbuilder.setBolt("ZhCountBoltwfg4", new Yunguan_G4JK_ZhWordsCountToRedis(),6).shuffleGrouping("SJJS093Bolt93wfg4");
         /*拓扑执行*/
         //Configuration
   		Config conf = new Config();

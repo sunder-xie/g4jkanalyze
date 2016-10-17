@@ -14,12 +14,12 @@ import org.apdplat.word.segmentation.Word;
 
 import cm.storm.g4jk.Commons.RedisServer;
 
-public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
+public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
 	private static final long serialVersionUID = 156585005107889286L;
 	
 	//记录作业日志到storm的logs目录下对应的topology日志中
-	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_ChineseWordsCountToRedis.class);
+	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_ZhWordsCountToRedis.class);
 
 	//元组发射搜集器
 	private OutputCollector collector;
