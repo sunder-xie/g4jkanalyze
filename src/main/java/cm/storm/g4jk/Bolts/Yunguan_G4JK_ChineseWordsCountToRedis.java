@@ -59,7 +59,7 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 						for(int i=0;i<words.size();i++)
 						{
 							chwords=words.get(i).getText();
-							if(chwords!=null&&chwords.length()>=2)chwords=md5str16(chwords);
+							if(chwords!=null&&chwords.length()>=2)chwords=md5str32(chwords);
 							if(chwords!=null&&chwords.length()==16){
 								key="mfg4_"+tdate+"_ChineseSet";
 								redisserver.sadd(key, chwords);
@@ -70,7 +70,7 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 						}
 					}
 				}else{
-					chwords=md5str16(chwords);
+					chwords=md5str32(chwords);
 					if(chwords!=null&&chwords.length()==16){
 						key="mfg4_"+tdate+"_ChineseSet";
 						redisserver.sadd(key, chwords);
@@ -100,11 +100,11 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 	
 	//自定义方法区间
 	/**
-	 * 将明文的触点签名，转化为MD5 16位数字与字母组成的16进制编码
+	 * 将明文的触点签名，转化为MD5 32位数字与字母组成的16进制编码
 	 * @param sign 触点需求为account，timestamp，key组合成的签名
 	 * @return resSign 转化后的MD5 32位 16进制编码，小写
 	 */
-	private String md5str16(String chwd){
+	private String md5str32(String chwd){
 		String resSign=null;
 		try{
 			 // 生成一个MD5加密计算摘要
@@ -121,10 +121,8 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 		        if (i < 16)buf.append("0");
 		        buf.append(Integer.toHexString(i));
 	        }
-	        //最后获取16位的md5码
+	        //最后获取32位的md5码
 	        resSign = buf.toString();
-	        if(resSign!=null&&resSign.length()>=32)resSign = resSign.substring(8,24);
-	        else resSign=null;
 		}catch(Exception ex){
 			LOG.info(" Thread md5str16 crashes: "+ex.getMessage());
 			return null;
