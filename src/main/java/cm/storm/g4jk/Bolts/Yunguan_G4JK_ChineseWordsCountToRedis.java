@@ -67,7 +67,6 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 						chwords=null;
 					}
 				}
-
 			}
 		}catch(Exception ex){
 			//LOG.info(" Thread Yunguan_G4JK_ChineseWordsCountToRedis execute crashes: "+ex.getMessage());
