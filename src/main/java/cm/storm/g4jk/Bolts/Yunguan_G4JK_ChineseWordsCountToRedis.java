@@ -60,7 +60,7 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 						{
 							chwords=words.get(i).getText();
 							if(chwords!=null&&chwords.length()>=2)chwords=md5str32(chwords);
-							if(chwords!=null&&chwords.length()==16){
+							if(chwords!=null&&chwords.length()==32){
 								key="mfg4_"+tdate+"_ChineseSet";
 								redisserver.sadd(key, chwords);
 								key="mfg4_"+tdate+"_Zh_"+chwords;
@@ -71,7 +71,7 @@ public class Yunguan_G4JK_ChineseWordsCountToRedis extends BaseRichBolt {
 					}
 				}else{
 					chwords=md5str32(chwords);
-					if(chwords!=null&&chwords.length()==16){
+					if(chwords!=null&&chwords.length()==32){
 						key="mfg4_"+tdate+"_ChineseSet";
 						redisserver.sadd(key, chwords);
 						key="mfg4_"+tdate+"_Zh_"+chwords;
