@@ -17,7 +17,7 @@ import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 每15分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
+ * 每15分钟统计热点区域的人流量(区别imsi)，同时统计当天app应用的热度信息
  * @author chinamobile
  * 20160907
  */
@@ -52,13 +52,15 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
-		//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+		String intappid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
 		Set<String> hotspotlist=null;
 		String hour=null;
 		String minute=null;
 		String imsi_catch_time=null;
 		String imsi_tdate1="19000101000000";
 		String imsi_tdate2="19000101000000";
+		String appdate=tdate;
+		String appvalue=null;
 		int clk=0;
 		String key=null;
 
@@ -98,6 +100,21 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					redisserver.sadd(key, imsi);
 				}
 			}
+			
+			//统计appid的使用集合，每个appid的使用热度
+			if(intappid!=null&&intappid.trim().equals("")==false&&intappid.trim().equals("none")==false){
+				appdate=appdate.substring(0,10);	//获取日期
+				key="ref_wtag_"+intappid;
+				appvalue=redisserver.get(key);
+				//应用的维表中存在翻译信息则进行数据累加
+				if(appvalue!=null&&appvalue.length()>0){
+					key="mfg4_"+appdate+"_AppidSet";
+					redisserver.sadd(key, intappid);
+					
+					key="mfg4_"+appdate+"_AppUse_"+intappid;
+					redisserver.incr(key); 	//累计当天的访问次数
+				}
+			}
 		}
 
 		//释放内存
@@ -114,7 +131,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
-
+		appdate=null;
+		appvalue=null;
 		collector.ack(tuple);
 	}
 	
