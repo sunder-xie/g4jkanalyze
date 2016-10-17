@@ -187,14 +187,18 @@ public class flowtest {
 			System.out.println(url);
 			List<Word> words = null;
 			if(url!=null&&url.length()>2){
-				//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
-				words=WordSegmenter.seg(url);
-				//2.对热词做md5转码，然后存入集合中，同时每个字符做计数
-				if(words!=null&&words.isEmpty()==false){
-					for(int i=0;i<words.size();i++)
-					{
-						System.out.println(words.get(i).getText());
+				if(url.length()>6){
+					//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
+					words=WordSegmenter.seg(url);
+					//2.对热词做md5转码，然后存入集合中，同时每个字符做计数
+					if(words!=null&&words.isEmpty()==false){
+						for(int i=0;i<words.size();i++)
+						{
+							System.out.println(words.get(i).getText());
+						}
 					}
+				}else{
+					System.out.println(url);
 				}
 
 			}
