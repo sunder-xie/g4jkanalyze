@@ -6,11 +6,17 @@ package cm.storm.g4jk.test;
 //
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apdplat.word.WordSegmenter;
+import org.apdplat.word.segmentation.Word;
+
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 //import cm.storm.g4jk.Commons.TimeFormatter;
 
 public class flowtest {
-
+	public static Logger logger=Logger.getLogger(flowtest.class);
 	public static void main(String[] args) {
 //		Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
 //		String tuple1=new String("2016/8/15 9:37:26.498	460003021211258		867620029196398	9313	31054593		1952	1645						CMNET.MNC000.MCC460.GPRS	1	169274806	3747870114	45534	80	0	24142	24142");
@@ -181,9 +187,22 @@ public class flowtest {
 			String reg = "[^\u4e00-\u9fa5]";  
 			url = url.replaceAll(reg, "");
 			System.out.println(url);
-			System.out.println(url.length());
+			List<Word> words = null;
+			if(url!=null&&url.length()>2){
+				//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
+				words=WordSegmenter.seg(url);
+				//2.对热词做md5转码，然后存入集合中，同时每个字符做计数
+				if(words!=null&&words.isEmpty()==false){
+					for(int i=0;i<words.size();i++)
+					{
+						System.out.println(words.get(i).getText());
+					}
+				}
+
+			}
+			//System.out.println(url.length());
 		} catch (Exception ex) {
-//			LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
+			logger.info("Yunguan_G4JKtest execute error: "+ex.getMessage());
 		}
 	}
 
