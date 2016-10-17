@@ -8,15 +8,13 @@ package cm.storm.g4jk.test;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apdplat.word.WordSegmenter;
 import org.apdplat.word.segmentation.Word;
 
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 //import cm.storm.g4jk.Commons.TimeFormatter;
 
-public class flowtest {
-	public static Logger logger=Logger.getLogger(flowtest.class);
+public class flowtest {	
 	public static void main(String[] args) {
 //		Yunguan_G4JK_Basic4GBean g4jkbasic4gbean=new Yunguan_G4JK_Basic4GBean();
 //		String tuple1=new String("2016/8/15 9:37:26.498	460003021211258		867620029196398	9313	31054593		1952	1645						CMNET.MNC000.MCC460.GPRS	1	169274806	3747870114	45534	80	0	24142	24142");
@@ -182,8 +180,8 @@ public class flowtest {
 				url=fis;
 	        else
 	        	url= java.net.URLDecoder.decode(url, "utf-8");
-			
-			//提取其中的中文
+
+			//提取其中的中文，分词，均测试通过
 			String reg = "[^\u4e00-\u9fa5]";  
 			url = url.replaceAll(reg, "");
 			System.out.println(url);
@@ -202,7 +200,7 @@ public class flowtest {
 			}
 			//System.out.println(url.length());
 		} catch (Exception ex) {
-			logger.info("Yunguan_G4JKtest execute error: "+ex.getMessage());
+			//logger.info("Yunguan_G4JKtest execute error: "+ex.getMessage());
 		}
 	}
 
