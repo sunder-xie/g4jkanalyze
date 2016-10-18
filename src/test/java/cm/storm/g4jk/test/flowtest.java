@@ -8,6 +8,7 @@ package cm.storm.g4jk.test;
 
 import java.util.List;
 
+import org.apache.storm.shade.org.apache.commons.codec.binary.Base64;
 import org.apdplat.word.WordSegmenter;
 import org.apdplat.word.segmentation.Word;
 
@@ -169,7 +170,7 @@ public class flowtest {
 		
 		//测试中文提取与统计长度
 		try {
-			String url="/hm.gif?cc=0&ck=1&cl=24-bit&ds=720x1280&et=0&ja=0&ln=zh-CN&lo=0&lt=1452054716&nv=1&rnd=1052692563&si=cdf7b63861fb9e5aa11b9f3859918fac&st=3&su=http%3A%2F%2Fcommon.diditaxi.com.cn%2Fgeneral%2FwebEntry%3Fwx%3Dtrue%26code%3D01169203ae60e01df8320537bd1ecb5o%26state%3D123&v=1.1.22&lv=3&tt=%E7%B2%89%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%89";
+			String url="法轮广东省大法";
 			//测试url串1："/hm.gif?cc=0&ck=1&cl=24-bit&ds=720x1280&et=0&ja=0&ln=zh-CN&lo=0&lt=1452054716&nv=1&rnd=1052692563&si=cdf7b63861fb9e5aa11b9f3859918fac&st=3&su=http%3A%2F%2Fcommon.diditaxi.com.cn%2Fgeneral%2FwebEntry%3Fwx%3Dtrue%26code%3D01169203ae60e01df8320537bd1ecb5o%26state%3D123&v=1.1.22&lv=3&tt=%E7%B2%89%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%89";
 			//测试url串2："/025A84D404EA4E5834979B8A356DB4FA53340640/%5Bwww.qiqipu.com%5D%CB%DE%B5%D0.BD1024%B8%DF%C7%E5%D6%D0%D3%A2%CB%AB%D7%D6.mp4";
 			//测试url串3："/17.gif?n_try=0&t_ani=554&t_liv=6379&t_load=-9508&etype=slide&page=detail&app=mediacy&browser=baidubox&phoneid=50206&tanet=3&taspeed=287&logid=11218310436162814452&os=&wd=%E5%B0%91%E5%A6%87%E8%81%8A%E5%BE%AE%E4%BF%A1%E5%8F%91%E6%AF%94%E7%9A%84%E5%9B%BE%E7%89%87&sid=2c3ec78c910929ab174688703d173c16754ac96a&sampid=50&spat=1-0-nj02-&group="
@@ -188,7 +189,7 @@ public class flowtest {
 			url = url.replaceAll(reg, "");
 			System.out.println(url);
 			List<Word> words = null;
-			if(url!=null&&url.length()>2){
+			if(url!=null&&url.length()>=2){
 				if(url.length()>6){
 					//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
 					words=WordSegmenter.seg(url);
@@ -197,17 +198,17 @@ public class flowtest {
 						for(int i=0;i<words.size();i++)
 						{
 							res=words.get(i).getText();
-							res=flowtest.Base32Encode(res);
+							res=Base64.encodeBase64URLSafeString(res.getBytes("UTF-8"));
 							System.out.println(res);
-							res=flowtest.Base32Decode(res);
+							res=new String(Base64.decodeBase64(res),"UTF-8");
 							System.out.println(res);
 						}
 					}
 				}else{
 					res=url;
-					res=flowtest.Base32Encode(res);
+					res=Base64.encodeBase64URLSafeString(res.getBytes("UTF-8"));
 					System.out.println(res);
-					res=flowtest.Base32Decode(res);
+					res=new String(Base64.decodeBase64(res),"UTF-8");
 					System.out.println(res);
 				}
 			}
@@ -217,93 +218,93 @@ public class flowtest {
 		}
 	}
 	
-	private static final String base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-	
-	public static String Base32Encode(String chwd){
-		String res=null;
-		try{
-	        byte bytes[] = chwd.getBytes();//获取中文转成的bytes
-	        int i = 0, index = 0, digit = 0;  
-	        int currByte, nextByte;  
-	        StringBuffer base32 = new StringBuffer((bytes.length + 7) * 8 / 5);  
-	        while (i < bytes.length) {  
-	            currByte = (bytes[i] >= 0) ? bytes[i] : (bytes[i] + 256); // unsign  
-	            /* Is the current digit going to span a byte boundary? */  
-	            if (index > 3) {  
-	                if ((i + 1) < bytes.length) {  
-	                    nextByte = (bytes[i + 1] >= 0) ? bytes[i + 1]  
-	                            : (bytes[i + 1] + 256);  
-	                } else {  
-	                    nextByte = 0;  
-	                }  
-	                digit = currByte & (0xFF >> index);  
-	                index = (index + 5) % 8;  
-	                digit <<= index;  
-	                digit |= nextByte >> (8 - index);  
-	                i++;  
-	            } else {  
-	                digit = (currByte >> (8 - (index + 5))) & 0x1F;  
-	                index = (index + 5) % 8;  
-	                if (index == 0)  
-	                    i++;  
-	            }  
-	            base32.append(base32Chars.charAt(digit));  
-	        }  
-	        res=base32.toString();
-		}catch(Exception ex){
-			//LOG.info(" Thread md5str16 crashes: "+ex.getMessage());
-			return null;
-		}
-		return res;
-	}
-	
-	private static final int[] base32Lookup = { 0xFF, 0xFF, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, // '0', '1', '2', '3', '4', '5', '6', '7'  
-	  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // '8', '9', ':', ';', '<', '=',  '>', '?'  
-	  0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G'  
-	  0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, // 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'  
-	  0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, // 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W'  
-	  0x17, 0x18, 0x19, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 'X', 'Y', 'Z', '[', '', ']', '^', '_'  
-	  0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g'  
-	  0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, // 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'  
-	  0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, // 'p', 'q', 'r', 's', 't', 'u', 'v', 'w'  
-	  0x17, 0x18, 0x19, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF // 'x', 'y', 'z', '{', '|', '}', '~', 'DEL'  
-	}; 
-	
-	public static String Base32Decode(String base32) {  
-        int i, index, lookup, offset, digit;  
-        byte[] bytes = new byte[base32.length() * 5 / 8];  
-        for (i = 0, index = 0, offset = 0; i < base32.length(); i++) {  
-            lookup = base32.charAt(i) - '0';  
-            /* Skip chars outside the lookup table */  
-            if (lookup < 0 || lookup >= base32Lookup.length) {  
-                continue;  
-            }  
-            digit = base32Lookup[lookup];  
-            /* If this digit is not in the table, ignore it */  
-            if (digit == 0xFF) {  
-                continue;  
-            }  
-            if (index <= 3) {  
-                index = (index + 5) % 8;  
-                if (index == 0) {  
-                    bytes[offset] |= digit;  
-                    offset++;  
-                    if (offset >= bytes.length)  
-                        break;  
-                } else {  
-                    bytes[offset] |= digit << (8 - index);  
-                }  
-            } else {  
-                index = (index + 5) % 8;  
-                bytes[offset] |= (digit >>> index);  
-                offset++;  
-                if (offset >= bytes.length) {  
-                    break;  
-                }  
-                bytes[offset] |= digit << (8 - index);  
-            }  
-        }  
-        return new String(bytes);
-    } 
+//	private static final String base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+//	
+//	public static String Base32Encode(String chwd){
+//		String res=null;
+//		try{
+//	        byte bytes[] = chwd.getBytes();//获取中文转成的bytes
+//	        int i = 0, index = 0, digit = 0;  
+//	        int currByte, nextByte;  
+//	        StringBuffer base32 = new StringBuffer((bytes.length + 7) * 8 / 5);  
+//	        while (i < bytes.length) {  
+//	            currByte = (bytes[i] >= 0) ? bytes[i] : (bytes[i] + 256); // unsign  
+//	            /* Is the current digit going to span a byte boundary? */  
+//	            if (index > 3) {  
+//	                if ((i + 1) < bytes.length) {  
+//	                    nextByte = (bytes[i + 1] >= 0) ? bytes[i + 1]  
+//	                            : (bytes[i + 1] + 256);  
+//	                } else {  
+//	                    nextByte = 0;  
+//	                }  
+//	                digit = currByte & (0xFF >> index);  
+//	                index = (index + 5) % 8;  
+//	                digit <<= index;  
+//	                digit |= nextByte >> (8 - index);  
+//	                i++;  
+//	            } else {  
+//	                digit = (currByte >> (8 - (index + 5))) & 0x1F;  
+//	                index = (index + 5) % 8;  
+//	                if (index == 0)  
+//	                    i++;  
+//	            }  
+//	            base32.append(base32Chars.charAt(digit));  
+//	        }  
+//	        res=base32.toString();
+//		}catch(Exception ex){
+//			//LOG.info(" Thread md5str16 crashes: "+ex.getMessage());
+//			return null;
+//		}
+//		return res;
+//	}
+//	
+//	private static final int[] base32Lookup = { 0xFF, 0xFF, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, // '0', '1', '2', '3', '4', '5', '6', '7'  
+//	  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // '8', '9', ':', ';', '<', '=',  '>', '?'  
+//	  0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G'  
+//	  0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, // 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'  
+//	  0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, // 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W'  
+//	  0x17, 0x18, 0x19, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 'X', 'Y', 'Z', '[', '', ']', '^', '_'  
+//	  0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g'  
+//	  0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, // 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'  
+//	  0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, // 'p', 'q', 'r', 's', 't', 'u', 'v', 'w'  
+//	  0x17, 0x18, 0x19, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF // 'x', 'y', 'z', '{', '|', '}', '~', 'DEL'  
+//	}; 
+//	
+//	public static String Base32Decode(String base32) {  
+//        int i, index, lookup, offset, digit;  
+//        byte[] bytes = new byte[base32.length() * 5 / 8];  
+//        for (i = 0, index = 0, offset = 0; i < base32.length(); i++) {  
+//            lookup = base32.charAt(i) - '0';  
+//            /* Skip chars outside the lookup table */  
+//            if (lookup < 0 || lookup >= base32Lookup.length) {  
+//                continue;  
+//            }  
+//            digit = base32Lookup[lookup];  
+//            /* If this digit is not in the table, ignore it */  
+//            if (digit == 0xFF) {  
+//                continue;  
+//            }  
+//            if (index <= 3) {  
+//                index = (index + 5) % 8;  
+//                if (index == 0) {  
+//                    bytes[offset] |= digit;  
+//                    offset++;  
+//                    if (offset >= bytes.length)  
+//                        break;  
+//                } else {  
+//                    bytes[offset] |= digit << (8 - index);  
+//                }  
+//            } else {  
+//                index = (index + 5) % 8;  
+//                bytes[offset] |= (digit >>> index);  
+//                offset++;  
+//                if (offset >= bytes.length) {  
+//                    break;  
+//                }  
+//                bytes[offset] |= digit << (8 - index);  
+//            }  
+//        }  
+//        return new String(bytes);
+//    } 
 
 }

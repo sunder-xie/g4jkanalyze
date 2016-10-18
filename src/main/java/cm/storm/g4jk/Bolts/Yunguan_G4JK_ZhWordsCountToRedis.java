@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.storm.shade.org.apache.commons.codec.binary.Base64;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -58,7 +59,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 						for(int i=0;i<words.size();i++)
 						{
 							chwords=words.get(i).getText();
-							if(chwords!=null&&chwords.length()>=2)chwords=Base32Encode(chwords);
+							if(chwords!=null&&chwords.length()>=2)chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));//Base32Encode(chwords);
 							if(chwords!=null&&chwords.length()>0){
 								key="mfg4_"+tdate+"_ChineseSet";
 								redisserver.sadd(key, chwords);
@@ -69,7 +70,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 						}
 					}
 				}else{
-					chwords=Base32Encode(chwords);
+					chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
 					if(chwords!=null&&chwords.length()>0){
 						key="mfg4_"+tdate+"_ChineseSet";
 						redisserver.sadd(key, chwords);
@@ -95,48 +96,5 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
-	}
-	
-	//自定义方法区间
-	/**
-	 * 将明文的触点签名，转化为 Base 32位数字与字母组成的编码
-	 * @param sign 触点需求为account，timestamp，key组合成的签名
-	 * @return resSign 转化后的Base 32位 数字与字母组成的编码，小写
-	 */
-	private String Base32Encode(String chwd){
-		String res=null;
-		String base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";  //Base32加密算法
-		try{
-	        byte bytes[] = chwd.getBytes();//获取中文转成的bytes
-	        int i = 0, index = 0, digit = 0;  
-	        int currByte, nextByte;  
-	        StringBuffer base32 = new StringBuffer((bytes.length + 7) * 8 / 5);  
-	        while (i < bytes.length) {  
-	            currByte = (bytes[i] >= 0) ? bytes[i] : (bytes[i] + 256); // 无符号  
-	            /* 当前的字符数字是超过字节编码的边界？ */  
-	            if (index > 3) {  
-	                if ((i + 1) < bytes.length) {  
-	                    nextByte = (bytes[i + 1] >= 0)?bytes[i + 1]:(bytes[i + 1] + 256);  
-	                } else {  
-	                    nextByte = 0;  
-	                }  
-	                digit = currByte & (0xFF >> index);  
-	                index = (index + 5) % 8;  
-	                digit <<= index;  
-	                digit |= nextByte >> (8 - index);  
-	                i++;  
-	            } else {  
-	                digit = (currByte >> (8 - (index + 5))) & 0x1F;  
-	                index = (index + 5) % 8;  
-	                if (index == 0) i++;  
-	            }  
-	            base32.append(base32Chars.charAt(digit));  
-	        }  
-	        res=base32.toString();
-		}catch(Exception ex){
-			LOG.info(" Thread Base32Encode crashes: "+ex.getMessage());
-			return null;
-		}
-		return res;
 	}
 }

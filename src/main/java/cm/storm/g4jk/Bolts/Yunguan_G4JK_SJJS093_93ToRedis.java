@@ -175,7 +175,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		}
 		return flag;
 	}
-
+	
 	/**
 	 * 过滤 邪黄赌毒，以及一些对我司无意义的词，同时可减少数据量
 	 * @param str
@@ -195,6 +195,8 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		return false;
 	}
 }
+
+
 
 //业务app小类，上网业务小类id
 //String appsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
