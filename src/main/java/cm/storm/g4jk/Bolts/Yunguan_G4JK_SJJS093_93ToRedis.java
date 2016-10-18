@@ -62,7 +62,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		chinesewords=getChineseWordsFromUrl(url);
 		//查看过滤无效的中文字串
 		flag=fillterUnValidWords(chinesewords);
-		if(chinesewords.length()<6)flag=fillterUnValidWords(chinesewords);
+		if(chinesewords.length()<=6)flag=fillterUnValidWords(chinesewords);
 		if(chinesewords!=null&&chinesewords.length()>=2&&flag==false){
 			chinesewords=chinesewords.trim();
 			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
@@ -198,7 +198,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 	}
 	
 	/**
-	 * 对于长度小于6的中文，出现国家，本省地名直接过滤
+	 * 对于长度小于7的中文，出现国家，本省地名直接过滤
 	 * @param str
 	 * @return
 	 */
