@@ -59,17 +59,19 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 						for(int i=0;i<words.size();i++)
 						{
 							chwords=words.get(i).getText();
-							if(chwords!=null&&chwords.length()>=2)chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));//Base32Encode(chwords);
-							if(chwords!=null&&chwords.length()>0){
-								key="mfg4_"+tdate+"_ChineseSet";
-								redisserver.sadd(key, chwords);
-								key="mfg4_"+tdate+"_Zh_"+chwords;
-								redisserver.incr(key);
+							if(chwords!=null&&chwords.length()>=2){
+								chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));//Base32Encode(chwords);
+								if(chwords!=null&&chwords.length()>0){
+									key="mfg4_"+tdate+"_ChineseSet";
+									redisserver.sadd(key, chwords);
+									key="mfg4_"+tdate+"_Zh_"+chwords;
+									redisserver.incr(key);
+								}
+								chwords=null;
 							}
-							chwords=null;
 						}
 					}
-				}else{
+				}else if(chwords.length()>=2){
 					chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
 					if(chwords!=null&&chwords.length()>0){
 						key="mfg4_"+tdate+"_ChineseSet";

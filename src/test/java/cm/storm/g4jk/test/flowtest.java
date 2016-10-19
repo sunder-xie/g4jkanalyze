@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.storm.shade.org.apache.commons.codec.binary.Base64;
+import org.apache.storm.shade.org.apache.commons.codec.binary.Hex;
 import org.apdplat.word.WordSegmenter;
 import org.apdplat.word.segmentation.Word;
 
@@ -218,15 +219,16 @@ public class flowtest {
 //			//logger.info("Yunguan_G4JKtest execute error: "+ex.getMessage());
 //		}
 		//测试base64解码
-		String url="5rGV5aS05biC";
-		String res=null;
-		try {
-			res = new String(Base64.decodeBase64(url),"UTF-8");
-			System.out.println(res);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+//		String url="e7bd91";
+//		String res=null;
+//		
+//		try {
+//			System.out.println(new String(Hex.decodeHex(url.toCharArray()), "utf-8"));
+//			res = new String(Base64.decodeBase64(url),"UTF-8");
+//			System.out.println(res);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
 	}
 }
