@@ -62,7 +62,6 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		chinesewords=getChineseWordsFromUrl(url);
 		//查看过滤无效的中文字串
 		flag=fillterUnValidWords(chinesewords);
-		if(chinesewords!=null&&chinesewords.length()<=6&&flag==false)flag=fillterUnValidWords(chinesewords);
 		if(chinesewords!=null&&chinesewords.length()>=2&&flag==false){
 			chinesewords=chinesewords.trim();
 			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
@@ -83,7 +82,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 				}
 			}
 			//如果提取之后存在中文信息，并且符合一定规律将信息转发给bolt做中文热词分析
-			if(flag==false)collector.emit(new Values(tdate, chinesewords));
+			collector.emit(new Values(tdate, chinesewords));
 		}
 		
 		//释放内存
@@ -187,7 +186,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		if(str==null||str.trim().equals("")==true)return true;
 		str=str.trim();
 		String not="赌博,老千,法轮,全能神,全能教,邪教,冰毒,摇头丸,大麻,造反,色吧,鸡鸡,手淫,性吧,性福,性欲,狠狠插,红灯区,卖淫,淫乱,爆乳,约炮,色情,情色,精液,艳照,淫荡,勾引,爱爱,做爱,偷情,偷性,交配,撸管,色系,鸡巴,毒品,吸毒,叫鸡,赌钱,性骚扰,裸奔,裸照,轮奸,强奸,色图,淫娃,爆乳,妖姬,生殖器,插插,壮阳,性故事,不雅照,一夜情,造爱,草榴,咪咪爱,阴蒂,阴唇,色色,走光,少妇,熟妇,熟女,黄图,黄片,乱伦,阴茎,性交,裸体,射精,鸡婆,性侵,打飞机,巨乳,口交,口爆"
-				+ ",公司,分公司,电信,联通,运营商,移动,共产党,政府,地方,中央";
+				+ ",公司,分公司,电信,联通,运营商,移动,共产党,政府,地方,中央,中国,广东,广州,韶关,深圳,珠海,汕头,佛山,江门,湛江,茂名,肇庆,惠州,梅州,汕尾,河源,阳江,清远,东莞,中山,潮州,揭阳,云浮,潮阳,潮南,澄海,庵埠,普宁,揭东";
 		String[] tmp=not.split(",");
 		
 		for(int i=0;i<tmp.length;i++)
@@ -196,26 +195,6 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		}
 		return false;
 	}
-	
-	/**
-	 * 对于长度小于7的中文，出现国家，本省地名直接过滤
-	 * @param str
-	 * @return
-	 */
-	public boolean fillterNoValueWords(String str)
-	{
-		if(str==null||str.trim().equals("")==true)return true;
-		str=str.trim();
-		String not="中国,广东,广州,韶关,深圳,珠海,汕头,佛山,江门,湛江,茂名,肇庆,惠州,梅州,汕尾,河源,阳江,清远,东莞,中山,潮州,揭阳,云浮,潮阳,潮南,澄海,庵埠,普宁,揭东";
-		String[] tmp=not.split(",");
-		
-		for(int i=0;i<tmp.length;i++)
-		{
-			if(str.contains(tmp[i])==true)return true;
-		}
-		return false;
-	}
-	
 }
 
 
