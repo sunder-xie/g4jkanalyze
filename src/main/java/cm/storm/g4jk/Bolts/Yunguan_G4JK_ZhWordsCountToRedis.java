@@ -50,8 +50,8 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 			tdate=tuple.getStringByField("TupleDate");
 			chwords=tuple.getStringByField("ChineseInfo");
 			if(chwords!=null&&chwords.length()>2&&tdate!=null&&tdate.length()==10){
-				//如果获取的词的长度大于8，才进行拆词
-				if(chwords.length()>8){
+				//如果获取的词的长度大于6，才进行拆词
+				if(chwords.length()>6){
 					//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
 					words=WordSegmenter.seg(chwords);
 					//2.对热词做md5转码，然后存入集合中，同时每个字符做计数
