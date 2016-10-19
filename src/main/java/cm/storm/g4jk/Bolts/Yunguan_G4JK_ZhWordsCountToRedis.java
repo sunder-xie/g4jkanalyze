@@ -49,37 +49,25 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 		try{
 			tdate=tuple.getStringByField("TupleDate");
 			chwords=tuple.getStringByField("ChineseInfo");
-			if(chwords!=null&&chwords.length()>2&&tdate!=null&&tdate.length()==10){
-				//如果获取的词的长度大于8，才进行拆词
-				if(chwords.length()>8){
-					//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
-					words=WordSegmenter.seg(chwords);
-					//2.对热词做md5转码，然后存入集合中，同时每个字符做计数
-					if(words!=null&&words.isEmpty()==false){
-						for(int i=0;i<words.size();i++)
-						{
-							chwords=words.get(i).getText();
-							if(chwords!=null&&chwords.length()>=2){
-								chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));//Base32Encode(chwords);
-								if(chwords!=null&&chwords.length()>0){
-									key="mfg4_"+tdate+"_ChineseSet";
-									redisserver.sadd(key, chwords);
-									key="mfg4_"+tdate+"_Zh_"+chwords;
-									redisserver.incr(key);
-								}
-								chwords=null;
+			if(chwords!=null&&chwords.length()>=2&&tdate!=null&&tdate.length()==10){
+				//1.对中文做分词，移除停用词，采用words库，详细参考pom的配置
+				words=WordSegmenter.seg(chwords);
+				//2.对热词做BASE64URLSAFE转码，然后存入集合中，对每个热词分别做计数
+				if(words!=null&&words.size()>0){
+					for(int i=0;i<words.size();i++)
+					{
+						chwords=words.get(i).getText();
+						if(chwords!=null&&chwords.length()>=2){
+							chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
+							if(chwords!=null&&chwords.length()>0){
+								key="mfg4_"+tdate+"_ChineseSet";
+								redisserver.sadd(key, chwords);
+								key="mfg4_"+tdate+"_Zh_"+chwords;
+								redisserver.incr(key);
 							}
+							chwords=null;
 						}
 					}
-				}else if(chwords.length()>=2){
-					chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
-					if(chwords!=null&&chwords.length()>0){
-						key="mfg4_"+tdate+"_ChineseSet";
-						redisserver.sadd(key, chwords);
-						key="mfg4_"+tdate+"_Zh_"+chwords;
-						redisserver.incr(key);
-					}
-					chwords=null;
 				}
 			}
 		}catch(Exception ex){
@@ -100,3 +88,16 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
 	}
 }
+
+//如果获取的词的长度6个字以内，不进行拆词
+//if(chwords.length()<=6){
+//	chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
+//	if(chwords!=null&&chwords.length()>0){
+//		key="mfg4_"+tdate+"_ChineseSet";
+//		redisserver.sadd(key, chwords);
+//		key="mfg4_"+tdate+"_Zh_"+chwords;
+//		redisserver.incr(key);
+//	}
+//	chwords=null;
+//}else{//对于超长的字符串，才进行拆词
+
