@@ -6,13 +6,13 @@ package cm.storm.g4jk.test;
 //
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
-import org.apache.storm.shade.org.apache.commons.codec.binary.Base64;
-import org.apache.storm.shade.org.apache.commons.codec.binary.Hex;
-import org.apdplat.word.WordSegmenter;
-import org.apdplat.word.segmentation.Word;
+//import java.io.UnsupportedEncodingException;
+//import java.util.List;
+//
+//import org.apache.storm.shade.org.apache.commons.codec.binary.Base64;
+//import org.apache.storm.shade.org.apache.commons.codec.binary.Hex;
+//import org.apdplat.word.WordSegmenter;
+//import org.apdplat.word.segmentation.Word;
 
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 //import cm.storm.g4jk.Commons.TimeFormatter;
