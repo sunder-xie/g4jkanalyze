@@ -106,8 +106,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				appdate=appdate.substring(0,10);	//获取日期
 				key="ref_wtag_"+intappid;
 				appvalue=redisserver.get(key);
-				//应用的维表中存在翻译信息则进行数据累加
-				if(appvalue!=null&&appvalue.length()>0){
+				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
+				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
 					key="mfg4_"+appdate+"_AppidSet";
 					redisserver.sadd(key, intappid);
 					

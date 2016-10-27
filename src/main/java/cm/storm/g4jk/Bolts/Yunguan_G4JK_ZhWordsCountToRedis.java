@@ -15,6 +15,12 @@ import org.apdplat.word.segmentation.Word;
 
 import cm.storm.g4jk.Commons.RedisServer;
 
+/**
+ * 对url中出现的中文进行拆词，统计热搜次数，元组来源于SJJS093这个bolt
+ * 这是用户网络热搜的基础
+ * @author chinamobile
+ *
+ */
 public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
 	private static final long serialVersionUID = 156585005107889286L;
