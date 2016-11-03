@@ -171,7 +171,7 @@ public class flowtest {
 		
 		//测试中文提取与统计长度
 		try {
-			String[] urllist={"九一八事变","许学研","微微一笑很倾城","你的名字我的姓氏","汕头牛肉丸"};
+			String[] urllist={"百度翻译","百度云盘","微微一笑很倾城","你的名字我的姓氏","百度云"};
 			//测试url串1："/hm.gif?cc=0&ck=1&cl=24-bit&ds=720x1280&et=0&ja=0&ln=zh-CN&lo=0&lt=1452054716&nv=1&rnd=1052692563&si=cdf7b63861fb9e5aa11b9f3859918fac&st=3&su=http%3A%2F%2Fcommon.diditaxi.com.cn%2Fgeneral%2FwebEntry%3Fwx%3Dtrue%26code%3D01169203ae60e01df8320537bd1ecb5o%26state%3D123&v=1.1.22&lv=3&tt=%E7%B2%89%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%89";
 			//测试url串2："/025A84D404EA4E5834979B8A356DB4FA53340640/%5Bwww.qiqipu.com%5D%CB%DE%B5%D0.BD1024%B8%DF%C7%E5%D6%D0%D3%A2%CB%AB%D7%D6.mp4";
 			//测试url串3："/17.gif?n_try=0&t_ani=554&t_liv=6379&t_load=-9508&etype=slide&page=detail&app=mediacy&browser=baidubox&phoneid=50206&tanet=3&taspeed=287&logid=11218310436162814452&os=&wd=%E5%B0%91%E5%A6%87%E8%81%8A%E5%BE%AE%E4%BF%A1%E5%8F%91%E6%AF%94%E7%9A%84%E5%9B%BE%E7%89%87&sid=2c3ec78c910929ab174688703d173c16754ac96a&sampid=50&spat=1-0-nj02-&group="
@@ -218,55 +218,7 @@ public class flowtest {
 		//测试base64解码
 //		String[] url=new String[]{
 //				"5omL5py6"
-//				,"6ZiF6K-7"
-//				,"55S35a2p"
-//				,"5b6S5omL"
-//				,"5YWt5ZCI5b2p"
-//				,"5aWH6JGp"
-//				,"6LWw57qi"
-//				,"5YiX6KGo"
-//				,"5aWz5a2p"
-//				,"5aSp5a6r"
-//				,"54Wn54mH"
-//				,"5o6l5L2P"
-//				,"56We6Iif"
-//				,"57-76aG1"
-//				,"5bCP6K-0"
-//				,"5YGH54mM"
-//				,"6buR6b6Z5rGf"
-//				,"6LWE6K6v"
-//				,"5Zu-54mH"
-//				,"5LiA54K5"
-//				,"5a6Y5ZGY"
-//				,"6LWE6K6v"
-//				,"5LiA54K5"
-//				,"5YWt5ZCI"
-//				,"5LiL6L29"
-//				,"6IOh5q2M"
-//				,"5Zyo57q_"
-//				,"5byA5aWW"
-//				,"6aG16Z2i"
-//				,"55m-5bqm572R55uf5o6o5bm_"
-//				,"5ryr55S7"
-//				,"5Y-M5paZ"
-//				,"5Y2V5puy"
-//				,"5pma5a60"
-//				,"6ICz5py6"
-//				,"5oWI5ZaE"
-//				,"6JOd54mZ"
-//				,"5pWF5LqL6ZSB5bGP"
-//				,"6L2755uI"
-//				,"5YWl6ICz"
-//				,"5pyA5paw56ug6IqC"
-//				,"5Y-w6aOO"
-//				,"55m-5bqm5Zyw5Zu-"
-//				,"5LmL5a62"
-//				,"5rOV5Zu9"
-//				,"6Iiq5ouN"
-//				,"5pyA5paw"
-//				,"5omL5py66ZiF6K-7"
-//				,"55u05pKt"
-//				,"5ZCM5Z-O"
+//			   ,"5ZCM5Z-O"
 //		};
 //		String res=null;
 //		

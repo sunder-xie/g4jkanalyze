@@ -53,6 +53,8 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String minute=null;
 		int clk=0;
 		String key=null;
+		String value=null;
+		long rt=0;
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hpm_"+tac+"_"+ci;
@@ -67,9 +69,16 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				else if(clk>=30&&clk<45)minute="30";
 				else if(clk>=45)minute="45";
 
-				//将imsi累计到对应的标签中
-				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
-				redisserver.sadd(key, imsi);
+				//将imsi累计到对应的标签中，空间换效率尝试20161031
+//				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
+//				redisserver.sadd(key, imsi);
+				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+				value=tcsll;
+				rt=redisserver.sadd(key,value);
+				if(rt>0){
+					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
+					redisserver.incr(key);
+				}
 			}
 		}
 		//释放内存
@@ -83,6 +92,8 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		minute=null;
 		clk=0;
 		key=null;
+		value=null;
+		rt=0;
 		
 		collector.ack(tuple);
 	}
