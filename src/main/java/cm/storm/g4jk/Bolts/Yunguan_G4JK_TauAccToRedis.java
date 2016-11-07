@@ -53,6 +53,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		String hour=null;
 		String minute=null;
 		String tcsll=null;
+		Set<String> custtag=null;
 		int clk=0;
 		String key=null;
 //		String value=null;
@@ -69,6 +70,10 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 			key="ref_hpm_"+tac+"_"+ci;
 			//查询维表获取标签
 			tcsll=redisserver.get(key);
+			
+			//统计标签对应的人数
+			key="ref_custtag_"+imsi;
+			custtag=redisserver.smembers(key);
 
 			hour=tdate.substring(11,13);
 			minute=tdate.substring(14,16);
@@ -125,6 +130,14 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 //					redisserver.incr(key);
 //				}
 			}
+			
+			//补充日人群标签人流
+			if(custtag!=null&&custtag.size()>0){
+				for(String cid:custtag){
+					key="mfg4_"+tdate+"_custtag_"+cid;
+					redisserver.sadd(key,imsi);
+				}
+			}
 		}
 		
 		//释放内存
@@ -138,6 +151,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		minute=null;
 		tcsll=null;
 		key=null;
+		custtag=null;
 //		value=null;
 //		rt=0;
 		imsi_catch_time=null;
