@@ -63,8 +63,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String appvalue=null;
 		int clk=0;
 		String key=null;
-		String value=null;
-		long rt=0;
+//		String value=null;
+//		long rt=0;
 
 		if(tdate.length()>=23&&imsi.length()>=15){
 			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
@@ -98,15 +98,15 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					redisserver.set(key, imsi_tdate1);
 					
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
-//					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
-//					redisserver.sadd(key, imsi);
-					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-					value=hotspot;
-					rt=redisserver.sadd(key,value);
-					if(rt>0){
-						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
-						redisserver.incr(key);
-					}
+					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
+					redisserver.sadd(key, imsi);
+//					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+//					value=hotspot;
+//					rt=redisserver.sadd(key,value);
+//					if(rt>0){
+//						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
+//						redisserver.incr(key);
+//					}
 				}
 			}
 			
@@ -137,8 +137,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		minute=null;
 		clk=0;
 		key=null;
-		value=null;
-		rt=0;
+//		value=null;
+//		rt=0;
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;

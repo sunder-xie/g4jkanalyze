@@ -1,6 +1,7 @@
 package cm.storm.g4jk.Bolts;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -13,7 +14,7 @@ import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 每15分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
+ * 每15分钟统计热点区域的人流量(区别imsi)，人群标签统计
  * @author chinamobile
  * 20160907
  */
@@ -49,35 +50,46 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String tcsll=null;
+		Set<String> custtag=null;
 		String hour=null;
 		String minute=null;
 		int clk=0;
 		String key=null;
-		String value=null;
-		long rt=0;
+//		String value=null;
+//		long rt=0;
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hpm_"+tac+"_"+ci;
 			tcsll=redisserver.get(key);
+			hour=tdate.substring(11,13);
+			minute=tdate.substring(14,16);
+			clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+			tdate=tdate.substring(0,10);
 			if(tcsll!=null&&tcsll.equals("nil")==false){
-				hour=tdate.substring(11,13);
-				minute=tdate.substring(14,16);
-				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
-				tdate=tdate.substring(0,10);
 				if(clk>=0&&clk<15)minute="00";
 				else if(clk>=15&&clk<30)minute="15";
 				else if(clk>=30&&clk<45)minute="30";
 				else if(clk>=45)minute="45";
 
+				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
+				redisserver.sadd(key, imsi);
 				//将imsi累计到对应的标签中，空间换效率尝试20161031
-//				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
-//				redisserver.sadd(key, imsi);
-				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-				value=tcsll;
-				rt=redisserver.sadd(key,value);
-				if(rt>0){
-					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
-					redisserver.incr(key);
+//				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+//				value=tcsll;
+//				rt=redisserver.sadd(key,value);
+//				if(rt>0){
+//					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
+//					redisserver.incr(key);
+//				}
+			}
+			
+			//统计标签对应的人数
+			key="ref_custtag_"+imsi;
+			custtag=redisserver.smembers(key);
+			if(custtag!=null&&custtag.size()>0){
+				for(String cid:custtag){
+					key="mfg4_"+tdate+"_custtag_"+cid;
+					redisserver.sadd(key,imsi);
 				}
 			}
 		}
@@ -92,8 +104,9 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		minute=null;
 		clk=0;
 		key=null;
-		value=null;
-		rt=0;
+		custtag=null;
+//		value=null;
+//		rt=0;
 		
 		collector.ack(tuple);
 	}

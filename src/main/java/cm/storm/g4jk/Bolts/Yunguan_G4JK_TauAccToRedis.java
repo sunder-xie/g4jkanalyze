@@ -55,8 +55,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		String tcsll=null;
 		int clk=0;
 		String key=null;
-		String value=null;
-		long rt=0;
+//		String value=null;
+//		long rt=0;
 		String imsi_catch_time=null;
 		String imsi_tdate1="19000101000000";
 		String imsi_tdate2="19000101000000";
@@ -98,15 +98,15 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					redisserver.set(key, imsi_tdate1);
 					
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
-//					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
-//					redisserver.sadd(key, imsi);
-					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-					value=hotspot;
-					rt=redisserver.sadd(key,value);
-					if(rt>0){
-						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
-						redisserver.incr(key);
-					}
+					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
+					redisserver.sadd(key, imsi);
+//					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+//					value=hotspot;
+//					rt=redisserver.sadd(key,value);
+//					if(rt>0){
+//						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
+//						redisserver.incr(key);
+//					}
 				}
 			}
 			
@@ -114,16 +114,16 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 			if(tcsll!=null&&tcsll.equals("nil")==false)
 			{
 				//将imsi累计到对应的标签中
-//				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
-//				redisserver.sadd(key, imsi);
+				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
+				redisserver.sadd(key, imsi);
 				//将imsi累计到对应的标签中，空间换效率尝试20161031
-				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-				value=tcsll;
-				rt=redisserver.sadd(key,value);
-				if(rt>0){
-					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
-					redisserver.incr(key);
-				}
+//				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+//				value=tcsll;
+//				rt=redisserver.sadd(key,value);
+//				if(rt>0){
+//					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
+//					redisserver.incr(key);
+//				}
 			}
 		}
 		
@@ -138,12 +138,13 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		minute=null;
 		tcsll=null;
 		key=null;
-		value=null;
+//		value=null;
+//		rt=0;
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
 		clk=0;
-		rt=0;
+
 		collector.ack(tuple);
 	}
 
