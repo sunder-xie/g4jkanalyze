@@ -89,8 +89,9 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 					//记录用户url中关注信息的明细记录
 					if(imsi.length()>=15&&tac.length()>0&&sdate.length()>=23&&value.length()>0)
 					{
-						sdate=sdate.substring(0, 19);
+						sdate=sdate.substring(0, 13);  //以小时为单位
 						sdate=sdate.replaceAll("[^0-9]","");
+						sdate+="0000";
 						key="mfg4_"+tdate+"_SrhDetail_"+imsi; //记录每个imsi当天的热搜记录信息
 						value=tac+"#"+value+"#"+intsid+"#"+host+"#"+sdate;
 						redisserver.sadd(key, value);
