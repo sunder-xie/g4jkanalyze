@@ -117,8 +117,8 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		//这样假设成立，也就是GBK编码。如果解析失败，则用utf8解码
 		try {
 			String reg = "[^\u4e00-\u9fa5]";   //^匹配所有非中文字符, \u4e00, \u9fa5代表是两个unicode编码值，他们正好是Unicode表中的汉字的头和尾
-			String fis= java.net.URLDecoder.decode(url, "gb2312");
-			String sec = new String(fis.getBytes("gb2312"), "gb2312");
+			String fis= java.net.URLDecoder.decode(url, "gbk");
+			String sec = new String(fis.getBytes("gbk"), "gbk");
 			if (fis.equals(sec)==true)
 				url=fis;
 	        else
