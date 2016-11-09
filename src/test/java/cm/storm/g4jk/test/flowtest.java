@@ -186,7 +186,7 @@ public class flowtest {
 			{
 				url=urllist[k];
 				//尝试解码3次，单次解码未必直接能够解析出中文
-				for(int i=0;i<5;i++)
+				for(int i=0;i<3;i++)
 				{
 					fis = java.net.URLDecoder.decode(url, "gb2312");
 					sec = new String(fis.getBytes("gb2312"), "gb2312");
@@ -240,6 +240,12 @@ public class flowtest {
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
+		
+		//测试日期中特殊字符的去除
+//		String sdate="2016-11-09 14:46:25.355";
+//		sdate=sdate.substring(0, 19); //去掉微秒
+//		sdate=sdate.replaceAll("[^0-9]","");
+//		System.out.println(sdate);
 		
 	}
 }

@@ -77,7 +77,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 
 			hour=tdate.substring(11,13);
 			minute=tdate.substring(14,16);
-			imsi_catch_time=tdate.substring(0,4)+tdate.substring(5,7)+tdate.substring(8,10)+hour+minute+tdate.substring(17,19);
+			imsi_catch_time=tdate.substring(0,19);
+			imsi_catch_time=imsi_catch_time.replaceAll("[^0-9]","");
 			clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
 			tdate=tdate.substring(0,10);
 			if(clk>=0&&clk<15)minute="00";
@@ -131,7 +132,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 //				}
 			}
 			
-			//补充日人群标签人流
+			//补充累计当天人群标签对应的人流量
 			if(custtag!=null&&custtag.size()>0){
 				for(String cid:custtag){
 					key="mfg4_"+tdate+"_custtag_"+cid;
