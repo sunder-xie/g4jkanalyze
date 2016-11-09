@@ -27,6 +27,7 @@ public class Yunguan_G4JK_Basic4GBean {
     private String apptype="none";									//业务大类
     private String intappid="none";									//app小类
     private String intsid="none";										//业务小类
+    private String host="none";										//域名-20161109网分数据新加入字段
 	public String getStarttime() {
 		return starttime;
 	}
@@ -164,6 +165,12 @@ public class Yunguan_G4JK_Basic4GBean {
 	}
 	public void setIntsid(String intsid) {
 		this.intsid = intsid;
+	}
+	public String getHost() {
+		return host;
+	}
+	public void setHost(String host) {
+		this.host = host;
 	}
     
 }

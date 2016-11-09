@@ -78,7 +78,8 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 					g4jkbasic4gbean.getApp_server_port(),
 					g4jkbasic4gbean.getApptype(),
 					g4jkbasic4gbean.getIntappid(),
-					g4jkbasic4gbean.getIntsid()
+					g4jkbasic4gbean.getIntsid(),
+					g4jkbasic4gbean.getHost()
 				));
 			}
 		}
@@ -100,7 +101,7 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 			return;
 		}
 		
-		//字段共23个，目前4个空值，19个可用
+		//字段共24个，目前4个空值，20个可用
 		//字段1，获取日期并做格式转换
 		if(fields_set.length>0){
 			attr_value=TimeFormatter.Tra_realdate2(fields_set[0]);
@@ -216,6 +217,11 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 		if(fields_set.length>22){
 			if(fields_set[22].length()>0)g4jkbasic4gbean.setIntsid(fields_set[22]);
 		}
+		
+		//字段24，域名
+		if(fields_set.length>23){
+			if(fields_set[23].length()>0)g4jkbasic4gbean.setHost(fields_set[23]);
+		}
 	}
 
 	//对发射出去的元组进行字段的声明
@@ -245,7 +251,8 @@ public class Yunguan_G4JK_Basic4GSplitter extends BaseRichBolt {
 			Yunguan_G4JK_Basic4GFields.APP_SERVER_PORT,
 			Yunguan_G4JK_Basic4GFields.APPTYPE,
 			Yunguan_G4JK_Basic4GFields.INTAPPID,
-			Yunguan_G4JK_Basic4GFields.INTSID
+			Yunguan_G4JK_Basic4GFields.INTSID,
+			Yunguan_G4JK_Basic4GFields.HOST
 		));
 	}
 

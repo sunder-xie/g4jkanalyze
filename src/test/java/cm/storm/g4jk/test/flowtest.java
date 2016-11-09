@@ -171,7 +171,8 @@ public class flowtest {
 		
 		//测试中文提取与统计长度
 		try {
-			String[] urllist={"http://so.m.jd.com/ware/search.action?sid=174d75695dc2171d4202573f538b2110&keyword=%E5%B1%B1%E5%9C%B0%E8%BD%A6+%E6%8A%98%E5%8F%A0&catelogyList="};
+			String[] urllist={"/log.gif?t=m.100000&m=MO-J2011-1&cul=http%3A%2F%2Fso.m.jd.com%2Fware%2Fsearch.action%3Fkeyword%3D%25E7%2594%25B5%25E8%25A7%2586%25E6%259C%25BA%26tag%3Dexpand_name%2C84057%3A%3A244&pin=-&uid=1213291685&sid=1213291685|1&ref=http%3A%2F%2Fso.m.jd.com%2Fware%2Fsearch.action%3Fsid%3D9faa8118c5a3663b67fd026cfda683ae%26keyword%3D%25E7%2594%25B5%25E8%25A7%2586%25E6%259C%25BA%26catelogyList%3D&v=je%3D0%24sc%3D32-bit%24sr%3D375x667%24ul%3Dzh-cn%24cs%3DUTF-8%24dt%3D%E4%BA%AC%E4%B8%9C%E5%95%86%E5%9F%8E%24hn%3Dso.m.jd.c"};
+			//{"http://so.m.jd.com/ware/search.action?sid=174d75695dc2171d4202573f538b2110&keyword=%E5%B1%B1%E5%9C%B0%E8%BD%A6+%E6%8A%98%E5%8F%A0&catelogyList="};
 			//{"https://s.m.taobao.com/h5?event_submit_do_new_search_auction=1&_input_charset=utf-8&topSearch=1&atype=b&searchfrom=1&action=home%3Aredirect_app_action&from=1&sst=1&n=20&buying=buyitnow&q=%E5%B1%B1%E5%9C%B0%E8%BD%A6"};
 			//测试url串1："/hm.gif?cc=0&ck=1&cl=24-bit&ds=720x1280&et=0&ja=0&ln=zh-CN&lo=0&lt=1452054716&nv=1&rnd=1052692563&si=cdf7b63861fb9e5aa11b9f3859918fac&st=3&su=http%3A%2F%2Fcommon.diditaxi.com.cn%2Fgeneral%2FwebEntry%3Fwx%3Dtrue%26code%3D01169203ae60e01df8320537bd1ecb5o%26state%3D123&v=1.1.22&lv=3&tt=%E7%B2%89%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%89";
 			//测试url串2："/025A84D404EA4E5834979B8A356DB4FA53340640/%5Bwww.qiqipu.com%5D%CB%DE%B5%D0.BD1024%B8%DF%C7%E5%D6%D0%D3%A2%CB%AB%D7%D6.mp4";
@@ -184,12 +185,17 @@ public class flowtest {
 			for(int k=0;k<urllist.length;k++)
 			{
 				url=urllist[k];
-				fis=java.net.URLDecoder.decode(url, "gbk");
-				sec=new String(fis.getBytes("gbk"), "gbk");
-				if (fis.equals(sec)==true)
-					url=fis;
-		        else
-		        	url= java.net.URLDecoder.decode(url, "utf-8");
+				//尝试解码3次，单次解码未必直接能够解析出中文
+				for(int i=0;i<5;i++)
+				{
+					fis = java.net.URLDecoder.decode(url, "gb2312");
+					sec = new String(fis.getBytes("gb2312"), "gb2312");
+					if (fis.equals(sec)==true)
+						url=fis;
+			        else
+			        	url= java.net.URLDecoder.decode(url, "utf-8");
+				}
+				
 				System.out.println(url);
 				//提取其中的中文，分词，编解码，均测试通过
 				String reg = "[^\u4e00-\u9fa5]";  

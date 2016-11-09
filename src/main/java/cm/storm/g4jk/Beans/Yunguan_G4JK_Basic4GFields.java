@@ -26,5 +26,6 @@ public class Yunguan_G4JK_Basic4GFields {
 		public static final String APP_SERVER_PORT="app_server_port";	//目标端口
 		public static final String APPTYPE="apptype";								//业务大类，查看4G业务大类维表
 		public static final String INTAPPID="intappid";								//app小类，查看4G业务小类维表						 
-		public static final String INTSID="intsid";										//业务小类，查看4G业务小类维表									
+		public static final String INTSID="intsid";										//业务小类，查看4G业务小类维表
+		public static final String HOST="host";											//域名-20161109网分数据新加入字段
 }
