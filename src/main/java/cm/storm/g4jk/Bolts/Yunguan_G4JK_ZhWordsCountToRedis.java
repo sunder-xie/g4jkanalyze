@@ -87,7 +87,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 					if(value.length()>0)value=value.substring(1);
 					
 					//记录用户url中关注信息的明细记录
-					if(imsi.length()>=15&&tac.length()>0&&sdate.length()>=23)
+					if(imsi.length()>=15&&tac.length()>0&&sdate.length()>=23&&value.length()>0)
 					{
 						sdate=sdate.substring(0, 19);
 						sdate=sdate.replaceAll("[^0-9]","");
