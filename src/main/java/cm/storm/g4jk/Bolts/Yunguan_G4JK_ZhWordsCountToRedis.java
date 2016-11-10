@@ -51,6 +51,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 		redisserver=RedisServer.getInstance();
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
+		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String chwords=tuple.getStringByField("ChineseInfo");
 		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
@@ -93,7 +94,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 						sdate=sdate.replaceAll("[^0-9]","");
 						sdate+="0000";
 						key="mfg4_"+tdate+"_SrhDetail_"+imsi; //记录每个imsi当天的热搜记录信息
-						value=tac+"#"+value+"#"+intsid+"#"+host+"#"+sdate;
+						value=tac+"#"+ci+"#"+value+"#"+intsid+"#"+host+"#"+sdate;
 						redisserver.sadd(key, value);
 					}
 				}
@@ -106,6 +107,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 		redisserver=null;
 		imsi=null;
 		tac=null;
+		ci=null;
 		chwords=null;
 		intsid=null;
 		host=null;

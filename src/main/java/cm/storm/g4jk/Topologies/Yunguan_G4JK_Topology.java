@@ -106,7 +106,7 @@ public class Yunguan_G4JK_Topology {
         //基站周边人数，流量累计，15分钟累计一次，将数据直接入库redis
         //统计TAU中的人流量信息补充，15分钟累计一次，将数据直接入库redis
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),4).shuffleGrouping("SplitterBoltwftau");
         Tpbuilder.setBolt("SJJS093Bolt93wfg4", new Yunguan_G4JK_SJJS093_93ToRedis(),9).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("SJJS208Bolt88wfg4", new Yunguan_G4JK_SJJS208_88ToRedis(),9).shuffleGrouping("SJJS093Bolt93wfg4");

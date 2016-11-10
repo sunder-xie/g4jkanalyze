@@ -49,6 +49,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		String tcsll=null;
 		Set<String> custtag=null;
 		String hour=null;
@@ -74,13 +75,21 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 				redisserver.sadd(key, imsi);
 				//将imsi累计到对应的标签中，空间换效率尝试20161031
-//				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-//				value=tcsll;
-//				rt=redisserver.sadd(key,value);
-//				if(rt>0){
+				//key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+				//value=tcsll;
+				//rt=redisserver.sadd(key,value);
+				//if(rt>0){
 //					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
 //					redisserver.incr(key);
-//				}
+				//}
+
+				//20161110临时处理代码段，新增累计当天的淘宝，京东，天猫每隔一小时的人数
+				if(intsid.endsWith("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
+				else if(intsid.endsWith("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
+				else if(intsid.endsWith("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
+				else if(intsid.endsWith("1733")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//唯品会
+				else if(intsid.endsWith("1593")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//苏宁易购
+				redisserver.sadd(key, imsi);
 			}
 			
 			//统计标签对应的人数
@@ -118,6 +127,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 	}
 
 }
+
 
 //将标签产生的流量值累计到对应的标签中，2016年10月8日，未使用暂停
 //String dlflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA);
