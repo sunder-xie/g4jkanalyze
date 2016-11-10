@@ -44,6 +44,7 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
+		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
 		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
@@ -62,13 +63,14 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 			sdate=tdate;
 			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
 			//如果提取之后存在中文信息，并且符合一定规律将信息转发给bolt做中文热词分析，有域名才进行分析，否则没有意义
-			collector.emit(new Values(imsi, tac, chinesewords, intsid, host, sdate));
+			collector.emit(new Values(imsi, tac, ci, chinesewords, intsid, host, sdate));
 		}
 		
 		//释放内存
 		tdate=null;
 		imsi=null;
 		tac=null;
+		ci=null;
 		url=null;
 		intsid=null;
 		host=null;
@@ -83,6 +85,7 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
 		outputFieldsDeclarer.declare(new Fields(Yunguan_G4JK_Basic4GFields.IMSI,
 				Yunguan_G4JK_Basic4GFields.TAC,
+				Yunguan_G4JK_Basic4GFields.CID,
 				"ChineseInfo",
 				Yunguan_G4JK_Basic4GFields.INTSID,
 				Yunguan_G4JK_Basic4GFields.HOST,
