@@ -87,8 +87,8 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				if(intsid.endsWith("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
 				else if(intsid.endsWith("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
 				else if(intsid.endsWith("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
-				else if(intsid.endsWith("1733")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//唯品会
-				else if(intsid.endsWith("1593")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//苏宁易购
+				else if(intsid.endsWith("1733")==true) key="mfg4_"+tdate+"_vip_"+tcsll+"_"+hour;		//唯品会
+				else if(intsid.endsWith("1593")==true) key="mfg4_"+tdate+"_snyg_"+tcsll+"_"+hour;	//苏宁易购
 				redisserver.sadd(key, imsi);
 			}
 			
