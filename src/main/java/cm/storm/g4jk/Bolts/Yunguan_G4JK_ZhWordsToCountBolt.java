@@ -42,13 +42,7 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 		//redis操作
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
-		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
-		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
-		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
-		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
-		String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
-		String sdate=null;
 		boolean flag=false;
 		//记录url中的中文字符串
 		String chinesewords=null;
@@ -57,25 +51,17 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 		chinesewords=getChineseWordsFromUrl(url);
 		//查看过滤无效的中文字串
 		flag=fillterUnValidWords(chinesewords);
-		if(flag==false&&host!=null&&chinesewords!=null
-		  &&host.equals("none")==false&&tdate.length()>=23&&chinesewords.length()>=2){
+		if(flag==false&&chinesewords!=null
+		  &&tdate.length()>=23&&chinesewords.length()>=2){
 			chinesewords=chinesewords.trim();
-			sdate=tdate;
-			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
 			//如果提取之后存在中文信息，并且符合一定规律将信息转发给bolt做中文热词分析，有域名才进行分析，否则没有意义
-			collector.emit(new Values(imsi, tac, ci, chinesewords, intsid, host, sdate));
+			collector.emit(new Values(tdate,chinesewords));
 		}
 		
 		//释放内存
 		tdate=null;
-		imsi=null;
-		tac=null;
-		ci=null;
 		url=null;
-		intsid=null;
-		host=null;
 		chinesewords=null;
-		sdate=null;
 		collector.ack(tuple);
 	}
 
@@ -84,12 +70,7 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
 		outputFieldsDeclarer.declare(new Fields(Yunguan_G4JK_Basic4GFields.IMSI,
-				Yunguan_G4JK_Basic4GFields.TAC,
-				Yunguan_G4JK_Basic4GFields.CID,
-				"ChineseInfo",
-				Yunguan_G4JK_Basic4GFields.INTSID,
-				Yunguan_G4JK_Basic4GFields.HOST,
-				Yunguan_G4JK_Basic4GFields.STARTTIME
+				"ChineseInfo"
 		));
 	}
 	
@@ -151,3 +132,26 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 		return false;
 	}
 }
+
+//String sdate=null;
+//sdate=tdate;
+//tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
+//sdate=null;
+//String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
+//String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
+//String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+//String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
+//imsi=null;
+//tac=null;
+//ci=null;
+//intsid=null;
+//host=null;
+//&&host!=null
+//imsi, tac, ci, intsid, host, 
+//host.equals("none")==false&&
+//Yunguan_G4JK_Basic4GFields.TAC,
+//Yunguan_G4JK_Basic4GFields.CID,
+//Yunguan_G4JK_Basic4GFields.INTSID,
+//Yunguan_G4JK_Basic4GFields.HOST,
+//Yunguan_G4JK_Basic4GFields.STARTTIME

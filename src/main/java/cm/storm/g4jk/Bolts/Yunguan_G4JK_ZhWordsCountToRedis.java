@@ -49,19 +49,12 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 		//redis操作
 		redisserver=RedisServer.getInstance();
-		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
-		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
-		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String chwords=tuple.getStringByField("ChineseInfo");
-		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
-		String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
-		List<Word> words = null;
-		String sdate=null;
+		List<Word> words = null;	
 		String key=null;
-		String value=null;
 		try{
-			sdate=tdate;
+			
 			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
 
 			if(chwords!=null&&chwords.length()>=2&&tdate!=null&&tdate.length()==10){
@@ -69,7 +62,6 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 				words=WordSegmenter.seg(chwords);
 				//2.对热词做BASE64URLSAFE转码，然后存入集合中，对每个热词分别做计数
 				if(words!=null&&words.size()>0){
-					value="";
 					for(int i=0;i<words.size();i++)
 					{
 						chwords=words.get(i).getText();
@@ -80,22 +72,9 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 								redisserver.sadd(key, chwords);
 								key="mfg4_"+tdate+"_Zh_"+chwords;
 								redisserver.incr(key);
-								value+=","+chwords;
 							}
 							chwords=null;
 						}
-					}
-					if(value.length()>0)value=value.substring(1);
-					
-					//记录用户url中关注信息的明细记录
-					if(imsi.length()>=15&&tac.length()>0&&sdate.length()>=23&&value.length()>0)
-					{
-						sdate=sdate.substring(0, 13);  //以小时为单位
-						sdate=sdate.replaceAll("[^0-9]","");
-						sdate+="0000";
-						key="mfg4_"+tdate+"_SrhDetail_"+imsi; //记录每个imsi当天的热搜记录信息
-						value=tac+"#"+ci+"#"+value+"#"+intsid+"#"+host+"#"+sdate;
-						redisserver.sadd(key, value);
 					}
 				}
 			}
@@ -105,17 +84,10 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 
 		//释放内存
 		redisserver=null;
-		imsi=null;
-		tac=null;
-		ci=null;
 		chwords=null;
-		intsid=null;
-		host=null;
 		tdate=null;
 		words = null;	
-		sdate=null;
 		key=null;
-		value=null;
 		collector.ack(tuple);
 	}
 
@@ -125,6 +97,37 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
 	}
 }
+
+
+//String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
+//String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
+//String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+//String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
+//imsi=null;
+//tac=null;
+//ci=null;
+//intsid=null;
+//host=null;
+//String sdate=null;
+//sdate=tdate;
+//String value=null;
+//value="";
+//value=null;
+//sdate=null;
+//value+=","+chwords;
+//if(value.length()>0)value=value.substring(1);
+//
+////记录用户url中关注信息的明细记录
+//if(imsi.length()>=15&&tac.length()>0&&sdate.length()>=23&&value.length()>0)
+//{
+//	sdate=sdate.substring(0, 13);  //以小时为单位
+//	sdate=sdate.replaceAll("[^0-9]","");
+//	sdate+="0000";
+//	key="mfg4_"+tdate+"_SrhDetail_"+imsi; //记录每个imsi当天的热搜记录信息
+//	value=tac+"#"+ci+"#"+value+"#"+intsid+"#"+host+"#"+sdate;
+//	redisserver.sadd(key, value);
+//}
 
 //如果获取的词的长度6个字以内，不进行拆词
 //if(chwords.length()<=6){

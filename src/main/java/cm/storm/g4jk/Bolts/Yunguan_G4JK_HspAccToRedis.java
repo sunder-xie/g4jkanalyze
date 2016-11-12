@@ -52,20 +52,16 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
-		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
-		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		Set<String> hotspotlist=null;
 		String hour=null;
 		String minute=null;
 		String imsi_catch_time=null;
 		String imsi_tdate1="19000101000000";
 		String imsi_tdate2="19000101000000";
-		String appdate=tdate;
-		String appvalue=null;
 		int clk=0;
 		String key=null;
-//		String value=null;
-//		long rt=0;
+		String value=null;
+		long rt=0;
 
 		if(tdate.length()>=23&&imsi.length()>=15){
 			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
@@ -100,35 +96,14 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					redisserver.set(key, imsi_tdate1);
 					
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
-					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
-					redisserver.sadd(key, imsi);
-//					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-//					value=hotspot;
-//					rt=redisserver.sadd(key,value);
-//					if(rt>0){
-//						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
-//						redisserver.incr(key);
-//					}
-				}
-			}
-			
-			//统计appid的使用集合，每个appid的使用热度，补充微信支付判断逻辑
-			if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
-				appdate=appdate.substring(0,10);	//获取日期
-				key="ref_wtag_"+intsid;
-				appvalue=redisserver.get(key);
-				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
-				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
-					key="mfg4_"+appdate+"_AppidSet";
-					redisserver.sadd(key, intsid);
-
-					key="mfg4_"+appdate+"_AppUse_"+intsid;
-					redisserver.incr(key); 	//累计当天的访问次数
-					
-					//微信支付判断逻辑,intappid为8943或者66,url中包含pay，则计入mfg4_YYYY-MM-DD_AppUse_3333，3333为自定义的维表数据 微信支付
-					if((intsid.equals("66")||intsid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
-						key="mfg4_"+tdate+"_AppUse_3333";
-						redisserver.incr(key); 	//累计当天微信支付次数
+//					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
+//					redisserver.sadd(key, imsi);
+					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
+					value=hotspot;
+					rt=redisserver.sadd(key,value);
+					if(rt>0){
+						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
+						redisserver.incr(key);
 					}
 				}
 			}
@@ -140,20 +115,17 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		imsi=null;
 		tac=null;
 		ci=null;
-		url=null;
-		intsid=null;
 		hotspotlist=null;
 		hour=null;
 		minute=null;
 		clk=0;		
 		key=null;
-//		value=null;
-//		rt=0;
+		value=null;
+		rt=0;
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
-		appdate=null;
-		appvalue=null;
+
 		collector.ack(tuple);
 	}
 	
