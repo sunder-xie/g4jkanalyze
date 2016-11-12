@@ -69,7 +69,7 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
-		outputFieldsDeclarer.declare(new Fields(Yunguan_G4JK_Basic4GFields.IMSI,
+		outputFieldsDeclarer.declare(new Fields(Yunguan_G4JK_Basic4GFields.STARTTIME,
 				"ChineseInfo"
 		));
 	}

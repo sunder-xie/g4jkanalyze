@@ -49,8 +49,8 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 		//redis操作
 		redisserver=RedisServer.getInstance();
-		String chwords=tuple.getStringByField("ChineseInfo");
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
+		String chwords=tuple.getStringByField("ChineseInfo");		
 		List<Word> words = null;	
 		String key=null;
 		try{
