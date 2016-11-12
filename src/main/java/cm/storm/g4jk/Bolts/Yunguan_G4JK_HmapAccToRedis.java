@@ -77,8 +77,8 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 //				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 //				redisserver.sadd(key, imsi);
 				//将imsi累计到对应的标签中，空间换效率尝试20161031
-				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-				value=tcsll;
+				key="mfg4_"+tdate+"_imsihot_"+imsi;
+				value=hour+"_"+minute+"_"+tcsll;
 				rt=redisserver.sadd(key,value);
 				if(rt>0){
 					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	

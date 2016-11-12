@@ -53,7 +53,6 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		String hour=null;
 		String minute=null;
 		String tcsll=null;
-		Set<String> custtag=null;
 		int clk=0;
 		String key=null;
 		String value=null;
@@ -70,10 +69,6 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 			key="ref_hpm_"+tac+"_"+ci;
 			//查询维表获取标签
 			tcsll=redisserver.get(key);
-			
-			//统计标签对应的人数
-			key="ref_custtag_"+imsi;
-			custtag=redisserver.smembers(key);
 
 			hour=tdate.substring(11,13);
 			minute=tdate.substring(14,16);
@@ -106,8 +101,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
 //					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
 //					redisserver.sadd(key, imsi);
-					key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-					value=hotspot;
+					key="mfg4_"+tdate+"_imsihot_"+imsi;
+					value=hour+"_"+minute+"_"+hotspot;
 					rt=redisserver.sadd(key,value);
 					if(rt>0){
 						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
@@ -123,20 +118,12 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 //				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
 //				redisserver.sadd(key, imsi);
 				//将imsi累计到对应的标签中，空间换效率尝试20161031
-				key="mfg4_"+tdate+"_imsihot_"+hour+"_"+minute+"_"+imsi;
-				value=tcsll;
+				key="mfg4_"+tdate+"_imsihot_"+imsi;
+				value=hour+"_"+minute+"_"+tcsll;
 				rt=redisserver.sadd(key,value);
 				if(rt>0){
 					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
 					redisserver.incr(key);
-				}
-			}
-			
-			//补充累计当天人群标签对应的人流量
-			if(custtag!=null&&custtag.size()>0){
-				for(String cid:custtag){
-					key="mfg4_"+tdate+"_custtag_"+cid;
-					redisserver.sadd(key,imsi);
 				}
 			}
 		}
@@ -152,9 +139,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		minute=null;
 		tcsll=null;
 		key=null;
-		custtag=null;
-//		value=null;
-//		rt=0;
+		value=null;
+		rt=0;
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
@@ -171,6 +157,19 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 
 }
 
+//统计标签对应的人数
+//Set<String> custtag=null;
+//custtag=null;
+//key="ref_custtag_"+imsi;
+//custtag=redisserver.smembers(key);
+
+//补充累计当天人群标签对应的人流量
+//if(custtag!=null&&custtag.size()>0){
+//	for(String cid:custtag){
+//		key="mfg4_"+tdate+"_custtag_"+cid;
+//		redisserver.sadd(key,imsi);
+//	}
+//}
 //String tag=null;
 //key="ref_tags_"+imsi;
 ////查询维表获取标签
