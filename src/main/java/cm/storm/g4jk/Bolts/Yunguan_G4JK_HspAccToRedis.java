@@ -98,9 +98,11 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					//将imsi累计到热点区域中,以15分钟为维度进行创建
 //					key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;
 //					redisserver.sadd(key, imsi);
-					key="mfg4_"+tdate+"_imsihot_"+imsi;
-					value=hour+"_"+minute+"_"+hotspot;
-					rt=redisserver.sadd(key,value);
+					if(imsi.equals("123456789012345")==false){
+						key="mfg4_"+tdate+"_imsihot_"+imsi;
+						value=hour+"_"+minute+"_"+hotspot;
+						rt=redisserver.sadd(key,value);
+					}else rt=1;
 					if(rt>0){
 						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
 						redisserver.incr(key);
