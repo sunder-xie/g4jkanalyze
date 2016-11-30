@@ -75,12 +75,12 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 				words=WordSegmenter.seg(chwords);
 				//2.对热词做BASE64URLSAFE转码，然后存入集合中，对每个热词分别做计数
 				if(words!=null&&words.size()>0){
-					userwords=",";
+					userwords="";
 					for(int i=0;i<words.size();i++)
 					{
 						chwords=words.get(i).getText();
 						if(chwords!=null&&chwords.length()>=2){
-							userwords+=chwords;
+							userwords+=","+chwords;
 							chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
 							if(chwords!=null&&chwords.length()>0){
 								key="mfg4_"+tdate+"_ChineseSet";

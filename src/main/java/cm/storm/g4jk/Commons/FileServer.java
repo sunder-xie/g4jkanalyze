@@ -45,12 +45,16 @@ public class FileServer {
         	String file_postfix=null;
         	String file_name=null;
         	File stormfile=null;
-        	RandomAccessFile out=null;
+        	RandomAccessFile randomFile =null;
         	FileChannel fcout=null;
         	FileLock flout=null;
         	StringBuffer sb=null;
+        	// 文件长度，字节数     
+            long fileLength = 0;          
+           
         	//每个小时，定义最多10个txt文件提供并发写入，如果无法全部锁定就按照写入失败处理
     		for(int i=0;i<=9;i++){
+    			fileLength = 0; 
         		flag=false;
         		file_postfix=tdate+String.valueOf(i)+".txt";
         		file_name=file_prefix+file_postfix;
@@ -59,11 +63,11 @@ public class FileServer {
                 	stormfile.createNewFile();
                 
                 //尝试对文件加锁  
-            	out = new RandomAccessFile(stormfile, "rw");  
-            	fcout=out.getChannel();
+                randomFile  = new RandomAccessFile(stormfile, "rw");  
+            	fcout=randomFile .getChannel();
 
             	try {  
-                    flout = fcout.tryLock();  
+                    flout = fcout.tryLock();
                     flag=true; 
 				} catch (Exception e) {
 					flag=false;
@@ -71,20 +75,23 @@ public class FileServer {
             	if(flag==true)break;
         	}
     		if(flag==true){
-    			sb=new StringBuffer();  
-                sb.append(contentline);
-                out.write(sb.toString().getBytes("utf-8"));
+    			fileLength=randomFile.length();
+                randomFile.seek(fileLength);
+    			randomFile.writeBytes(contentline);
                 flout.release();  
                 fcout.close();  
-                out.close();
+                randomFile.close();
     		} 
-            out=null; 
 			flag=false;
-			stormfile=null;
-			out =null;
-			fcout=null;
-			flout=null;
-			sb=null;
+			tdate=null;
+        	file_prefix=null;
+        	file_postfix=null;
+        	file_name=null;
+        	stormfile=null;
+        	randomFile=null;
+        	fcout=null;
+        	flout=null;
+        	sb=null;
         } catch (Exception e) {  
             //保存文件出错
         }
