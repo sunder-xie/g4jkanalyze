@@ -48,7 +48,6 @@ public class FileServer {
         	RandomAccessFile randomFile =null;
         	FileChannel fcout=null;
         	FileLock flout=null;
-        	StringBuffer sb=null;
         	// 文件长度，字节数     
             long fileLength = 0;          
            
@@ -91,7 +90,6 @@ public class FileServer {
         	randomFile=null;
         	fcout=null;
         	flout=null;
-        	sb=null;
         } catch (Exception e) {  
             //保存文件出错
         }
