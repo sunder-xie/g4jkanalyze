@@ -106,6 +106,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 							fileserver.setWordsToFile(userwords);
 						}
 					}
+					//临时需求，将用户的热搜词串拼接好写入到文件中--结束
 				}
 			}
 		}catch(Exception ex){
