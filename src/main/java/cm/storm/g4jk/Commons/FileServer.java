@@ -76,7 +76,7 @@ public class FileServer {
     		if(flag==true){
     			fileLength=randomFile.length();
                 randomFile.seek(fileLength);
-    			randomFile.writeBytes(contentline);
+    			randomFile.write(contentline.getBytes("utf-8"));
                 flout.release();  
                 fcout.close();  
                 randomFile.close();
