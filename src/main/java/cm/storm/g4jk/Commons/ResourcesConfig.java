@@ -24,4 +24,6 @@ public class ResourcesConfig {
 	public final static String REDIS_SERVER_IP="10.245.254.56";		//redis数据库IP地址
 	public final static String REDIS_SERVER_PORT="7000";				//redis数据库端口
 	
+	public final static String LOCAL_SERVER_PATH="/home/storm/netantdata/collect_imsi_words";
+	
 }

@@ -14,6 +14,7 @@ import org.apdplat.word.WordSegmenter;
 import org.apdplat.word.segmentation.Word;
 
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
+import cm.storm.g4jk.Commons.FileServer;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
@@ -34,6 +35,8 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 
 	//获取redis连接
 	private RedisServer redisserver;
+	//获取文件对象
+	private FileServer fileserver;
 
 	//初始化bolt元组搜集器，用于存放需要发射元组
 	@SuppressWarnings("rawtypes")
@@ -49,12 +52,22 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 		//redis操作
 		redisserver=RedisServer.getInstance();
+		fileserver=FileServer.getInstance();
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
-		String chwords=tuple.getStringByField("ChineseInfo");		
+		String chwords=tuple.getStringByField("ChineseInfo");
 		List<Word> words = null;	
 		String key=null;
+		//临时需求
+		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
+		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
+		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+		String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
+		String userwords=null;
+		String sdate=null;
+		int size=0;
 		try{
-			
+			sdate=tdate;
 			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
 
 			if(chwords!=null&&chwords.length()>=2&&tdate!=null&&tdate.length()==10){
@@ -62,10 +75,12 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 				words=WordSegmenter.seg(chwords);
 				//2.对热词做BASE64URLSAFE转码，然后存入集合中，对每个热词分别做计数
 				if(words!=null&&words.size()>0){
+					userwords=",";
 					for(int i=0;i<words.size();i++)
 					{
 						chwords=words.get(i).getText();
 						if(chwords!=null&&chwords.length()>=2){
+							userwords+=chwords;
 							chwords=Base64.encodeBase64URLSafeString(chwords.getBytes("UTF-8"));
 							if(chwords!=null&&chwords.length()>0){
 								key="mfg4_"+tdate+"_ChineseSet";
@@ -74,6 +89,21 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 								redisserver.incr(key);
 							}
 							chwords=null;
+						}
+					}
+					//临时需求，将用户的热搜词串拼接好写入到文件中
+					if(userwords.length()>1){
+						key="ref_wtag_"+intsid;
+						key=redisserver.get(key);
+						if(key!=null&&key.contains("#")==true){
+							size=key.indexOf("#");
+							userwords=userwords.substring(1);
+							sdate=sdate.substring(0, 19);  //时间截取到秒
+							sdate=sdate.replaceAll("[^0-9]","");
+							userwords=imsi+"|"+tac+"|"+ci+"|"+userwords+"|"+key.substring(0,size)+"|"+key.substring(size+1)+"|"+host+"|"+sdate;
+							userwords=userwords.replaceAll("[\\s\b\r\f\n\t]*", "");
+							userwords+="\n";
+							fileserver.setWordsToFile(userwords);
 						}
 					}
 				}
@@ -86,8 +116,15 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 		redisserver=null;
 		chwords=null;
 		tdate=null;
-		words = null;	
+		words = null;
 		key=null;
+		imsi=null;
+		tac=null;
+		ci=null;
+		intsid=null;
+		host=null;
+		userwords=null;
+		sdate=null;
 		collector.ack(tuple);
 	}
 

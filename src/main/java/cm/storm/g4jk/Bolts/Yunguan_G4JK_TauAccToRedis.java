@@ -109,6 +109,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					if(rt>0){
 						key="mfg4_"+tdate+"_hspset_"+hotspot+"_"+hour+"_"+minute;	
 						redisserver.incr(key);
+						key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; //统计每个时刻的总人数
+						redisserver.incr(key);
 					}
 				}
 			}

@@ -85,7 +85,17 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				if(rt>0){
 					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
 					redisserver.incr(key);
+					key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; //统计每个时刻的总人数
+					redisserver.incr(key);
 				}
+				
+				//临时处理代码段，新增累计当天的淘宝，京东，天猫每隔一小时的人数
+				if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+					if(intsid.equals("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
+					else if(intsid.equals("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
+					else if(intsid.equals("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
+				}
+				redisserver.sadd(key, imsi);
 			}
 			
 			//统计appid的使用集合，每个appid的使用热度，补充微信支付判断逻辑

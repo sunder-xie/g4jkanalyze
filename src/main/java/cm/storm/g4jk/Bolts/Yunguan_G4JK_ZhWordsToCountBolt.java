@@ -43,6 +43,12 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 		//redis操作
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
 		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
+		//临时需求
+		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
+		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
+		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+		String host=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.HOST);
 		boolean flag=false;
 		//记录url中的中文字符串
 		String chinesewords=null;
@@ -55,13 +61,18 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 		  &&tdate.length()>=23&&chinesewords.length()>=2){
 			chinesewords=chinesewords.trim();
 			//如果提取之后存在中文信息，并且符合一定规律将信息转发给bolt做中文热词分析，有域名才进行分析，否则没有意义
-			collector.emit(new Values(tdate,chinesewords));
+			collector.emit(new Values(tdate,chinesewords,imsi,tac,ci,intsid,host));
 		}
 		
 		//释放内存
 		tdate=null;
 		url=null;
 		chinesewords=null;
+		imsi=null;
+		tac=null;
+		ci=null;
+		intsid=null;
+		host=null;
 		collector.ack(tuple);
 	}
 
@@ -70,7 +81,12 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
 		outputFieldsDeclarer.declare(new Fields(Yunguan_G4JK_Basic4GFields.STARTTIME,
-				"ChineseInfo"
+				"ChineseInfo",
+				Yunguan_G4JK_Basic4GFields.IMSI,
+				Yunguan_G4JK_Basic4GFields.TAC,
+				Yunguan_G4JK_Basic4GFields.CID,
+				Yunguan_G4JK_Basic4GFields.INTSID,
+				Yunguan_G4JK_Basic4GFields.HOST
 		));
 	}
 	
@@ -121,7 +137,7 @@ public class Yunguan_G4JK_ZhWordsToCountBolt extends BaseRichBolt {
 	{
 		if(str==null||str.trim().equals("")==true)return true;
 		str=str.trim();
-		String not="赌博,奇葩,六合,假牌,假证,迷药,杀人,放火,仿真枪,成人网,抢劫,偷盗,枪支,弹药,假冒,事变,政变,老千,法轮,全能神,全能教,邪教,冰毒,摇头丸,大麻,造反,色吧,鸡鸡,手淫,性吧,性福,性欲,狠狠插,红灯区,卖淫,淫乱,爆乳,约炮,色情,情色,吞精,精液,艳照,淫荡,勾引,爱爱,做爱,偷情,偷性,交配,撸管,色系,鸡巴"
+		String not="赌博,奇葩,六合,假牌,假证,迷药,杀人,放火,仿真枪,成人,成人网,抢劫,偷盗,枪支,弹药,假冒,事变,政变,老千,法轮,全能神,全能教,邪教,冰毒,摇头丸,大麻,造反,色吧,鸡鸡,手淫,性吧,性福,性欲,狠狠插,红灯区,卖淫,淫乱,爆乳,约炮,色情,情色,吞精,精液,艳照,淫荡,勾引,爱爱,做爱,偷情,偷性,交配,撸管,色系,鸡巴"
 				+ ",毒品,吸毒,叫鸡,洗钱,黑钱,赌钱,性骚扰,裸奔,裸照,轮奸,强奸,色图,淫娃,爆乳,妖姬,海天盛筵,生殖器,插插,壮阳,性故事,不雅照,一夜情,造爱,草榴,咪咪爱,阴蒂,阴唇,色色,走光,少妇,熟妇,熟女,日逼,操逼,黄图,黄片,强暴,强奸,迷奸,乱伦,阴茎,性交,裸体,射精,鸡婆,性侵,打飞机,奶子,吸奶,喂奶,巨乳,乳交,口交,口爆";
 		String[] tmp=not.split(",");
 		
