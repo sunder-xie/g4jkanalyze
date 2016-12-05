@@ -62,12 +62,11 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		String imsi_tdate2="19000101000000";
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
+			//热点区域信息所需维表
 			key="ref_hsp_"+tac+"_"+ci;
-			//查询维表获取标签
 			hotspotlist=redisserver.smembers(key);
-			
+			//基站tac ci缩减维表
 			key="ref_hpm_"+tac+"_"+ci;
-			//查询维表获取标签
 			tcsll=redisserver.get(key);
 
 			hour=tdate.substring(11,13);
@@ -130,6 +129,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					redisserver.incr(key);
 					key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; //统计每个时刻的总人数
 					redisserver.incr(key);
+					key="mfg4_"+tdate+"_localtotalset";//汇总一天总的imsi集合，用于统计总人数
+					redisserver.sadd(key, imsi);
 				}
 			}
 		}
