@@ -123,14 +123,16 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					key="mfg4_"+tdate+"_imsihot_"+imsi;
 					value=hour+"_"+minute+"_"+tcsll;
 					rt=redisserver.sadd(key,value);
+					if(rt>0){
+						key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; //统计每个时刻的总人数
+						redisserver.incr(key);
+						key="mfg4_"+tdate+"_localtotalset";//汇总一天总的imsi集合，用于统计总人数
+						redisserver.sadd(key, imsi);
+					}
 				}else rt=1;
 				if(rt>0){
 					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
 					redisserver.incr(key);
-					key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; //统计每个时刻的总人数
-					redisserver.incr(key);
-					key="mfg4_"+tdate+"_localtotalset";//汇总一天总的imsi集合，用于统计总人数
-					redisserver.sadd(key, imsi);
 				}
 			}
 		}
