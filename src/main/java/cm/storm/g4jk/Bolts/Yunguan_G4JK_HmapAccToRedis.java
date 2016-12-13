@@ -117,6 +117,9 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 					
 					//微信支付判断逻辑,intappid为8943或者66,url中包含pay，则计入mfg4_YYYY-MM-DD_AppUse_3333，3333为自定义的维表数据 微信支付
 					if((intsid.equals("66")||intsid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
+						key="mfg4_"+appdate+"_AppidSet";
+						redisserver.sadd(key, "3333");
+						
 						key="mfg4_"+tdate+"_AppUse_3333";
 						redisserver.incr(key); 	//累计当天微信支付次数
 					}
