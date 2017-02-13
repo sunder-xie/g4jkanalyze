@@ -108,8 +108,8 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),20).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),20).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),6).shuffleGrouping("SplitterBoltwftau");
-        Tpbuilder.setBolt("SJJS093Bolt93wfg4", new Yunguan_G4JK_SJJS093_93ToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("SJJS208Bolt88wfg4", new Yunguan_G4JK_SJJS208_88ToRedis(),12).shuffleGrouping("SJJS093Bolt93wfg4");
+//        Tpbuilder.setBolt("SJJS093Bolt93wfg4", new Yunguan_G4JK_SJJS093_93ToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
+//        Tpbuilder.setBolt("SJJS208Bolt88wfg4", new Yunguan_G4JK_SJJS208_88ToRedis(),12).shuffleGrouping("SJJS093Bolt93wfg4");
         Tpbuilder.setBolt("ZhToCountBoltwfg4", new Yunguan_G4JK_ZhWordsToCountBolt(),6).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("ZhCountBoltwfg4", new Yunguan_G4JK_ZhWordsCountToRedis(),6).shuffleGrouping("ZhToCountBoltwfg4");
         /*拓扑执行*/
