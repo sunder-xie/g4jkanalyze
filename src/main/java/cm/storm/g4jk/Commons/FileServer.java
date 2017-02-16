@@ -24,7 +24,7 @@ public class FileServer {
 	 */
 	public static FileServer getInstance() {
 		if(INSTANCE==null){
-			synchronized (RedisServer.class) {
+			synchronized (FileServer.class) {
 				if(INSTANCE==null){
 					INSTANCE=new FileServer();
 				}
