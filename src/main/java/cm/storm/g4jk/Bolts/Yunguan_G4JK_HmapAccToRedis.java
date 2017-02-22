@@ -50,6 +50,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
 		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
+		String appid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
 		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		String tcsll=null;
 		String hour=null;
@@ -93,30 +94,55 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 					redisserver.incr(key);
 				}
 				
-				//临时处理代码段，新增累计当天的淘宝，京东，天猫每隔一小时的人数
-				if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
-					if(intsid.equals("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
-					else if(intsid.equals("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
-					else if(intsid.equals("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
-				}
-				redisserver.sadd(key, imsi);
+				//临时处理代码段，新增累计当天的淘宝，京东，天猫每隔一小时的网页访问人数
+//				if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+//					if(intsid.equals("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
+//					else if(intsid.equals("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
+//					else if(intsid.equals("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
+//				}
+//				redisserver.sadd(key, imsi);
+				
 			}
 			
-			//统计appid的使用集合，每个appid的使用热度，补充微信支付判断逻辑
+			//统计网页的使用热度集合，每个网页的使用热度，补充微信支付判断逻辑，从网页角度观察用户行为
 			if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
 				appdate=appdate.substring(0,10);	//获取日期
 				key="ref_wtag_"+intsid;
 				appvalue=redisserver.get(key);
 				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
 				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
+					key="mfg4_"+appdate+"_IntidSet";
+					redisserver.sadd(key, intsid);
+
+					key="mfg4_"+appdate+"_IntidUse_"+intsid;
+					redisserver.incr(key); 	//累计当天的访问次数
+					
+					//微信支付判断逻辑,intsid为8943或者66,url中包含pay，则计入mfg4_YYYY-MM-DD_AppUse_3333，3333为自定义的维表数据 微信支付
+					if((intsid.equals("66")||intsid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
+						key="mfg4_"+appdate+"_IntidSet";
+						redisserver.sadd(key, "3333");
+						
+						key="mfg4_"+tdate+"_IntidUse_3333";
+						redisserver.incr(key); 	//累计当天微信支付次数
+					}
+				}
+			}
+			
+			//统计appid的使用热度集合，每个appid的使用热度，补充微信支付判断逻辑，从app角度观察用户行为
+			if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
+				appdate=appdate.substring(0,10);	//获取日期
+				key="ref_wtag_"+appid;
+				appvalue=redisserver.get(key);
+				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
+				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
 					key="mfg4_"+appdate+"_AppidSet";
 					redisserver.sadd(key, intsid);
 
-					key="mfg4_"+appdate+"_AppUse_"+intsid;
+					key="mfg4_"+appdate+"_AppUse_"+appid;
 					redisserver.incr(key); 	//累计当天的访问次数
 					
 					//微信支付判断逻辑,intappid为8943或者66,url中包含pay，则计入mfg4_YYYY-MM-DD_AppUse_3333，3333为自定义的维表数据 微信支付
-					if((intsid.equals("66")||intsid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
+					if((appid.equals("66")||appid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
 						key="mfg4_"+appdate+"_AppidSet";
 						redisserver.sadd(key, "3333");
 						
