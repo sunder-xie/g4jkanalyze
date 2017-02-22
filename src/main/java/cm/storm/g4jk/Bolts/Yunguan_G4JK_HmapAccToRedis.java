@@ -83,9 +83,9 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 					value=hour+"_"+minute+"_"+tcsll;
 					rt=redisserver.sadd(key,value);
 					if(rt>0){
-						key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; //统计每个时刻的总人数
+						key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; 	//统计每个时刻的总人数
 						redisserver.incr(key);
-						key="mfg4_"+tdate+"_localtotalset";//汇总一天总的imsi集合，用于统计总人数
+						key="mfg4_"+tdate+"_localtotalset";							//汇总一天总的imsi集合，用于统计总人数
 						redisserver.sadd(key, imsi);
 					}
 				}else rt=1;
@@ -136,7 +136,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
 				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
 					key="mfg4_"+appdate+"_AppidSet";
-					redisserver.sadd(key, intsid);
+					redisserver.sadd(key, appid);
 
 					key="mfg4_"+appdate+"_AppUse_"+appid;
 					redisserver.incr(key); 	//累计当天的访问次数
