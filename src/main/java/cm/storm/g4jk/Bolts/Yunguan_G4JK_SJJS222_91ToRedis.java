@@ -19,12 +19,12 @@ import cm.storm.g4jk.Commons.RedisServer;
  * 20161008
  * 20170303 修改触点改为触点流量特惠包
  */
-public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
+public class Yunguan_G4JK_SJJS222_91ToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
 	private static final long serialVersionUID = -2349911902769092963L;
 
 	//记录作业日志到storm的logs目录下对应的topology日志中
-	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJS093_93ToRedis.class);
+	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJS222_91ToRedis.class);
 	
 	//元组发射搜集器
 	private OutputCollector collector;
@@ -56,12 +56,16 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		String key=null;
 		String phnum=null;
 		String appvalue=null;
+		String words=null;
+		boolean flag=false;
 		int offset=0;
 
 		if(tdate.length()>=23&&imsi!=null&&imsi.length()>=15){
 			//先获取用户标签信息
 			appvalue="";
 			offset=0;
+			flag=false;
+			words="";
 			if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
 				key="ref_wtag_"+intsid;
 				appvalue=redisserver.get(key);//获取对应的用户标签信息
@@ -76,17 +80,21 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 				}
 			}
 			
-			//进行标签判断
+			//进行标签判断，标签存在则判断对应的标签
 			if(offset>0&&appvalue!=null&&appvalue.trim().equals("")==false){
-				appvalue=StringUtils.substring(appvalue, 0,offset);
-				if(appvalue.contains("音频")==true||appvalue.contains("视频")==true||appvalue.contains("游戏")==true){
-					tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
+				appvalue=StringUtils.substring(appvalue, 0, offset);
+				//业务：分析用户是为宽带触点潜在目标用户，对应触点id为SJJS222
+				key="ref_sjjsparams_SJJS222";
+				words=redisserver.get(key);	//20170303取值为--上网行为类型:音频#视频#游戏;上网搜索热词:#;
+				flag=businessJudge(appvalue, words);		
+				if(flag==true){							//需要触点，再将号码放入当天的触点集合中
 					key="ref_imsiphn_"+imsi;
 					phnum=redisserver.get(key);
 					if(phnum!=null&&phnum.length()>=11){
-						//业务：分析用户是否业务或者应用标签有使用 游戏，视频，音频，对应触点id为SJJS093
+						tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
+						//业务：分析用户是否业务或者应用标签有使用 游戏，视频，音频等，对应触点id为SJJS222
 						key="mfg4_"+tdate+"_sjjs_"+phnum;
-						redisserver.sadd(key, "SJJS093");
+						redisserver.sadd(key, "SJJS222");
 						key="mfg4_"+tdate+"_UnTouchSet";
 						redisserver.sadd(key, phnum);
 					}
@@ -101,6 +109,8 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		imsi=null;
 		phnum=null;
 		key=null;
+		appvalue=null;
+		words=null;
 		collector.ack(tuple);
 	}
 
@@ -111,7 +121,41 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 	}
 	
 	//自定义方法区域
-
+	/**
+	 * 触点逻辑判断，决定号码是否为潜在推送触点的目标号码
+	 * @param wfch 已经从网分中抽取，翻译的app及业务标签中文字符串
+	 * @param words 从触点配置的参数中获取的所有参数，格式为 名称1:值1;名称2:值2;名称3:值3;...;
+	 * @return 用于最后标记业务逻辑判断是否添加触点 true为需要添加，false为不需要添加
+	 * 如果取消匹配业务，请注释掉以下代码
+	 */
+	public boolean businessJudge(String wfch, String words){
+		boolean flag=false; 
+		
+		String[] params=null;
+		String[] keywords=null;
+		int i=0;
+		//没有参数，直接返回
+		if(words==null||words.endsWith(";")==false)return false;
+		params=words.split(";");
+		//内存不足直接返回
+		if(params==null||params.length<1)return false;
+		for(i=0;i<params.length;i++){
+			keywords=null;
+			words=params[i].trim();
+			if(words!=null&&words.contains(":")==true)keywords=words.split(":");
+			//必须是变量名称和值组成，长度必须为2
+			if(keywords!=null&&keywords.length==2){
+				//上网类型匹配逻辑
+				if(keywords[0].contains("上网行为")){
+					words=keywords[1]; //取值为--游戏#视频#音频#  
+					if(words.contains(wfch)==true){
+							return true;
+					}
+				}
+			}
+		}
+		return flag;
+	}
 }
 
 //如果不需要热词检索逻辑则注释掉相应的热词检测保存代码，仅保留最后的转发逻辑
@@ -175,46 +219,7 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 //	return url_ch;
 //}
 
-/**
- * 触点逻辑判断，决定号码是否为潜在推送触点的目标号码
- * @param url_ch 已经从url中提取的中文字符串
- * @param words 从触点配置的参数中获取的所有参数，格式为 名称1:值1;名称2:值2;名称3:值3;...;
- * @return 用于最后标记业务逻辑判断是否添加触点 true为需要添加，false为不需要添加
- * 如果取消匹配业务，请注释掉以下代码
- */
-//public boolean businessJudge(String url_ch, String words){
-//	boolean flag=false; 
-//	
-//	String[] params=null;
-//	String[] keywords=null;
-//	int i=0;
-//	int j=0;
-//	//没有参数，直接返回
-//	if(words==null||words.endsWith(";")==false)return false;
-//	params=words.split(";");
-//	//内存不足直接返回
-//	if(params==null||params.length<1)return false;
-//	for(i=0;i<params.length;i++){
-//		keywords=null;
-//		words=params[i].trim();
-//		if(words!=null&&words.contains(":")==true)keywords=words.split(":");
-//		//必须是变量名称和值组成，长度必须为2
-//		if(keywords!=null&&keywords.length==2){
-//			//热词搜索匹配逻辑
-//			if(keywords[0].contains("热词")){
-//				words=keywords[1]+"#"; //取值为--家宽#宽带#极光#电信#
-//				keywords=words.split("#");
-//				for(j=0;j<keywords.length;j++){
-//					keywords[j]=keywords[j].trim();
-//					if(keywords[j].equals("")==false&&url_ch.contains(keywords[j])==true){
-//						return true;
-//					}
-//				}
-//			}
-//		}
-//	}
-//	return flag;
-//}
+
 
 /**
  * @param tuple:从string中获取数据
