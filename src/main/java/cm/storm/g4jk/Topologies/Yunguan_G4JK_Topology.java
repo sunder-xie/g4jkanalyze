@@ -20,7 +20,8 @@ import cm.storm.g4jk.Bolts.Yunguan_G4JK_ZhWordsToCountBolt;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicJKSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HmapAccToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HspAccToRedis;
-import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS222_91ToRedis;
+//import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS222_91ToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJSToRedis;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS208_88ToRedis;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS245_87ToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_TauAccToRedis;
@@ -108,7 +109,7 @@ public class Yunguan_G4JK_Topology {
         Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),22).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),24).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),6).shuffleGrouping("SplitterBoltwftau");
-        Tpbuilder.setBolt("SJJSBoltwfg4", new Yunguan_G4JK_SJJS222_91ToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("SJJSBoltwfg4", new Yunguan_G4JK_SJJSToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
 //        Tpbuilder.setBolt("SJJS208Bolt88wfg4", new Yunguan_G4JK_SJJS208_88ToRedis(),12).shuffleGrouping("SJJS222Bolt91wfg4");
         Tpbuilder.setBolt("ZhToCountBoltwfg4", new Yunguan_G4JK_ZhWordsToCountBolt(),6).shuffleGrouping("SplitterBoltwf4g");
         Tpbuilder.setBolt("ZhCountBoltwfg4", new Yunguan_G4JK_ZhWordsCountToRedis(),6).shuffleGrouping("ZhToCountBoltwfg4");
