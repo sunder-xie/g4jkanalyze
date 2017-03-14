@@ -1,6 +1,7 @@
 package cm.storm.g4jk.Bolts;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -16,14 +17,14 @@ import cm.storm.g4jk.Commons.RedisServer;
 /**
  * 实时分析网分记录IMSI对应的号码，以及号码可以参与的SJJSXXX活动，符合规则则添加SJJSid到对应的key中，并且将号码丢入触点集合中。
  * @author chinamobile
- * 20161008
+ * 20170314
  */
-public class Yunguan_G4JK_SJJS208_88ToRedis extends BaseRichBolt {
+public class Yunguan_G4JK_SJJSToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
 	private static final long serialVersionUID = 4438803730362084161L;
 
 	//记录作业日志到storm的logs目录下对应的topology日志中
-	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJS208_88ToRedis.class);
+	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJSToRedis.class);
 	
 	//元组发射搜集器
 	private OutputCollector collector;
@@ -47,10 +48,19 @@ public class Yunguan_G4JK_SJJS208_88ToRedis extends BaseRichBolt {
 		redisserver=RedisServer.getInstance();
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
+		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
+		String appid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
 		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+		Set<String> sjjslist=null;
 		String words=null;
 		String key=null;
 		String phnum=null;
+		String appvalue=null;
+		String intvalue=null;
+		String chinesewords=null;
+		String[] params=null;
+		String[] keywords=null;
+		String testwords=null;
 		boolean flag=false;
 
 		if(tdate.length()>=23&&imsi!=null&&imsi.length()>=15){
@@ -58,18 +68,57 @@ public class Yunguan_G4JK_SJJS208_88ToRedis extends BaseRichBolt {
 			key="ref_imsiphn_"+imsi;
 			phnum=redisserver.get(key);
 			if(phnum!=null&&phnum.length()>=11){
-				//业务：分析用户是为16114G飞享乐潜在目标用户，对应触点id为SJJS208
-				key="ref_sjjsparams_SJJS208";
-				words=redisserver.get(key);	//20161109取值为--上网行为类型:天猫#淘宝#支付宝#京东;
-				key="ref_wtag_"+intsid;
-				intsid=redisserver.get(key);
-				if(intsid!=null&&intsid.trim().equals("nil")==false&&intsid.trim().equals("")==false)flag=businessJudge(intsid, words);		
-				if(flag==true){						//需要触点，再将号码放入当天的触点集合中
-					key="mfg4_"+tdate+"_sjjs_"+phnum;
-					redisserver.sadd(key, "SJJS208");
-					key="mfg4_"+tdate+"_UnTouchSet";
-					redisserver.sadd(key, phnum);
-				}
+				//业务：对应触点的SJJS列表
+				key="ref_sjjsparams_set";
+				sjjslist=redisserver.smembers(key);
+				if(sjjslist!=null&&sjjslist.size()>0)
+				{
+					for(String sjjs : sjjslist){
+						flag=false;
+						testwords="";
+						intvalue=null;
+						appvalue=null;
+						chinesewords=null;
+						key="ref_sjjsparams_"+sjjs;
+						words=redisserver.get(key);	//例子--上网行为类型:天猫#淘宝#支付宝#京东;上网搜索热词:家宽#宽带#极光#电信;
+						if(words!=null){
+							params=words.split(";");
+							if(params!=null){
+								for(int i=0;i<params.length;i++){
+									keywords=null;
+									words=params[i].trim();
+									if(words!=null&&words.contains(":")==true)keywords=words.split(":");
+									//必须是变量名称和值组成，长度必须为2
+									if(keywords!=null&&keywords.length==2)testwords+=keywords[1].trim()+"#";
+								}
+							}
+							if(testwords.length()>1)keywords=testwords.split("#");
+							if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+								key="ref_wtag_"+intsid;
+								intvalue=redisserver.get(key);//获取对应的用户业务标签信息
+							}
+							if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
+								key="ref_wtag_"+appid;
+								appvalue=redisserver.get(key);//获取对应的用户标签信息
+							}
+							chinesewords=getChineseWordsFromUrl(url);
+						}
+						for(int j=0;j<keywords.length;j++){
+							if(keywords[j].equals("")==false){
+								if(intvalue!=null&&intvalue.contains(keywords[j])==true)flag=true;
+								else if(appvalue!=null&&appvalue.contains(keywords[j])==true)flag=true;
+								else if(chinesewords!=null&&chinesewords.contains(keywords[j])==true)flag=true;
+							}
+							if(flag==true)break;
+						}
+						if(flag==true){						//需要触点，再将号码放入当天的触点集合中
+							key="mfg4_"+tdate+"_sjjs_"+phnum;
+							redisserver.sadd(key, sjjs);
+							key="mfg4_"+tdate+"_UnTouchSet";
+							redisserver.sadd(key, phnum);
+						}
+					}
+				}				
 			}
 		}
 		
@@ -80,7 +129,16 @@ public class Yunguan_G4JK_SJJS208_88ToRedis extends BaseRichBolt {
 		intsid=null;
 		phnum=null;
 		words=null;
+		sjjslist=null;
+		appid=null;
 		key=null;
+		appvalue=null;
+		intvalue=null;
+		url=null;
+		chinesewords=null;
+		params=null;
+		keywords=null;
+		testwords=null;
 		collector.ack(tuple);
 	}
 
@@ -91,46 +149,41 @@ public class Yunguan_G4JK_SJJS208_88ToRedis extends BaseRichBolt {
 	}
 	
 	//自定义方法区域
-	
 	/**
-	 * 触点逻辑判断，决定号码是否为潜在推送触点的目标号码
-	 * @param instid 业务类型
-	 * @param words 从触点配置的参数中获取的所有参数，格式为 名称1:值1;名称2:值2;名称3:值3;...;
-	 * @return 用于最后标记业务逻辑判断是否添加触点 true为需要添加，false为不需要添加
-	 * 如果取消匹配业务，请注释掉以下代码
+	 * 提取url中的中文
+	 * @param url 网分数据中的url
+	 * @return 返回中文字符串或者null
 	 */
-	public boolean businessJudge(String instid, String words){
-		boolean flag=false; 
-		
-		String[] params=null;
-		String[] keywords=null;
-		int i=0;
-		int j=0;
-		//没有参数，直接返回
-		if(words==null||words.endsWith(";")==false)return false;
-		params=words.split(";");
-		//内存不足直接返回
-		if(params==null||params.length<1)return false;
-		for(i=0;i<params.length;i++){
-			keywords=null;
-			words=params[i].trim();
-			if(words!=null&&words.contains(":")==true)keywords=words.split(":");
-			//必须是变量名称和值组成，长度必须为2
-			if(keywords!=null&&keywords.length==2){
-				//热词搜索匹配逻辑
-				if(keywords[0].contains("上网行为")){
-					words=keywords[1]+"#"; //取值为--天猫#淘宝#支付宝#京东
-					keywords=words.split("#");
-					for(j=0;j<keywords.length;j++){
-						keywords[j]=keywords[j].trim();
-						if(keywords[j].equals("")==false&&instid.contains(keywords[j])==true){
-							return true;
-						}
-					}
-				}
+	public String getChineseWordsFromUrl(String url){
+		String url_ch=null;
+		//对url做转换操作，通用转换做法假定就是 GBK 的编码：
+		//将其解码成字节码，然后再把字节码编码为GBK，
+		//如果转换回来后与没有转换之前是相等的。
+		//这样假设成立，也就是GBK编码。如果解析失败，则用utf8解码
+		try {
+			String reg = "[^\u4e00-\u9fa5]";   //^匹配所有非中文字符, \u4e00, \u9fa5代表是两个unicode编码值，他们正好是Unicode表中的汉字的头和尾
+			String fis= null;
+			String sec = null;
+			//尝试解码3次，单次解码未必直接能够解析出中文
+			for(int i=0;i<3;i++)
+			{
+				fis = java.net.URLDecoder.decode(url, "gb2312");
+				sec = new String(fis.getBytes("gb2312"), "gb2312");
+				if (fis.equals(sec)==true)
+					url=fis;
+		        else
+		        	url= java.net.URLDecoder.decode(url, "utf-8");
 			}
+	
+			//提取url中的中文
+			url = url.replaceAll(reg, "");
+			//记录中文信息
+			if(url!=null&&url.length()>=2)url_ch=url;
+		} catch (Exception ex) {
+			//LOG.info("Yunguan_G4JK_TouchSjjsToRedis execute error: "+ex.getMessage());
+			return null;
 		}
-		return flag;
+		return url_ch;
 	}
 }
 
