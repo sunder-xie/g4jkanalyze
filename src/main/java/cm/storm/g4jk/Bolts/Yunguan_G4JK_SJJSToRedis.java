@@ -93,23 +93,25 @@ public class Yunguan_G4JK_SJJSToRedis extends BaseRichBolt {
 								}
 							}
 							if(testwords.length()>1)keywords=testwords.split("#");
-							if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
-								key="ref_wtag_"+intsid;
-								intvalue=redisserver.get(key);//获取对应的用户业务标签信息
+							if(keywords!=null&&keywords.length>0){
+								if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+									key="ref_wtag_"+intsid;
+									intvalue=redisserver.get(key);//获取对应的用户业务标签信息
+								}
+								if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
+									key="ref_wtag_"+appid;
+									appvalue=redisserver.get(key);//获取对应的用户标签信息
+								}
+								chinesewords=getChineseWordsFromUrl(url);
+								for(int j=0;j<keywords.length;j++){
+									if(keywords[j].equals("")==false){
+										if(intvalue!=null&&intvalue.contains(keywords[j])==true)flag=true;
+										else if(appvalue!=null&&appvalue.contains(keywords[j])==true)flag=true;
+										else if(chinesewords!=null&&chinesewords.contains(keywords[j])==true)flag=true;
+									}
+									if(flag==true)break;
+								}
 							}
-							if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
-								key="ref_wtag_"+appid;
-								appvalue=redisserver.get(key);//获取对应的用户标签信息
-							}
-							chinesewords=getChineseWordsFromUrl(url);
-						}
-						for(int j=0;j<keywords.length;j++){
-							if(keywords[j].equals("")==false){
-								if(intvalue!=null&&intvalue.contains(keywords[j])==true)flag=true;
-								else if(appvalue!=null&&appvalue.contains(keywords[j])==true)flag=true;
-								else if(chinesewords!=null&&chinesewords.contains(keywords[j])==true)flag=true;
-							}
-							if(flag==true)break;
 						}
 						if(flag==true){						//需要触点，再将号码放入当天的触点集合中
 							key="mfg4_"+tdate+"_sjjs_"+phnum;
