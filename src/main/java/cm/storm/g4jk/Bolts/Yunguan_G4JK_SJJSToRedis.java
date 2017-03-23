@@ -81,7 +81,7 @@ public class Yunguan_G4JK_SJJSToRedis extends BaseRichBolt {
 						chinesewords=null;
 						key="ref_sjjsparams_"+sjjs;
 						words=redisserver.get(key);	//例子--上网行为类型:天猫#淘宝#支付宝#京东;上网搜索热词:家宽#宽带#极光#电信;
-						if(words!=null){
+						if(words!=null&&words.trim().length()>0){
 							params=words.split(";");
 							if(params!=null){
 								for(int i=0;i<params.length;i++){
