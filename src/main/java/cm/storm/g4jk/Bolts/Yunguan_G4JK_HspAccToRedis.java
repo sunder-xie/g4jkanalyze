@@ -9,12 +9,19 @@ import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
+
+
 //import org.apache.storm.tuple.Values;
 //import org.apache.storm.tuple.Fields;
 //
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
+import cm.storm.g4jk.Commons.FileServer;
 import cm.storm.g4jk.Commons.RedisServer;
+import cm.storm.g4jk.Commons.ResourcesConfig;
+import cm.storm.g4jk.Commons.TimeFormatter;
+
+
 
 /**
  * 每15分钟统计热点区域的人流量(区别imsi)，同时统计当天app应用的热度信息
@@ -33,6 +40,9 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 	
 	//获取redis连接
 	private RedisServer redisserver;
+	
+	//获取文件对象
+	private FileServer fileserver;
 
 	//初始化bolt元组搜集器，用于存放需要发射元组
 	@SuppressWarnings("rawtypes")
@@ -58,6 +68,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String imsi_catch_time=null;
 		String imsi_tdate1="19000101000000";
 		String imsi_tdate2="19000101000000";
+		String imsi_hsp_file=null;
+		String data_time=null;
 		int clk=0;
 		String key=null;
 		String value=null;
@@ -67,7 +79,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
 			key="ref_hsp_"+tac+"_"+ci;
 			hotspotlist=redisserver.smembers(key);
-
+			data_time=TimeFormatter.getNow(); 						//获取当前时间YYYY-MM-DD HH:mm:ss
+			
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
 				hour=tdate.substring(11,13);
@@ -85,13 +98,26 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					//标记hotspot捕获imsi的时间
 					key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+imsi;
 					imsi_tdate1=redisserver.get(key);
-					if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+					imsi_hsp_file="";
+					if(imsi_tdate1==null||imsi_tdate1.equals("nil")){
+						imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+						imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_catch_time+"\n";
+					}
 					else if (imsi_tdate1.length()>=29){
 						imsi_tdate2=imsi_tdate1.substring(15);
 						imsi_tdate1=imsi_tdate1.substring(0,14);
-						if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
-						else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+						if(imsi_catch_time.compareTo(imsi_tdate1)<0){
+							imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
+							imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_tdate2+"\n";
+						}
+						else if(imsi_catch_time.compareTo(imsi_tdate2)>0){
+							imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+							imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_tdate1+"|"+imsi_catch_time+"\n";
+						}
 						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
+					}
+					if(imsi_hsp_file.length()>0){
+						fileserver.setWordsToFile(imsi_hsp_file, ResourcesConfig.LOCAL_IMIS_HSP_PATH);
 					}
 					redisserver.set(key, imsi_tdate1);
 					
@@ -127,6 +153,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		imsi_catch_time=null;
 		imsi_tdate1=null;
 		imsi_tdate2=null;
+		imsi_hsp_file=null;
+		data_time=null;
 
 		collector.ack(tuple);
 	}

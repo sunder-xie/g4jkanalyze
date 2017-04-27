@@ -37,11 +37,11 @@ public class FileServer {
 	 * 将新增行写入到文件中
 	 * @param contentline：需要新增到文件末尾的内容行
 	 */
-	public void setWordsToFile(String contentline){        
+	public void setWordsToFile(String contentline, String filepath){        
         try {
         	boolean flag=false;
         	String tdate=TimeFormatter.getDate()+TimeFormatter.getHour(); //当前日期小时的时间格式
-        	String file_prefix=ResourcesConfig.LOCAL_SERVER_PATH;
+        	String file_prefix=filepath;
         	String file_postfix=null;
         	String file_name=null;
         	File stormfile=null;

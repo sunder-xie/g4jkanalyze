@@ -16,6 +16,7 @@ import org.apdplat.word.segmentation.Word;
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.FileServer;
 import cm.storm.g4jk.Commons.RedisServer;
+import cm.storm.g4jk.Commons.ResourcesConfig;
 
 /**
  * 对url中出现的中文进行拆词，统计热搜次数，元组来源于SJJS093这个bolt
@@ -103,7 +104,7 @@ public class Yunguan_G4JK_ZhWordsCountToRedis extends BaseRichBolt {
 							userwords=imsi+"|"+tac+"|"+ci+"|"+userwords+"|"+key.substring(0,size)+"|"+key.substring(size+1)+"|"+host+"|"+sdate;
 							userwords=userwords.replaceAll("[\\s\b\r\f\n\t]*", "");
 							userwords+="\n";
-							fileserver.setWordsToFile(userwords);
+							fileserver.setWordsToFile(userwords,ResourcesConfig.LOCAL_IMIS_WORDS_PATH);
 						}
 					}
 					//临时需求，将用户的热搜词串拼接好写入到文件中--结束
