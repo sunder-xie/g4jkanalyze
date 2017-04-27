@@ -7,8 +7,6 @@ import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.StringScheme;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 
-import java.util.List;
-
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
