@@ -7,6 +7,8 @@ import org.apache.storm.kafka.KafkaSpout;
 import org.apache.storm.kafka.StringScheme;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 
+import java.util.List;
+
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.StormSubmitter;
@@ -141,13 +143,15 @@ public class Yunguan_G4JK_Topology {
   			}
   			else
   			{
-  				//集群模式
+  				//集群模式，注意，如果是远程提交作业，还需要在config中配置seeds作为nimubs的节点位置 
+  				//List<String> nimbus=null;
   				int cnt=-1;
   				try{ cnt=Integer.parseInt(args[0]); }catch(Exception exc){}
   				if(cnt<0)
   					cnt=6;			// 默认值
   				
   				conf.put(Config.TOPOLOGY_WORKERS,cnt);
+  				//conf.put(Config.NIMBUS_SEEDS, nimbus);
   				//conf.put(Config.TOPOLOGY_RECEIVER_BUFFER_SIZE, 16); 								// default is 8
   				//conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 16384); 		// batched; default is 1024
   				//conf.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE, 16384); 			// individual tuples; default is 1024
