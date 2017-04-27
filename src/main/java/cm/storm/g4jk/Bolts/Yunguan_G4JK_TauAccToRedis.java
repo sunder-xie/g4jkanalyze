@@ -11,7 +11,10 @@ import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
 
 import cm.storm.g4jk.Beans.Yunguan_G4JK_BasicTAUFields;
+import cm.storm.g4jk.Commons.FileServer;
 import cm.storm.g4jk.Commons.RedisServer;
+import cm.storm.g4jk.Commons.ResourcesConfig;
+import cm.storm.g4jk.Commons.TimeFormatter;
 
 /**
  * 每15分钟补充统计热点区域，热力图对应的人流量(区别imsi)
@@ -30,6 +33,9 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 
 	//获取redis连接
 	private RedisServer redisserver;
+	
+	//获取文件对象
+	private FileServer fileserver;
 	
 	//初始化bolt元组搜集器，用于存放需要发射元组
 	@SuppressWarnings("rawtypes")
@@ -60,11 +66,14 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		String imsi_catch_time=null;
 		String imsi_tdate1="19000101000000";
 		String imsi_tdate2="19000101000000";
+		String imsi_hsp_file=null;
+		String data_time=null;
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			//热点区域信息所需维表
 			key="ref_hsp_"+tac+"_"+ci;
 			hotspotlist=redisserver.smembers(key);
+			data_time=TimeFormatter.getNow(); 						//获取当前时间YYYY-MM-DD HH:mm:ss
 			//基站tac ci缩减维表
 			key="ref_hpm_"+tac+"_"+ci;
 			tcsll=redisserver.get(key);
@@ -87,13 +96,26 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					//标记hotspot捕获imsi的时间
 					key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+imsi;
 					imsi_tdate1=redisserver.get(key);
-					if(imsi_tdate1==null||imsi_tdate1.equals("nil"))imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+					imsi_hsp_file="";
+					if(imsi_tdate1==null||imsi_tdate1.equals("nil")){
+						imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
+						imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_catch_time+"\n";
+					}
 					else if (imsi_tdate1.length()>=29){
 						imsi_tdate2=imsi_tdate1.substring(15);
 						imsi_tdate1=imsi_tdate1.substring(0,14);
-						if(imsi_catch_time.compareTo(imsi_tdate1)<0)imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
-						else if(imsi_catch_time.compareTo(imsi_tdate2)>0)imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+						if(imsi_catch_time.compareTo(imsi_tdate1)<0){
+							imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
+							imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_tdate2+"\n";
+						}
+						else if(imsi_catch_time.compareTo(imsi_tdate2)>0){
+							imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
+							imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_tdate1+"|"+imsi_catch_time+"\n";
+						}
 						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
+					}
+					if(imsi_hsp_file.length()>0){
+						fileserver.setWordsToFile(imsi_hsp_file, ResourcesConfig.LOCAL_IMIS_HSP_PATH);
 					}
 					redisserver.set(key, imsi_tdate1);
 					
@@ -154,6 +176,8 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 		imsi_tdate1=null;
 		imsi_tdate2=null;
 		clk=0;
+		imsi_hsp_file=null;
+		data_time=null;
 
 		collector.ack(tuple);
 	}
