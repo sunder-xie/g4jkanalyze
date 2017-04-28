@@ -51,6 +51,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 	public void execute(Tuple tuple) {
 		//redis操作
 		redisserver=RedisServer.getInstance();
+		fileserver=FileServer.getInstance();
 		String tdate=tuple.getStringByField(Yunguan_G4JK_BasicTAUFields.TTIME);
 		String imsi=tuple.getStringByField(Yunguan_G4JK_BasicTAUFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_BasicTAUFields.TAC);
