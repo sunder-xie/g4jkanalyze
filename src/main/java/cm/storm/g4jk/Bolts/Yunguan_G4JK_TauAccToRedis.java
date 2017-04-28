@@ -97,7 +97,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 					//标记hotspot捕获imsi的时间
 					key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+imsi;
 					imsi_tdate1=redisserver.get(key);
-					imsi_hsp_file="";
+					imsi_hsp_file="nil";
 					if(imsi_tdate1==null||imsi_tdate1.equals("nil")){
 						imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
 						imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_catch_time+"\n";
@@ -115,7 +115,7 @@ public class Yunguan_G4JK_TauAccToRedis extends BaseRichBolt {
 						}
 						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
 					}
-					if(imsi_hsp_file.length()>0){
+					if(imsi_hsp_file.equals("nil")==false){
 						fileserver.setWordsToFile(imsi_hsp_file, ResourcesConfig.LOCAL_IMIS_HSP_PATH);
 					}
 					redisserver.set(key, imsi_tdate1);
