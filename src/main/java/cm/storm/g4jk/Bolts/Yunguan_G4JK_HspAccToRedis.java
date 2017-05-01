@@ -101,19 +101,19 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					imsi_tdate1=redisserver.get(key);
 					imsi_hsp_file="nil";
 					if(imsi_tdate1==null||imsi_tdate1.equals("nil")){
-						imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
 						imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_catch_time+"\n";
+						imsi_tdate1=imsi_catch_time+";"+imsi_catch_time;
 					}
 					else if (imsi_tdate1.length()>=29){
 						imsi_tdate2=imsi_tdate1.substring(15);
 						imsi_tdate1=imsi_tdate1.substring(0,14);
 						if(imsi_catch_time.compareTo(imsi_tdate1)<0){
-							imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
 							imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_catch_time+"|"+imsi_tdate2+"\n";
+							imsi_tdate1=imsi_catch_time+";"+imsi_tdate2;
 						}
 						else if(imsi_catch_time.compareTo(imsi_tdate2)>0){
-							imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
 							imsi_hsp_file=data_time+"|"+hotspot+"|"+imsi+"|"+imsi_tdate1+"|"+imsi_catch_time+"\n";
+							imsi_tdate1=imsi_tdate1+";"+imsi_catch_time;
 						}
 						else imsi_tdate1=imsi_tdate1+";"+imsi_tdate2;
 					}
