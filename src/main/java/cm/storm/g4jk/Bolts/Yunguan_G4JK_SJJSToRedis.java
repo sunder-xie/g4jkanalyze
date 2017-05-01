@@ -1,32 +1,30 @@
 package cm.storm.g4jk.Bolts;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
-import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
-import org.apache.storm.tuple.Values;
 
 //import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GBean;
 import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 实时分析网分记录IMSI对应的号码，以及号码可以参与的SJJSXXX活动，符合规则则添加SJJSid到对应的key中，并且将号码丢入触点集合中
- * 另外由于涉及url的中文提取，本段代码添加了url的中文信息提取并组合成字符串，继续转发，如果后续取消该sjjs检索业务，则注释掉匹配部分的代码即可。
+ * 实时分析网分记录IMSI对应的号码，以及号码可以参与的SJJSXXX活动，符合规则则添加SJJSid到对应的key中，并且将号码丢入触点集合中。
  * @author chinamobile
- * 20161008
+ * 20170314
  */
-public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
+public class Yunguan_G4JK_SJJSToRedis extends BaseRichBolt {
 	//代码自动生成的类序列号
-	private static final long serialVersionUID = -2349911902769092963L;
+	private static final long serialVersionUID = 4438803730362084161L;
 
 	//记录作业日志到storm的logs目录下对应的topology日志中
-	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJS093_93ToRedis.class);
+	public static Logger LOG=Logger.getLogger(Yunguan_G4JK_SJJSToRedis.class);
 	
 	//元组发射搜集器
 	private OutputCollector collector;
@@ -51,48 +49,98 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		String tdate=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.STARTTIME);
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
+		String appid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
+		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+		Set<String> sjjslist=null;
 		String words=null;
 		String key=null;
 		String phnum=null;
-		boolean flag=false;
-		//记录url中的中文字符串
+		String appvalue=null;
+		String intvalue=null;
 		String chinesewords=null;
+		String[] params=null;
+		String[] keywords=null;
+		String testwords=null;
+		boolean flag=false;
 
-		//如果不需要热词检索逻辑则注释掉相应的热词检测保存代码，仅保留最后的转发逻辑
-		chinesewords=getChineseWordsFromUrl(url);
-		//查看过滤无效的中文字串
-		flag=fillterUnValidWords(chinesewords);
-		if(chinesewords!=null&&chinesewords.length()>=2&&flag==false){
-			chinesewords=chinesewords.trim();
+		if(tdate.length()>=23&&imsi!=null&&imsi.length()>=15){
 			tdate=tdate.substring(0,10);	//获取日期YYYY-MM-DD
-			if(imsi!=null&&imsi.length()>=15){
-				key="ref_imsiphn_"+imsi;
-				phnum=redisserver.get(key);
-				if(phnum!=null&&phnum.length()>=11){
-					//业务：分析用户是为宽带触点潜在目标用户，对应触点id为SJJS093
-					key="ref_sjjsparams_SJJS093";
-					words=redisserver.get(key);	//20161009取值为--上网行为类型:购物#论坛;上网搜索热词:家宽#宽带#极光#电信;
-					flag=businessJudge(chinesewords, words);		
-					if(flag==true){								//需要触点，再将号码放入当天的触点集合中
-						key="mfg4_"+tdate+"_sjjs_"+phnum;
-						redisserver.sadd(key, "SJJS093");
-						key="mfg4_"+tdate+"_UnTouchSet";
-						redisserver.sadd(key, phnum);
+			key="ref_imsiphn_"+imsi;
+			phnum=redisserver.get(key);
+			if(phnum!=null&&phnum.length()>=11){
+				//业务：对应触点的SJJS列表
+				key="ref_sjjsparams_set";
+				sjjslist=redisserver.smembers(key);
+				if(sjjslist!=null&&sjjslist.size()>0)
+				{
+					for(String sjjs : sjjslist){
+						flag=false;
+						testwords="";
+						intvalue=null;
+						appvalue=null;
+						chinesewords=null;
+						key="ref_sjjsparams_"+sjjs;
+						words=redisserver.get(key);	//例子--上网行为类型:天猫#淘宝#支付宝#京东;上网搜索热词:家宽#宽带#极光#电信;
+						if(words!=null&&words.trim().length()>0){
+							params=words.split(";");
+							if(params!=null){
+								for(int i=0;i<params.length;i++){
+									keywords=null;
+									words=params[i].trim();
+									if(words!=null&&words.contains(":")==true)keywords=words.split(":");
+									//必须是变量名称和值组成，长度必须为2
+									if(keywords!=null&&keywords.length==2)testwords+=keywords[1].trim()+"#";
+								}
+							}
+							if(testwords.length()>1)keywords=testwords.split("#");
+							if(keywords!=null&&keywords.length>0){
+								if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+									key="ref_wtag_"+intsid;
+									intvalue=redisserver.get(key);//获取对应的用户业务标签信息
+								}
+								if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
+									key="ref_wtag_"+appid;
+									appvalue=redisserver.get(key);//获取对应的用户标签信息
+								}
+								chinesewords=getChineseWordsFromUrl(url);
+								for(int j=0;j<keywords.length;j++){
+									if(keywords[j].equals("")==false){
+										if(intvalue!=null&&intvalue.contains(keywords[j])==true)flag=true;
+										else if(appvalue!=null&&appvalue.contains(keywords[j])==true)flag=true;
+										else if(chinesewords!=null&&chinesewords.contains(keywords[j])==true)flag=true;
+									}
+									if(flag==true)break;
+								}
+							}
+						}
+						if(flag==true){						//需要触点，再将号码放入当天的触点集合中
+							key="mfg4_"+tdate+"_sjjs_"+phnum;
+							redisserver.sadd(key, sjjs);
+							key="mfg4_"+tdate+"_UnTouchSet";
+							redisserver.sadd(key, phnum);
+						}
 					}
-				}
+				}				
 			}
-			//如果提取之后存在中文信息，并且符合一定规律将信息转发给bolt做中文热词分析
-			collector.emit(new Values(tdate, chinesewords));
 		}
 		
 		//释放内存
 		redisserver=null;
 		tdate=null;
 		imsi=null;
+		intsid=null;
 		phnum=null;
 		words=null;
+		sjjslist=null;
+		appid=null;
 		key=null;
+		appvalue=null;
+		intvalue=null;
+		url=null;
 		chinesewords=null;
+		params=null;
+		keywords=null;
+		testwords=null;
 		collector.ack(tuple);
 	}
 
@@ -100,7 +148,6 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 		//字段说明，如果execute有后续处理需求，发射后可以依赖以下字段进行标记
-		outputFieldsDeclarer.declare(new Fields("TupleDate","ChineseInfo"));
 	}
 	
 	//自定义方法区域
@@ -117,13 +164,19 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 		//这样假设成立，也就是GBK编码。如果解析失败，则用utf8解码
 		try {
 			String reg = "[^\u4e00-\u9fa5]";   //^匹配所有非中文字符, \u4e00, \u9fa5代表是两个unicode编码值，他们正好是Unicode表中的汉字的头和尾
-			String fis= java.net.URLDecoder.decode(url, "gb2312");
-			String sec = new String(fis.getBytes("gb2312"), "gb2312");
-			if (fis.equals(sec)==true)
-				url=fis;
-	        else
-	        	url= java.net.URLDecoder.decode(url, "utf-8");
-			
+			String fis= null;
+			String sec = null;
+			//尝试解码3次，单次解码未必直接能够解析出中文
+			for(int i=0;i<3;i++)
+			{
+				fis = java.net.URLDecoder.decode(url, "gb2312");
+				sec = new String(fis.getBytes("gb2312"), "gb2312");
+				if (fis.equals(sec)==true)
+					url=fis;
+		        else
+		        	url= java.net.URLDecoder.decode(url, "utf-8");
+			}
+	
 			//提取url中的中文
 			url = url.replaceAll(reg, "");
 			//记录中文信息
@@ -133,67 +186,6 @@ public class Yunguan_G4JK_SJJS093_93ToRedis extends BaseRichBolt {
 			return null;
 		}
 		return url_ch;
-	}
-	
-	/**
-	 * 触点逻辑判断，决定号码是否为潜在推送触点的目标号码
-	 * @param url_ch 已经从url中提取的中文字符串
-	 * @param words 从触点配置的参数中获取的所有参数，格式为 名称1:值1;名称2:值2;名称3:值3;...;
-	 * @return 用于最后标记业务逻辑判断是否添加触点 true为需要添加，false为不需要添加
-	 * 如果取消匹配业务，请注释掉以下代码
-	 */
-	public boolean businessJudge(String url_ch, String words){
-		boolean flag=false; 
-		
-		String[] params=null;
-		String[] keywords=null;
-		int i=0;
-		int j=0;
-		//没有参数，直接返回
-		if(words==null||words.endsWith(";")==false)return false;
-		params=words.split(";");
-		//内存不足直接返回
-		if(params==null||params.length<1)return false;
-		for(i=0;i<params.length;i++){
-			keywords=null;
-			words=params[i].trim();
-			if(words!=null&&words.contains(":")==true)keywords=words.split(":");
-			//必须是变量名称和值组成，长度必须为2
-			if(keywords!=null&&keywords.length==2){
-				//热词搜索匹配逻辑
-				if(keywords[0].contains("热词")){
-					words=keywords[1]+"#"; //取值为--家宽#宽带#极光#电信#
-					keywords=words.split("#");
-					for(j=0;j<keywords.length;j++){
-						keywords[j]=keywords[j].trim();
-						if(keywords[j].equals("")==false&&url_ch.contains(keywords[j])==true){
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return flag;
-	}
-	
-	/**
-	 * 过滤 邪黄赌毒，敏感信息，同时可减少数据量
-	 * @param str
-	 * @return true代表包含黄赌毒，或者敏感信息，不做热词统计
-	 */
-	public boolean fillterUnValidWords(String str)
-	{
-		if(str==null||str.trim().equals("")==true)return true;
-		str=str.trim();
-		String not="赌博,奇葩,六合,假牌,假证,迷药,杀人,放火,抢劫,偷盗,枪支,弹药,假冒,事变,政变,老千,法轮,全能神,全能教,邪教,冰毒,摇头丸,大麻,造反,色吧,鸡鸡,手淫,性吧,性福,性欲,狠狠插,红灯区,卖淫,淫乱,爆乳,约炮,色情,情色,吞精,精液,艳照,淫荡,勾引,爱爱,做爱,偷情,偷性,交配,撸管,色系,鸡巴"
-				+ ",毒品,吸毒,叫鸡,赌钱,性骚扰,裸奔,裸照,轮奸,强奸,色图,淫娃,爆乳,妖姬,海天盛筵,生殖器,插插,壮阳,性故事,不雅照,一夜情,造爱,草榴,咪咪爱,阴蒂,阴唇,色色,走光,少妇,熟妇,熟女,日逼,操逼,黄图,黄片,强暴,强奸,迷奸,乱伦,阴茎,性交,裸体,射精,鸡婆,性侵,打飞机,奶子,吸奶,喂奶,巨乳,乳交,口交,口爆";
-		String[] tmp=not.split(",");
-		
-		for(int i=0;i<tmp.length;i++)
-		{
-			if(str.contains(tmp[i])==true)return true;
-		}
-		return false;
 	}
 }
 

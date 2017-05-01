@@ -1,6 +1,7 @@
 package cm.storm.g4jk.Bolts;
 
 import java.util.Map;
+//import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.storm.task.OutputCollector;
@@ -13,7 +14,7 @@ import cm.storm.g4jk.Beans.Yunguan_G4JK_Basic4GFields;
 import cm.storm.g4jk.Commons.RedisServer;
 
 /**
- * 每15分钟统计热点区域的人流量(区别imsi)，4G http流量使用量
+ * 每15分钟统计热点区域的人流量(区别imsi)，人群标签统计
  * @author chinamobile
  * 20160907
  */
@@ -48,28 +49,107 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String url=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.URL);
+		String appid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
+		String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
 		String tcsll=null;
 		String hour=null;
 		String minute=null;
+		String appdate=tdate;
+		String appvalue=null;
 		int clk=0;
 		String key=null;
+		String value=null;
+		long rt=0;
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hpm_"+tac+"_"+ci;
 			tcsll=redisserver.get(key);
+			hour=tdate.substring(11,13);
+			minute=tdate.substring(14,16);
+			clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+			tdate=tdate.substring(0,10);
 			if(tcsll!=null&&tcsll.equals("nil")==false){
-				hour=tdate.substring(11,13);
-				minute=tdate.substring(14,16);
-				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
-				tdate=tdate.substring(0,10);
 				if(clk>=0&&clk<15)minute="00";
 				else if(clk>=15&&clk<30)minute="15";
 				else if(clk>=30&&clk<45)minute="30";
 				else if(clk>=45)minute="45";
 
-				//将imsi累计到对应的标签中
-				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
-				redisserver.sadd(key, imsi);
+//				key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;
+//				redisserver.sadd(key, imsi);
+				//将imsi累计到对应的标签中，空间换效率尝试20161031，如果对于imsi为空，默认值123456789012345的情况，直接累加，不做判断，默认为未知用户
+				if(imsi.equals("123456789012345")==false){
+					key="mfg4_"+tdate+"_imsihot_"+imsi;
+					value=hour+"_"+minute+"_"+tcsll;
+					rt=redisserver.sadd(key,value);
+					if(rt>0){
+						key="mfg4_"+tdate+"_localtotal_"+hour+"_"+minute; 	//统计每个时刻的总人数
+						redisserver.incr(key);
+						key="mfg4_"+tdate+"_localtotalset";							//汇总一天总的imsi集合，用于统计总人数
+						redisserver.sadd(key, imsi);
+					}
+				}else rt=1;
+				if(rt>0){
+					key="mfg4_"+tdate+"_hmset_"+hour+"_"+minute+"_"+tcsll;	
+					redisserver.incr(key);
+				}
+				
+				//临时处理代码段，新增累计当天的淘宝，京东，天猫每隔一小时的网页访问人数
+//				if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+//					if(intsid.equals("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
+//					else if(intsid.equals("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
+//					else if(intsid.equals("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
+//				}
+//				redisserver.sadd(key, imsi);
+				
+			}
+			
+			//统计网页的使用热度集合，每个网页的使用热度，补充微信支付判断逻辑，从网页角度观察用户行为
+			if(intsid!=null&&intsid.trim().equals("")==false&&intsid.trim().equals("none")==false){
+				appdate=appdate.substring(0,10);	//获取日期
+				key="ref_wtag_"+intsid;
+				appvalue=redisserver.get(key);
+				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
+				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
+					key="mfg4_"+appdate+"_IntidSet";
+					redisserver.sadd(key, intsid);
+
+					key="mfg4_"+appdate+"_IntidUse_"+intsid;
+					redisserver.incr(key); 	//累计当天的访问次数
+					
+					//微信支付判断逻辑,intsid为8943或者66,url中包含pay，则计入mfg4_YYYY-MM-DD_AppUse_3333，3333为自定义的维表数据 微信支付
+					if((intsid.equals("66")||intsid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
+						key="mfg4_"+appdate+"_IntidSet";
+						redisserver.sadd(key, "3333");
+						
+						key="mfg4_"+tdate+"_IntidUse_3333";
+						redisserver.incr(key); 	//累计当天微信支付次数
+					}
+				}
+			}
+			
+			//统计appid的使用热度集合，每个appid的使用热度，补充微信支付判断逻辑，从app角度观察用户行为
+			if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
+				appdate=appdate.substring(0,10);	//获取日期
+				key="ref_wtag_"+appid;
+				appvalue=redisserver.get(key);
+				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
+				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false){
+					key="mfg4_"+appdate+"_AppidSet";
+					redisserver.sadd(key, appid);
+
+					key="mfg4_"+appdate+"_AppUse_"+appid;
+					redisserver.incr(key); 	//累计当天的访问次数
+					
+					//微信支付判断逻辑,intappid为8943或者66,url中包含pay，则计入mfg4_YYYY-MM-DD_AppUse_3333，3333为自定义的维表数据 微信支付
+					if((appid.equals("66")||appid.equals("8943"))&&(url.toLowerCase().contains("pay")==true)){
+						key="mfg4_"+appdate+"_AppidSet";
+						redisserver.sadd(key, "3333");
+						
+						key="mfg4_"+tdate+"_AppUse_3333";
+						redisserver.incr(key); 	//累计当天微信支付次数
+					}
+				}
 			}
 		}
 		//释放内存
@@ -78,11 +158,17 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		imsi=null;
 		tac=null;
 		ci=null;
+		url=null;
+		intsid=null;
 		tcsll=null;
 		hour=null;
 		minute=null;
 		clk=0;
 		key=null;
+		value=null;
+		rt=0;
+		appdate=null;
+		appvalue=null;
 		
 		collector.ack(tuple);
 	}
@@ -94,6 +180,29 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 	}
 
 }
+
+//String intsid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTSID);
+//Set<String> custtag=null;
+//custtag=null;
+
+//20161110临时处理代码段，新增累计当天的淘宝，京东，天猫每隔一小时的人数
+//if(intsid.endsWith("1613")==true) key="mfg4_"+tdate+"_taobao_"+tcsll+"_"+hour;		//淘宝
+//else if(intsid.endsWith("2545")==true) key="mfg4_"+tdate+"_tmall_"+tcsll+"_"+hour;	//天猫
+//else if(intsid.endsWith("1061")==true) key="mfg4_"+tdate+"_jd_"+tcsll+"_"+hour;		//京东
+//else if(intsid.endsWith("1733")==true) key="mfg4_"+tdate+"_vip_"+tcsll+"_"+hour;		//唯品会
+//else if(intsid.endsWith("1593")==true) key="mfg4_"+tdate+"_snyg_"+tcsll+"_"+hour;	//苏宁易购
+//redisserver.sadd(key, imsi);
+
+//20161110临时处理代码段，统计标签对应的人数
+//key="ref_custtag_"+imsi;
+//custtag=redisserver.smembers(key);
+//if(custtag!=null&&custtag.size()>0){
+//	for(String cid:custtag){
+//		key="mfg4_"+tdate+"_custtag_"+cid;
+//		redisserver.sadd(key,imsi);
+//	}
+//}
+
 
 //将标签产生的流量值累计到对应的标签中，2016年10月8日，未使用暂停
 //String dlflux=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.DL_DATA);

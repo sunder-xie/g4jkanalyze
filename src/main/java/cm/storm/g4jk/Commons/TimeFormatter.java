@@ -195,7 +195,7 @@ public class TimeFormatter {
 	}
 	
 	/**
-	 * 将当前实时时间格式从 "YYYY/M/D h:m:s.xxx"转成"YYYY-MM-DD hh:mm:ss.xxx" 注意阿拉伯日如果不足两位DD，则是空格加D即 “ D”的格式
+	 * 将当前实时时间格式从 "YYYY/M/D h:mm:ss.xxx"转成"YYYY-MM-DD hh:mm:ss.xxx" 注意阿拉伯日如果不足两位DD，则是0加D即 “0D”的格式
 	 * @param dt
 	 * 2016-09-05添加
 	 */
@@ -207,7 +207,7 @@ public class TimeFormatter {
 		{
 			if(sep.length==2)
 			{
-				String[] mydate=sep[0].split("/");
+				String[] mydate=sep[0].split("/"); 
 				String[] mytime=sep[1].split(":");
 				int month=0;
 				int day=0; 

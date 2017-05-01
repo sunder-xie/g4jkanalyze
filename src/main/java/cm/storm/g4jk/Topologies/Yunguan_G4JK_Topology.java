@@ -15,11 +15,14 @@ import org.apache.storm.topology.TopologyBuilder;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_Basic4GSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicTAUSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_ZhWordsCountToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_ZhWordsToCountBolt;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicATDTSplitter;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_BasicJKSplitter;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HmapAccToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_HspAccToRedis;
-import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS093_93ToRedis;
+//import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS222_91ToRedis;
+import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJSToRedis;
+//import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS208_88ToRedis;
 //import cm.storm.g4jk.Bolts.Yunguan_G4JK_SJJS245_87ToRedis;
 import cm.storm.g4jk.Bolts.Yunguan_G4JK_TauAccToRedis;
 
@@ -103,11 +106,13 @@ public class Yunguan_G4JK_Topology {
         //统计热点区域人流量，标签，上网标签人数，热点区域流量数据，15分钟累计一次，将数据直接入库redis
         //基站周边人数，流量累计，15分钟累计一次，将数据直接入库redis
         //统计TAU中的人流量信息补充，15分钟累计一次，将数据直接入库redis
-        Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),4).shuffleGrouping("SplitterBoltwftau");
-        Tpbuilder.setBolt("SJJS093Bolt93wfg4", new Yunguan_G4JK_SJJS093_93ToRedis(),12).shuffleGrouping("SplitterBoltwf4g");
-        Tpbuilder.setBolt("ZhCountBoltwfg4", new Yunguan_G4JK_ZhWordsCountToRedis(),6).shuffleGrouping("SJJS093Bolt93wfg4");
+        Tpbuilder.setBolt("HspAccBoltwfg4", new Yunguan_G4JK_HspAccToRedis(),22).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("HmapAccBoltwfg4", new Yunguan_G4JK_HmapAccToRedis(),24).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("TauAccBoltwfg4", new Yunguan_G4JK_TauAccToRedis(),6).shuffleGrouping("SplitterBoltwftau");
+        Tpbuilder.setBolt("SJJSBoltwfg4", new Yunguan_G4JK_SJJSToRedis(),18).shuffleGrouping("SplitterBoltwf4g");
+//        Tpbuilder.setBolt("SJJS208Bolt88wfg4", new Yunguan_G4JK_SJJS208_88ToRedis(),12).shuffleGrouping("SJJS222Bolt91wfg4");
+        Tpbuilder.setBolt("ZhToCountBoltwfg4", new Yunguan_G4JK_ZhWordsToCountBolt(),6).shuffleGrouping("SplitterBoltwf4g");
+        Tpbuilder.setBolt("ZhCountBoltwfg4", new Yunguan_G4JK_ZhWordsCountToRedis(),6).shuffleGrouping("ZhToCountBoltwfg4");
         /*拓扑执行*/
         //Configuration
   		Config conf = new Config();
@@ -136,13 +141,15 @@ public class Yunguan_G4JK_Topology {
   			}
   			else
   			{
-  				//集群模式
+  				//集群模式，注意，如果是远程提交作业，还需要在config中配置seeds作为nimubs的节点位置 
+  				//List<String> nimbus=null;
   				int cnt=-1;
   				try{ cnt=Integer.parseInt(args[0]); }catch(Exception exc){}
   				if(cnt<0)
   					cnt=6;			// 默认值
   				
   				conf.put(Config.TOPOLOGY_WORKERS,cnt);
+  				//conf.put(Config.NIMBUS_SEEDS, nimbus);
   				//conf.put(Config.TOPOLOGY_RECEIVER_BUFFER_SIZE, 16); 								// default is 8
   				//conf.put(Config.TOPOLOGY_EXECUTOR_RECEIVE_BUFFER_SIZE, 16384); 		// batched; default is 1024
   				//conf.put(Config.TOPOLOGY_EXECUTOR_SEND_BUFFER_SIZE, 16384); 			// individual tuples; default is 1024

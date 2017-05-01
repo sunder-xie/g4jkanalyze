@@ -24,13 +24,24 @@ import redis.clients.jedis.SortingParams;
  * @author nicolashsu
  *
  */
+
+//构建Cluster的连接池配置参数
+//JedisPoolConfig config = new JedisPoolConfig();
+//config.setMaxTotal(ResourcesConfig.MAX_ACTIVE);
+//config.setMaxIdle(ResourcesConfig.MAX_IDLE);
+//config.setMinIdle(ResourcesConfig.MIN_IDLE);
+//config.setMaxWaitMillis(ResourcesConfig.MAX_WAIT);
+//config.setTestOnBorrow(ResourcesConfig.TEST_ON_BORROW);
+//jedisCluster=new JedisCluster(jedisClusterNodes,
+//ResourcesConfig.CLUSTER_TIMEOUT,
+//ResourcesConfig.CLUSTER_MAX_REDIRECTIONS, 
+//config);  
+
 public class RedisServer {
 	//构建集群连接对象实例
 	private static JedisCluster jedisCluster;
-	
 	//获取集群子节点
 	private static Map<String, JedisPool> clusterNodes;  
-	
 	//单例模式实现客户端管理类
 	private static RedisServer INSTANCE=new RedisServer();
 
@@ -44,21 +55,10 @@ public class RedisServer {
 		jedisClusterNodes.add(new HostAndPort(ResourcesConfig.REDIS_SERVER_IP, 
 				Integer.valueOf(ResourcesConfig.REDIS_SERVER_PORT)));
 		
-		//构建Cluster的连接池配置参数
-//		JedisPoolConfig config = new JedisPoolConfig();
-//        config.setMaxTotal(ResourcesConfig.MAX_ACTIVE);
-//        config.setMaxIdle(ResourcesConfig.MAX_IDLE);
-//        config.setMinIdle(ResourcesConfig.MIN_IDLE);
-//        config.setMaxWaitMillis(ResourcesConfig.MAX_WAIT);
-//        config.setTestOnBorrow(ResourcesConfig.TEST_ON_BORROW);
-        
         //新建JedisCluster连接
-		jedisCluster=new JedisCluster(jedisClusterNodes,ResourcesConfig.CLUSTER_TIMEOUT,ResourcesConfig.CLUSTER_MAX_REDIRECTIONS);
-//        jedisCluster=new JedisCluster(jedisClusterNodes,
-//        		ResourcesConfig.CLUSTER_TIMEOUT,
-//        		ResourcesConfig.CLUSTER_MAX_REDIRECTIONS, 
-//        		config);
-        
+		jedisCluster=new JedisCluster(jedisClusterNodes,ResourcesConfig.CLUSTER_TIMEOUT,
+				ResourcesConfig.CLUSTER_MAX_REDIRECTIONS);
+  
         //获取所有集群子节点
         clusterNodes=jedisCluster.getClusterNodes();
 	}
