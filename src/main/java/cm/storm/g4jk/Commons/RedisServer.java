@@ -609,12 +609,70 @@ public class RedisServer {
 		try{
 			res= jedisCluster.sort(key, sortingParameters);
 		}catch(Exception e){
-			logger.error("Jediscluster opt redis_sort1 error: ", e);
+			logger.error("Jediscluster opt redis_sort2 error: ", e);
 			return null;
 		}
 		return res;
 	}
 	/*排序操作封装结束*/
+	
+	/*Sorted set 操作接口封装 */
+	/**
+	 * 往排序集合中添加成员和分数
+	 * 为有序集key的成员member的score值加上增量increment。
+	 * 如果key中不存在member，就在key中添加一个member，score是increment。
+	 * 如果key不存在，就创建一个只含有指定member成员的有序集合，score是increment。
+	 * @param key
+	 * @param score
+	 * @param member
+	 * @return 成员的新分数
+	 */
+	public double zincrby(String key, double score, String member){
+		double res=0.0;
+		try{
+			res=jedisCluster.zincrby(key, score, member);
+		}catch(Exception e){
+			logger.error("Jediscluster opt zincrby error: ", e);
+			return 0.0;
+		}
+		return res;
+	}
+	
+	/**
+	 * 获取sorted set中的元素个数
+	 * @param key
+	 * @return
+	 */
+	public long zcard(String key){
+		long res=0;
+		try{
+			res=jedisCluster.zcard(key);
+		}catch(Exception e){
+			logger.error("Jediscluster opt zcard error: ", e);
+			return 0;
+		}
+		return res;
+	}
+	
+	/**
+	 * 对	sorted set	按照分数从高到低进行排序
+	 * @param key
+	 * @param min
+	 * @param max
+	 * @param offset	从排序后的结果开始取多少个
+	 * @param count	限制多少个数
+	 * @return
+	 */
+	public Set<String> zrangebyscore(String key, String min, String max, int offset,int count){
+		Set<String> res =null;
+		try{
+			res=jedisCluster.zrevrangeByScore(key, max, min, offset, count);
+		}catch(Exception e){
+			logger.error("Jediscluster opt zrangebyscore error: ", e);
+			return null;
+		}
+		return res;
+	}
 	
 	/*redis cluster不支持事务操作*/
 }
