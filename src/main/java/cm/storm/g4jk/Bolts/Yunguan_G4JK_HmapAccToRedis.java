@@ -61,7 +61,6 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		String key=null;
 		String value=null;
 		long rt=0;
-		String phnum=null;
 		
 		if(tdate.length()>=23&&imsi.length()>=15){
 			key="ref_hpm_"+tac+"_"+ci;
@@ -134,8 +133,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 				appdate=appdate.substring(0,10);	//获取日期
 				key="ref_wtag_"+appid;
 				appvalue=redisserver.get(key);
-				key="ref_imsiphn_"+imsi;
-				phnum=redisserver.get(key);
+
 				//应用的维表中存在翻译信息则进行数据累加，不对这两大类做统计
 				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false&&appvalue.contains("网页文件")==false){
 					key="mfg4_"+appdate+"_AppidSet";
@@ -151,19 +149,6 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 						
 						key="mfg4_"+tdate+"_AppUse_3333";
 						redisserver.incr(key); 	//累计当天微信支付次数
-					}
-					
-					//记录用户的打点行为判断是否会出现流量激增的现象，如果有则触点进行流量激发
-					if(phnum!=null&&phnum.length()==11)
-					{
-						key="mfg4_"+appdate+"_AppPoint_fre"+phnum;
-						redisserver.zincrby(key, 1.0, appid);
-						key="mfg4_"+appdate+"_AppPoint_times"+phnum;
-						value=hour+"_"+minute+"_"+appid;
-						redisserver.zincrby(key, 1.0, value);
-						key="mfg4_"+appdate+"_AppPoint_places"+phnum;
-						value=tcsll+"_"+appid;
-						redisserver.zincrby(key, 1.0, value);
 					}
 				}
 			}
@@ -185,8 +170,7 @@ public class Yunguan_G4JK_HmapAccToRedis extends BaseRichBolt {
 		rt=0;
 		appdate=null;
 		appvalue=null;
-		phnum=null;
-		
+
 		collector.ack(tuple);
 	}
 

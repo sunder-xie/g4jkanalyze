@@ -63,7 +63,9 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String imsi=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.IMSI);
 		String tac=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.TAC);
 		String ci=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.CID);
+		String appid=tuple.getStringByField(Yunguan_G4JK_Basic4GFields.INTAPPID);
 		Set<String> hotspotlist=null;
+		String tcsll=null;
 		String hour=null;
 		String minute=null;
 		String imsi_catch_time=null;
@@ -71,29 +73,33 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		String imsi_tdate2="19000101000000";
 		String imsi_hsp_file=null;
 		String data_time=null;
+		String appdate=tdate;
+		String appvalue=null;
 		int clk=0;
 		String key=null;
 		String value=null;
 		long rt=0;
+		String phnum=null;
 
 		if(tdate.length()>=23&&imsi.length()>=15){
 			//查询维表获取热点区域标签，一个tac，ci可能因为项目不同被归属在不同的项目热点区域之下
 			key="ref_hsp_"+tac+"_"+ci;
 			hotspotlist=redisserver.smembers(key);
 			data_time=TimeFormatter.getNow(); 						//获取当前时间YYYY-MM-DD HH:mm:ss
-			
+						
+			hour=tdate.substring(11,13);
+			minute=tdate.substring(14,16);
+			clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+			tdate=tdate.substring(0,10);
+			if(clk>=0&&clk<15)minute="00";
+			else if(clk>=15&&clk<30)minute="15";
+			else if(clk>=30&&clk<45)minute="30";
+			else if(clk>=45)minute="45";
+				
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
-				hour=tdate.substring(11,13);
-				minute=tdate.substring(14,16);
 				imsi_catch_time=tdate.substring(0,19);
 				imsi_catch_time=imsi_catch_time.replaceAll("[^0-9]","");
-				clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
-				tdate=tdate.substring(0,10);
-				if(clk>=0&&clk<15)minute="00";
-				else if(clk>=15&&clk<30)minute="15";
-				else if(clk>=30&&clk<45)minute="30";
-				else if(clk>=45)minute="45";
 				
 				for(String hotspot : hotspotlist){			
 					//标记hotspot捕获imsi的时间
@@ -136,6 +142,34 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					}
 				}
 			}
+
+			//记录用户的打点行为判断是否会出现流量激增的现象，如果有则触点进行流量激发
+			if(appid!=null&&appid.trim().equals("")==false&&appid.trim().equals("none")==false){
+				key="ref_imsiphn_"+imsi;
+				phnum=redisserver.get(key);
+				
+				key="ref_hpm_"+tac+"_"+ci;
+				tcsll=redisserver.get(key);
+				
+				key="ref_wtag_"+appid;
+				appvalue=redisserver.get(key);
+				if(appvalue!=null&&appvalue.length()>0&&appvalue.contains("浏览器")==false&&appvalue.contains("其他")==false&&appvalue.contains("网页文件")==false){
+					appdate=appdate.substring(0,10);	//获取日期
+					if(tcsll!=null&&tcsll.equals("nil")==false){
+						if(phnum!=null&&phnum.length()==11)
+						{
+							key="mfg4_"+appdate+"_AppPoint_fre"+phnum;
+							redisserver.zincrby(key, 1.0, appid);
+							key="mfg4_"+appdate+"_AppPoint_times"+phnum;
+							value=hour+"_"+minute+"_"+appid;
+							redisserver.zincrby(key, 1.0, value);
+							key="mfg4_"+appdate+"_AppPoint_places"+phnum;
+							value=tcsll+"_"+appid;
+							redisserver.zincrby(key, 1.0, value);
+						}
+					}	
+				}
+			}
 		}
 
 		//释放内存
@@ -156,7 +190,10 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 		imsi_tdate2=null;
 		imsi_hsp_file=null;
 		data_time=null;
-
+		tcsll=null;
+		phnum=null;
+		appdate=null;
+		
 		collector.ack(tuple);
 	}
 	
