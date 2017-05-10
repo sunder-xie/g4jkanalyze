@@ -90,6 +90,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 			hour=tdate.substring(11,13);
 			minute=tdate.substring(14,16);
 			clk=Integer.valueOf(minute); 	//会自动过滤数字前边的0
+			imsi_catch_time=tdate.substring(0,19);
+			imsi_catch_time=imsi_catch_time.replaceAll("[^0-9]","");
 			tdate=tdate.substring(0,10);
 			if(clk>=0&&clk<15)minute="00";
 			else if(clk>=15&&clk<30)minute="15";
@@ -98,9 +100,6 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 				
 			if(hotspotlist!=null&&hotspotlist.size()>0)
 			{
-				imsi_catch_time=tdate.substring(0,19);
-				imsi_catch_time=imsi_catch_time.replaceAll("[^0-9]","");
-				
 				for(String hotspot : hotspotlist){			
 					//标记hotspot捕获imsi的时间
 					key="mfg4_"+tdate+"_hspimsi_"+hotspot+"_"+imsi;
