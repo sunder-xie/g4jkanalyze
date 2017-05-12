@@ -663,7 +663,7 @@ public class RedisServer {
 	 * @param count	限制多少个数
 	 * @return
 	 */
-	public Set<String> zrangebyscore(String key, String min, String max, int offset,int count){
+	public Set<String> zrevrangebyscore(String key, String min, String max, int offset,int count){
 		Set<String> res =null;
 		try{
 			res=jedisCluster.zrevrangeByScore(key, max, min, offset, count);
