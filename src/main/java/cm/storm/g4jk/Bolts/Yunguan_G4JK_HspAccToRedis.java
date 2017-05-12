@@ -157,12 +157,12 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 					if(tcsll!=null&&tcsll.equals("nil")==false){
 						if(phnum!=null&&phnum.length()==11)
 						{
-							key="mfg4_"+appdate+"_AppPoint_fre"+phnum;
+							key="mfg4_"+appdate+"_AppPoint_fre_"+phnum;
 							redisserver.zincrby(key, 1.0, appid);
-							key="mfg4_"+appdate+"_AppPoint_times"+phnum;
+							key="mfg4_"+appdate+"_AppPoint_times_"+phnum;
 							value=hour+"_"+minute+"_"+appid;
 							redisserver.zincrby(key, 1.0, value);
-							key="mfg4_"+appdate+"_AppPoint_places"+phnum;
+							key="mfg4_"+appdate+"_AppPoint_places_"+phnum;
 							value=tcsll+"_"+appid;
 							redisserver.zincrby(key, 1.0, value);
 						}
