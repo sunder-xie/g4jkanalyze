@@ -673,6 +673,7 @@ public class RedisServer {
 		}
 		return res;
 	}
+	/*Sorted set 操作接口封装操作结束 */
 	
 	/*redis cluster不支持事务操作*/
 }
