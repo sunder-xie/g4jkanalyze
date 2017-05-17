@@ -659,8 +659,8 @@ public class RedisServer {
 	 * @param key
 	 * @param min
 	 * @param max
-	 * @param offset	从排序后的结果开始取多少个
-	 * @param count	限制多少个数
+	 * @param offset	从排序后的结果第offset个开始取记录，offset从0开始
+	 * @param count	限制获取的记录个数
 	 * @return
 	 */
 	public Set<String> zrevrangebyscore(String key, String min, String max, int offset,int count){
