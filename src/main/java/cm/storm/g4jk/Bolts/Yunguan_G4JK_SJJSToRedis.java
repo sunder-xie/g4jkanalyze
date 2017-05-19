@@ -113,7 +113,7 @@ public class Yunguan_G4JK_SJJSToRedis extends BaseRichBolt {
 								}
 							}
 						}
-						if(flag==true){						//需要触点，再将号码放入当天的触点集合中
+						if(flag==true){														//需要触点，再将号码放入当天的触点集合中
 							key="mfg4_"+tdate+"_sjjs_"+phnum;
 							redisserver.sadd(key, sjjs);
 							key="mfg4_"+tdate+"_UnTouchSet";
