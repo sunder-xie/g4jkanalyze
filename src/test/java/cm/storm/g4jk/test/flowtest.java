@@ -171,7 +171,7 @@ public class flowtest {
 		
 		//测试中文提取与统计长度
 		try {
-			String[] urllist={"天宫","王宝强","京东","淘宝"};
+			String[] urllist={"蓝月亮","立白","威露士","奥妙"};
 			//String[] urllist={"/log.gif?t=m.100000&m=MO-J2011-1&cul=http%3A%2F%2Fso.m.jd.com%2Fware%2Fsearch.action%3Fkeyword%3D%25E7%2594%25B5%25E8%25A7%2586%25E6%259C%25BA%26tag%3Dexpand_name%2C84057%3A%3A244&pin=-&uid=1213291685&sid=1213291685|1&ref=http%3A%2F%2Fso.m.jd.com%2Fware%2Fsearch.action%3Fsid%3D9faa8118c5a3663b67fd026cfda683ae%26keyword%3D%25E7%2594%25B5%25E8%25A7%2586%25E6%259C%25BA%26catelogyList%3D&v=je%3D0%24sc%3D32-bit%24sr%3D375x667%24ul%3Dzh-cn%24cs%3DUTF-8%24dt%3D%E4%BA%AC%E4%B8%9C%E5%95%86%E5%9F%8E%24hn%3Dso.m.jd.c"};
 			//{"http://so.m.jd.com/ware/search.action?sid=174d75695dc2171d4202573f538b2110&keyword=%E5%B1%B1%E5%9C%B0%E8%BD%A6+%E6%8A%98%E5%8F%A0&catelogyList="};
 			//{"https://s.m.taobao.com/h5?event_submit_do_new_search_auction=1&_input_charset=utf-8&topSearch=1&atype=b&searchfrom=1&action=home%3Aredirect_app_action&from=1&sst=1&n=20&buying=buyitnow&q=%E5%B1%B1%E5%9C%B0%E8%BD%A6"};
