@@ -165,6 +165,8 @@ public class Yunguan_G4JK_HspAccToRedis extends BaseRichBolt {
 							key="mfg4_"+appdate+"_AppPoint_places_"+phnum;
 							value=tcsll+"_"+appid;
 							redisserver.zincrby(key, 1.0, value);
+							key="mfg4_"+appdate+"_AppPoint_Set";
+							redisserver.sadd(key, phnum);					//将当天打点的全部号码列入集合中
 						}
 					}	
 				}
